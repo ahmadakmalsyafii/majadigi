@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "719401642649",
+    "firebase_url": "https://majadigi-app-default-rtdb.firebaseio.com",
+    "project_id": "majadigi-app",
+    "storage_bucket": "majadigi-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:719401642649:android:585a07fbf8523a6780e608",
+        "android_client_info": {
+          "package_name": "com.example.majadigi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnAtGFxCN8SuDif_9uhphRU6q7LIYZvsQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
