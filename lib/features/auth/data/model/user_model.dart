@@ -10,6 +10,7 @@ class UserModel extends UserEntity {
      required super.email,
      super.password,
      super.address,
+     super.phoneNumber,
      super.NIK,
      super.dateOfBirth,
      super.gender,
@@ -30,6 +31,7 @@ class UserModel extends UserEntity {
       email: json['email'],
       password: json['password'],
       address: 'address',
+      phoneNumber: 'phoneNumber',
       NIK: 'NIK',
       dateOfBirth: DateTime.now(),
       gender: 'gender',
@@ -48,8 +50,10 @@ class UserModel extends UserEntity {
       'email': email,
       'password': password,
       'address': address,
+      'phoneNumber': phoneNumber,
       'NIK': NIK,
       'dateOfBirth': dateOfBirth?.toIso8601String(),
+      'gender': gender
     };
   }
 

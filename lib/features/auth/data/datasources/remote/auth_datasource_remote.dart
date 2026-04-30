@@ -10,7 +10,7 @@ import 'package:dio/dio.dart';
 
 abstract class AuthRemoteDataSource {
   Future<UserModel> signIn(String email, String password);
-  Future<UserModel> signUp(String email, String password, String name, String address, String NIK, DateTime dateOfBirth);
+  Future<UserModel> signUp(String email, String password, String name, String NIK, String phoneNumber, DateTime dateOfBirth);
   Future<UserModel> signInWithGoogle();
   Future<void> signOut();
   Stream<UserModel> get userStream;
@@ -53,13 +53,16 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
   }
 
   @override
-  Future<void> signOut() {
-    // TODO: implement signOut
-    throw UnimplementedError();
+  Future<void> signOut() async {
+    try {
+      await _firebaseAuth.signOut();
+    } catch (e) {
+      throw UnknownAuthException(message: 'Gagal melakukan sign out: ${e.toString()}');
+    }
   }
 
   @override
-  Future<UserModel> signUp(String name, String email, String password, String address, String NIK, DateTime dateOfBirth) async {
+  Future<UserModel> signUp(String name, String email, String password, String NIK, phoneNumber, DateTime dateOfBirth) async {
     try{
       final userCredential = _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
@@ -74,10 +77,11 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
           name: name,
           email: email,
           password: password,
-          address: address,
+          address: "",
+          phoneNumber: phoneNumber,
           NIK: NIK,
           dateOfBirth: dateOfBirth,
-          gender: null,
+          gender: "",
         );
 
         await saveUserData(newUser);

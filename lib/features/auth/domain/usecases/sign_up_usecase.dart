@@ -9,12 +9,12 @@ class SignUpUsecase {
 
   SignUpUsecase(this.repository);
 
-  Future<Either<Failure, UserEntity>> call(String email, String password, String name,String address, String NIK, DateTime dateOfBirth) async {
+  Future<Either<Failure, UserEntity>> call(String email, String password, String name, String phoneNumber, String NIK, DateTime dateOfBirth) async {
     return await repository.signUp(
       email,
       password,
       name,
-      address,
+      phoneNumber,
       NIK,
       dateOfBirth,
     );

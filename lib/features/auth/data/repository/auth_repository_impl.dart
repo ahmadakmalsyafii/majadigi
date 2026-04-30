@@ -24,11 +24,12 @@ class AuthRepositoryImpl extends AuthRepository{
         uid: userModel.uid,
         email: userModel.email,
         name: userModel.name,
-        address: "",
-        NIK: "",
-        dateOfBirth: DateTime.now(),
-        gender: "",
-        password: '',
+        address: userModel.address,
+        NIK: userModel.NIK,
+        phoneNumber: userModel.phoneNumber,
+        dateOfBirth: userModel.dateOfBirth,
+        gender: userModel.gender,
+        password: userModel.password,
       ));
 
     } on AppException catch (e) {
@@ -37,9 +38,9 @@ class AuthRepositoryImpl extends AuthRepository{
   }
 
   @override
-  Future<Either<Failure, UserEntity>> signUp(String email, String password, String name, String address, String NIK, DateTime dateOfBirth) async {
+  Future<Either<Failure, UserEntity>> signUp(String email, String password, String name, String phoneNumber, String NIK, DateTime dateOfBirth) async {
     try{
-      final userModel = await remoteDataSource.signUp(email, password, name, address, NIK, dateOfBirth);
+      final userModel = await remoteDataSource.signUp(email, password, name, NIK, phoneNumber, dateOfBirth);
 
       return Right(UserEntity(
         uid: userModel.uid,
@@ -47,8 +48,10 @@ class AuthRepositoryImpl extends AuthRepository{
         password: userModel.password,
         name: userModel.name,
         address: userModel.address ?? "",
+        phoneNumber: userModel.phoneNumber ?? "",
         NIK: userModel.NIK ?? "",
         dateOfBirth: userModel.dateOfBirth ?? DateTime.now(),
+        gender: userModel.gender ?? "",
       ));
 
     } on AppException catch (e) {
