@@ -4,14 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_event.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class BerandaPage extends StatelessWidget {
+  const BerandaPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Dashboard Utama"),
+        title: const Text("beranda Utama"),
           actions: [
             IconButton(
               icon: const Icon(Icons.logout),

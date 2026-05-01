@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:majadigi/core/utils/helper/input_decoration_helper.dart';
+import 'package:majadigi/core/utils/helpers/input_decoration_helper.dart';
 
 class AuthTextField extends StatelessWidget {
   final String label;

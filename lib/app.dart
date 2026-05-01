@@ -5,7 +5,9 @@ import 'package:majadigi/core/di/di.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_state.dart';
 import 'package:majadigi/features/auth/presentation/pages/login_page.dart';
-import 'package:majadigi/features/home/presentation/pages/home_page.dart';
+import 'package:majadigi/features/beranda/presentation/pages/beranda_page.dart';
+import 'package:majadigi/features/navigation/presentation/bloc/navigation_bloc.dart';
+import 'package:majadigi/features/navigation/presentation/pages/main_page.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -16,6 +18,9 @@ class App extends StatelessWidget {
       providers: [
         BlocProvider<AuthBloc>(
           create: (_) => sl<AuthBloc>(),
+        ),
+        BlocProvider<NavigationBloc>(
+          create: (context) => NavigationBloc(),
         ),
       ],
       child: MaterialApp(
@@ -39,24 +44,23 @@ class App extends StatelessWidget {
             ),
           ),
         ),
-        home: const _AppHome(),
-        // initialRoute: SplashPage.routeName,
-        // onGenerateRoute: onGenerateRoute,
+        home: const _AuthGate(),
       ),
     );
   }
 }
 
-class _AppHome extends StatelessWidget {
-  const _AppHome();
+class _AuthGate extends StatelessWidget {
+  const _AuthGate();
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthAuthenticated) {
-          return const HomePage();
+          return const MainPage();
         }
+
         return const LoginPage();
       },
     );

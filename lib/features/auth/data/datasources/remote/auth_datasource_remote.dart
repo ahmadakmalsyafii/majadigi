@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:majadigi/core/error/exceptions.dart';
 import 'package:majadigi/core/error/failure.dart';
-import 'package:majadigi/core/utils/mapper/failure_mapper.dart';
-import 'package:majadigi/core/utils/mapper/firebase_auth_helper.dart';
+import 'package:majadigi/core/utils/mappers/failure_mapper.dart';
+import 'package:majadigi/core/utils/mappers/firebase_auth_helper.dart';
 import 'package:majadigi/features/auth/data/model/user_model.dart';
 
 import 'package:dio/dio.dart';
