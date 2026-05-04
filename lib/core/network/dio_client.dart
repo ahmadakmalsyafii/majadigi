@@ -8,7 +8,7 @@ class DioClient {
 
   DioClient(ApiKeyManager keyManager) {
     _dio = Dio(BaseOptions(
-      baseUrl: AppConfig.baseUrlLayanan,
+      baseUrl: AppConfig().baseUrlLayanan,
       connectTimeout: const Duration(seconds: 15),
       receiveTimeout: const Duration(seconds: 20),
     ));

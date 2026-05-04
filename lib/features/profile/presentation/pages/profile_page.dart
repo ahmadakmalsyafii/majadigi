@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:majadigi/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:majadigi/features/auth/presentation/bloc/auth_event.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -9,6 +12,14 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Profile"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Sign out',
+            onPressed: () =>
+                context.read<AuthBloc>().add(const SignOutRequested()),
+          ),
+        ],
       ),
       body: const Center(child: Text("Selamat Datang!")),
     );
