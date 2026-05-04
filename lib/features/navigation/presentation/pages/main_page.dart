@@ -32,7 +32,7 @@ class MainPage extends StatelessWidget {
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.2),
                   blurRadius: 10,
-                  offset: const Offset(0, -5),
+                  offset: const Offset(0, -2),
                 ),
               ],
             ),
@@ -52,28 +52,28 @@ class MainPage extends StatelessWidget {
               items: const [
                 BottomNavigationBarItem(
                   icon: Padding(
-                    padding: EdgeInsets.only(bottom: 4.0),
-                    child: Icon(Icons.home_filled),
+                    padding: EdgeInsets.only(bottom: 2.0),
+                    child: Icon(Icons.home_rounded),
                   ),
                   label: 'Beranda',
                 ),
                 BottomNavigationBarItem(
                   icon: Padding(
-                    padding: EdgeInsets.only(bottom: 4.0),
+                    padding: EdgeInsets.only(bottom: 2.0),
                     child: Icon(Icons.grid_view_rounded),
                   ),
                   label: 'Layanan',
                 ),
                 BottomNavigationBarItem(
                   icon: Padding(
-                    padding: EdgeInsets.only(bottom: 4.0),
+                    padding: EdgeInsets.only(bottom: 2.0),
                     child: Icon(Icons.bookmark),
                   ),
                   label: 'Tersimpan',
                 ),
                 BottomNavigationBarItem(
                   icon: Padding(
-                    padding: EdgeInsets.only(bottom: 4.0),
+                    padding: EdgeInsets.only(bottom: 2.0),
                     child: Icon(Icons.person),
                   ),
                   label: 'Profil',

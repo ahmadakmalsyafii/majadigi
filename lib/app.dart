@@ -5,7 +5,6 @@ import 'package:majadigi/core/di/di.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_state.dart';
 import 'package:majadigi/features/auth/presentation/pages/login_page.dart';
-import 'package:majadigi/features/beranda/presentation/pages/beranda_page.dart';
 import 'package:majadigi/features/navigation/presentation/bloc/navigation_bloc.dart';
 import 'package:majadigi/features/navigation/presentation/pages/main_page.dart';
 import 'package:majadigi/features/profile/presentation/bloc/profile_bloc.dart';
@@ -20,7 +19,7 @@ class App extends StatelessWidget {
           create: (_) => sl<AuthBloc>(),
         ),
         BlocProvider<NavigationBloc>(
-          create: (context) => NavigationBloc(),
+          create: (context) => sl<NavigationBloc>(),
         ),
         BlocProvider<ProfileBloc>(
           create: (_) => sl<ProfileBloc>(),

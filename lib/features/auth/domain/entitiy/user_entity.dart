@@ -11,7 +11,7 @@ class UserEntity extends Equatable {
   final DateTime? dateOfBirth;
   final String? gender;
 
-  UserEntity({
+  const UserEntity({
     required this.uid,
     required this.name,
     required this.email,

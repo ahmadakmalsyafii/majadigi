@@ -1,22 +1,13 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class AppConfig {
-  static const baseUrlLayanan =
-  String.fromEnvironment('BASE_URL_LAYANAN', defaultValue: 'https://api-splp.layanan.go.id');
-
-  static const baseUrlMajadigi =
-  String.fromEnvironment('BASE_URL_MAJADIGI', defaultValue: 'https://api.majadigi.jatimprov.go.id');
-
-  static const apiKeyHargaBahanPokok =
-  String.fromEnvironment('API_KEY_HARGA_BAHAN_POKOK');
-
-  static const apiKeySaifulAnwar =
-  String.fromEnvironment('API_KEY_SAIFUL_ANWAR');
-
-  static const apiKeyDahaHusada =
-  String.fromEnvironment('API_KEY_DAHA');
-
-  static const apiKeyKarsaHusada =
-  String.fromEnvironment('API_KEY_KARSA_HUSADA');
-
-  static const apiKeyHaji =
-  String.fromEnvironment('API_KEY_HAJI');
+  static String get baseUrlLayanan => 
+    dotenv.env['BASE_URL_LAYANAN'] ?? 'https://api-splp.layanan.go.id';
+  static String get baseUrlMajadigi => 
+    dotenv.env['BASE_URL_MAJADIGI'] ?? 'https://api.majadigi.layanan.go.id';
+  static String get apiKeyHargaBahanPokok => dotenv.env['API_KEY_HARGA_BAHAN_POKOK'] ?? '';
+  static String get apiKeySaifulAnwar => dotenv.env['API_KEY_SAIFUL_ANWAR'] ?? '';
+  static String get apiKeyDahaHusada => dotenv.env['API_KEY_DAHA'] ?? '';
+  static String get apiKeyKarsaHusada => dotenv.env['API_KEY_KARSA_HUSADA'] ?? '';
+  static String get apiKeyHaji => dotenv.env['API_KEY_HAJI'] ?? '';
 }

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import 'package:majadigi/features/auth/data/datasources/remote/auth_datasource_remote.dart';
 import 'package:majadigi/features/auth/data/repository/auth_repository_impl.dart';
@@ -21,6 +22,11 @@ import 'package:majadigi/features/layanan/data/repositories/layanan_repository_i
 import 'package:majadigi/features/layanan/domain/repositories/layanan_repository.dart';
 import 'package:majadigi/features/layanan/domain/usecases/get_katalog_layanan_usecase.dart';
 import 'package:majadigi/features/layanan/presentation/bloc/layanan_bloc.dart';
+import 'package:majadigi/features/beranda/data/datasources/remote/banner_remote_datasource.dart';
+import 'package:majadigi/features/beranda/data/repository/beranda_repository_impl.dart';
+import 'package:majadigi/features/beranda/domain/repositories/banner_repository.dart';
+import 'package:majadigi/features/beranda/domain/usecases/get_all_banner_usecase.dart';
+import 'package:majadigi/features/beranda/presentation/bloc/beranda_bloc.dart';
 
 /// Global service locator.
 final sl = GetIt.instance;
@@ -32,6 +38,7 @@ void init(){
   sl.registerLazySingleton<FirebaseRemoteConfig>(() => FirebaseRemoteConfig.instance);
   sl.registerLazySingleton(() => ApiKeyManager(sl()));
   sl.registerLazySingleton(() => DioClient(sl()));
+  sl.registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance);
 
   // Factories/BLoCs
   // di.registerFactory<AuthBloc>(() => AuthBloc(di()));
@@ -51,6 +58,10 @@ void init(){
   );
   
   sl.registerFactory(() => LayananBloc(sl()));
+  sl.registerFactory(() => BerandaBloc(getBannersUseCase: sl()));
+
+
+
 
   // Use Cases
   // di.registerLazySingleton<AuthUseCase>(() => AuthUseCaseImpl(di()));
@@ -60,6 +71,7 @@ void init(){
   sl.registerLazySingleton(() => UpdateProfileUseCase(sl()));
   sl.registerLazySingleton(() => GetKatalogLayananUseCase(sl()));
   // sl.registerLazySingleton(() => GetCachedUser(sl()));
+  sl.registerLazySingleton(() => GetAllBannersUseCase(sl()));
 
   // Data Sources
   // di.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(di()));
@@ -71,6 +83,9 @@ void init(){
   );
   sl.registerLazySingleton<LayananRemoteDataSource>(
         () => LayananRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<BannerRemoteDataSource>(
+        () => BannerRemoteDataSourceImpl(),
   );
 
   // Repositories
@@ -88,6 +103,11 @@ void init(){
   );
   sl.registerLazySingleton<LayananRepository>(
         () => LayananRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<BannerRepository>(
+        () => BerandaRepositoryImpl(
+      remoteDataSource: sl(),
+    ),
   );
 
 }
