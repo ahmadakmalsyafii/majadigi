@@ -26,16 +26,15 @@ class UserModel extends UserEntity {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      uid: json['uid'],
-      name: json["fullname"],
-      email: json['email'],
+      uid: json['uid'] ?? '',
+      name: json["name"] ?? json["fullname"] ?? '',
+      email: json['email'] ?? '',
       password: json['password'],
-      address: 'address',
-      phoneNumber: 'phoneNumber',
-      NIK: 'NIK',
-      dateOfBirth: DateTime.now(),
-      gender: 'gender',
-
+      address: json['address'],
+      phoneNumber: json['phoneNumber'],
+      NIK: json['NIK'],
+      dateOfBirth: json['dateOfBirth'] != null ? DateTime.tryParse(json['dateOfBirth']) : null,
+      gender: json['gender'],
     );
   }
 
@@ -63,12 +62,23 @@ class UserModel extends UserEntity {
      String? uid,
      String? email,
      String? name,
-
+     String? password,
+     String? address,
+     String? phoneNumber,
+     String? NIK,
+     DateTime? dateOfBirth,
+     String? gender,
    }) {
      return UserModel(
        uid: uid ?? this.uid,
        email: email ?? this.email,
        name: name ?? this.name,
+       password: password ?? this.password,
+       address: address ?? this.address,
+       phoneNumber: phoneNumber ?? this.phoneNumber,
+       NIK: NIK ?? this.NIK,
+       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+       gender: gender ?? this.gender,
      );
    }
 

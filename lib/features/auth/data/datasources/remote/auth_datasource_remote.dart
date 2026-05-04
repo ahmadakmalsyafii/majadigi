@@ -38,6 +38,11 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
         throw Exception('Sign in returned null user.');
       }
 
+      final doc = await _firestore.collection("users").doc(user.uid).get();
+      if (doc.exists && doc.data() != null) {
+        return UserModel.fromJson(doc.data()!);
+      }
+
       return UserModel.fromFirebase(user);
     } on FirebaseAuthException catch (e) {
       throw mapFirebaseAuthException(e);

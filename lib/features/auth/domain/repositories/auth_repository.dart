@@ -8,7 +8,6 @@ abstract class AuthRepository {
   Future<Either<Failure ,UserEntity>> signUp( String email, String password, String name, String phoneNumber,String NIK, DateTime dateOfBirth);
   Future<Either<Failure, UserEntity>> signInWithGoogle();
   Future<Either<Failure, void>> signOut();
-
   Stream<UserEntity?> get userSession;
 
   // Future<Either<Failure, UserEntity?>> getCachedUser();

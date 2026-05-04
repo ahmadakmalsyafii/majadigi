@@ -11,8 +11,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SignInUseCase _signIn;
   final SignOutUsecase _signOut;
   final SignUpUsecase _signUp;
-
-
   AuthBloc({
     required SignInUseCase signIn,
     required SignOutUsecase signOut,
@@ -25,6 +23,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignInRequested>(_onSignInRequested);
     on<SignUpRequested>(_onSignUpRequested);
     on<SignOutRequested>(_onSignOutRequested);
+    on<AuthUserUpdated>(_onAuthUserUpdated);
   }
 
   // ─── Check cached session ────────────────────────────────────────────────
@@ -93,5 +92,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           (failure) => emit(AuthFailure(failure)),
           (_) => emit(const AuthUnauthenticated()),
     );
+  }
+
+  void _onAuthUserUpdated(
+      AuthUserUpdated event,
+      Emitter<AuthState> emit,
+      ) {
+    emit(AuthAuthenticated(event.user));
   }
 }

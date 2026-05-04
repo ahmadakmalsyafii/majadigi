@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-
+import 'package:majadigi/features/auth/domain/entitiy/user_entity.dart';
 abstract class AuthEvent extends Equatable {
   const AuthEvent();
   @override
@@ -34,3 +34,12 @@ class SignUpRequested extends AuthEvent {
   @override
   List<Object> get props => [name, email, password, phoneNumber, NIK, dateOfBirth];
 }
+
+class AuthUserUpdated extends AuthEvent {
+  final UserEntity user;
+
+  const AuthUserUpdated(this.user);
+
+  @override
+  List<Object> get props => [user];
+}

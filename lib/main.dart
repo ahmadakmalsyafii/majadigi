@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:majadigi/app.dart';
 import 'package:majadigi/core/di/di.dart' as di;
 import 'package:majadigi/firebase_options.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,6 +11,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await initializeDateFormatting('id_ID', null);
 
   di.init();
 

@@ -82,17 +82,18 @@ class AuthDatePickerField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Label Text
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
+        if (label.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
             ),
           ),
-        ),
 
         GestureDetector(
           onTap: () => _showDatePicker(context),

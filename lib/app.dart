@@ -8,7 +8,7 @@ import 'package:majadigi/features/auth/presentation/pages/login_page.dart';
 import 'package:majadigi/features/beranda/presentation/pages/beranda_page.dart';
 import 'package:majadigi/features/navigation/presentation/bloc/navigation_bloc.dart';
 import 'package:majadigi/features/navigation/presentation/pages/main_page.dart';
-
+import 'package:majadigi/features/profile/presentation/bloc/profile_bloc.dart';
 class App extends StatelessWidget {
   const App({super.key});
 
@@ -21,6 +21,9 @@ class App extends StatelessWidget {
         ),
         BlocProvider<NavigationBloc>(
           create: (context) => NavigationBloc(),
+        ),
+        BlocProvider<ProfileBloc>(
+          create: (_) => sl<ProfileBloc>(),
         ),
       ],
       child: MaterialApp(

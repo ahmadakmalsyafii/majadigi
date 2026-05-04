@@ -3,7 +3,7 @@ class AppConfig {
   String.fromEnvironment('BASE_URL_LAYANAN', defaultValue: 'https://api-splp.layanan.go.id');
 
   static const baseUrlMajadigi =
-  String.fromEnvironment('BASE_URL_MAJADIGI', defaultValue: 'https://api-majadigi.layanan.go.id');
+  String.fromEnvironment('BASE_URL_MAJADIGI', defaultValue: 'https://api.majadigi.jatimprov.go.id');
 
   static const apiKeyHargaBahanPokok =
   String.fromEnvironment('API_KEY_HARGA_BAHAN_POKOK');
