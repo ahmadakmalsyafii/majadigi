@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:majadigi/core/error/failure.dart';
 import 'package:majadigi/core/network/api_key_manager.dart';
-import 'package:majadigi/features/auth/presentation/bloc/auth_state.dart';
 
 class ApiKeyInterceptor extends Interceptor {
   final ApiKeyManager _keyManager;
@@ -34,16 +33,14 @@ class ApiKeyInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     final failure = switch (err.type) {
       DioExceptionType.connectionTimeout ||
-      DioExceptionType.receiveTimeout =>
-        const NetworkFailure(),
-      DioExceptionType.badResponse when
-        (err.response?.statusCode ?? 0) == 401 =>
-      const UnauthorizedFailure(),
+      DioExceptionType.receiveTimeout => const NetworkFailure(),
+      DioExceptionType.badResponse
+          when (err.response?.statusCode ?? 0) == 401 =>
+        const UnauthorizedFailure(),
       _ => ServerFailure(),
     };
-    handler.reject(DioException(
-      requestOptions: err.requestOptions,
-      error: failure,
-    ));
+    handler.reject(
+      DioException(requestOptions: err.requestOptions, error: failure),
+    );
   }
 }

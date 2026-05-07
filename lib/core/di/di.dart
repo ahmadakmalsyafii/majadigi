@@ -2,12 +2,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
-import 'package:majadigi/features/auth/data/datasources/remote/auth_datasource_remote.dart';
+import 'package:majadigi/features/auth/data/datasources/local/auth_local_datasource.dart';
+import 'package:majadigi/features/auth/data/datasources/remote/auth_remote_datasource.dart';
 import 'package:majadigi/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:majadigi/features/auth/domain/repositories/auth_repository.dart';
+import 'package:majadigi/features/auth/domain/usecases/get_cached_user_usecase.dart';
 import 'package:majadigi/features/auth/domain/usecases/sign_in_usecase.dart';
 import 'package:majadigi/features/auth/domain/usecases/sign_out_usecase.dart';
 import 'package:majadigi/features/auth/domain/usecases/sign_up_usecase.dart';
+import 'package:majadigi/features/beranda/data/datasources/remote/beranda_remote_datasource.dart';
+import 'package:majadigi/features/beranda/domain/repositories/jatim_angka_repository.dart';
+import 'package:majadigi/features/beranda/domain/repositories/service_repository.dart';
+import 'package:majadigi/features/beranda/domain/usecases/get_all_service_usecase.dart';
 import 'package:majadigi/features/profile/data/datasources/profile_remote_datasource.dart';
 import 'package:majadigi/features/profile/data/repository/profile_repository_impl.dart';
 import 'package:majadigi/features/profile/domain/repositories/profile_repository.dart';
@@ -22,18 +28,21 @@ import 'package:majadigi/features/layanan/data/repositories/layanan_repository_i
 import 'package:majadigi/features/layanan/domain/repositories/layanan_repository.dart';
 import 'package:majadigi/features/layanan/domain/usecases/get_katalog_layanan_usecase.dart';
 import 'package:majadigi/features/layanan/presentation/bloc/layanan_bloc.dart';
-import 'package:majadigi/features/beranda/data/datasources/remote/banner_remote_datasource.dart';
 import 'package:majadigi/features/beranda/data/repository/beranda_repository_impl.dart';
 import 'package:majadigi/features/beranda/domain/repositories/banner_repository.dart';
 import 'package:majadigi/features/beranda/domain/usecases/get_all_banner_usecase.dart';
 import 'package:majadigi/features/beranda/presentation/bloc/beranda_bloc.dart';
+import 'package:majadigi/features/beranda/domain/usecases/get_jatim_angka_usecase.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Global service locator.
 final sl = GetIt.instance;
 
-void init(){
+void init() async {
 
   // External dependencies
+  final sharedpreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton<SharedPreferences>(() => sharedpreferences);
   sl.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
   sl.registerLazySingleton<FirebaseRemoteConfig>(() => FirebaseRemoteConfig.instance);
   sl.registerLazySingleton(() => ApiKeyManager(sl()));
@@ -48,6 +57,7 @@ void init(){
       signIn: sl(),
       signOut: sl(),
       signUp: sl(),
+          getCachedUser: sl(),
     ),
   );
 
@@ -58,7 +68,13 @@ void init(){
   );
   
   sl.registerFactory(() => LayananBloc(sl()));
-  sl.registerFactory(() => BerandaBloc(getBannersUseCase: sl()));
+  sl.registerFactory(
+          () => BerandaBloc(
+              getBannerUseCase: sl(),
+              getServiceUseCase: sl(),
+              getJatimAngkaUseCase: sl(),
+          )
+  );
 
 
 
@@ -68,15 +84,20 @@ void init(){
   sl.registerLazySingleton(() => SignInUseCase(sl()));
   sl.registerLazySingleton(() => SignUpUsecase(sl()));
   sl.registerLazySingleton(() => SignOutUsecase(sl()));
+  sl.registerLazySingleton(() => GetCachedUserUsecase(sl()));
   sl.registerLazySingleton(() => UpdateProfileUseCase(sl()));
   sl.registerLazySingleton(() => GetKatalogLayananUseCase(sl()));
-  // sl.registerLazySingleton(() => GetCachedUser(sl()));
-  sl.registerLazySingleton(() => GetAllBannersUseCase(sl()));
+  sl.registerLazySingleton(() => GetAllBannerUseCase(sl()));
+  sl.registerLazySingleton(() => GetAllServiceUsecase(sl()));
+  sl.registerLazySingleton(() => GetJatimAngkaUseCase(sl()));
 
   // Data Sources
   // di.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(di()));
   sl.registerLazySingleton<AuthRemoteDataSource>(
         () => AuthRemoteDataSourceImpl(firebaseAuth: sl()),
+  );
+  sl.registerLazySingleton<AuthLocalDataSource>(
+          ()=> AuthLocalDataSourceImpl(sharedPreferences: sl()),
   );
   sl.registerLazySingleton<ProfileRemoteDataSource>(
         () => ProfileRemoteDataSourceImpl(firebaseAuth: sl()),
@@ -84,15 +105,17 @@ void init(){
   sl.registerLazySingleton<LayananRemoteDataSource>(
         () => LayananRemoteDataSourceImpl(sl()),
   );
-  sl.registerLazySingleton<BannerRemoteDataSource>(
-        () => BannerRemoteDataSourceImpl(),
+  sl.registerLazySingleton<BerandaRemoteDatasource>(
+        () => BerandaRemoteDatasourceImpl(dioClient: sl()),
   );
+
 
   // Repositories
   // di.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(di()));
   sl.registerLazySingleton<AuthRepository>(
         () => AuthRepositoryImpl(
       remoteDataSource: sl(),
+      localDataSource: sl(),
       firebaseAuth: sl(),
     ),
   );
@@ -105,6 +128,16 @@ void init(){
         () => LayananRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<BannerRepository>(
+        () => BerandaRepositoryImpl(
+      remoteDataSource: sl(),
+    ),
+  );
+  sl.registerLazySingleton<ServiceRepository>(
+        () => BerandaRepositoryImpl(
+      remoteDataSource: sl(),
+    ),
+  );
+  sl.registerLazySingleton<JatimAngkaRepository>(
         () => BerandaRepositoryImpl(
       remoteDataSource: sl(),
     ),

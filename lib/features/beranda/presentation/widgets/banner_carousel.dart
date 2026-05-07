@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:majadigi/features/beranda/domain/entitiy/banner_entity.dart';
@@ -5,18 +6,13 @@ import 'package:majadigi/features/beranda/domain/entitiy/banner_entity.dart';
 class BannerCarouselWidget extends StatefulWidget {
   final List<BannerEntity> banners;
 
-  const BannerCarouselWidget({
-    super.key,
-    required this.banners,
-  });
+  const BannerCarouselWidget({super.key, required this.banners});
 
   @override
   State<BannerCarouselWidget> createState() => _BannerCarouselWidgetState();
 }
 
 class _BannerCarouselWidgetState extends State<BannerCarouselWidget> {
-  int _currentIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     if (widget.banners.isEmpty) {
@@ -24,9 +20,7 @@ class _BannerCarouselWidgetState extends State<BannerCarouselWidget> {
         height: 200,
         child: Container(
           color: Colors.grey[300],
-          child: const Center(
-            child: Text('Tidak ada banner'),
-          ),
+          child: const Center(child: Text('Tidak ada banner')),
         ),
       );
     }
@@ -42,11 +36,6 @@ class _BannerCarouselWidgetState extends State<BannerCarouselWidget> {
             autoPlayCurve: Curves.fastOutSlowIn,
             enlargeCenterPage: true,
             aspectRatio: 16 / 9,
-            onPageChanged: (index, reason) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
           ),
           items: widget.banners.map((banner) {
             return Builder(
@@ -61,37 +50,28 @@ class _BannerCarouselWidgetState extends State<BannerCarouselWidget> {
                         color: Colors.black.withOpacity(0.1),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
-                      )
+                      ),
                     ],
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                      banner.imageUrl,
+                    child: CachedNetworkImage(
+                      imageUrl: banner.imageUrl,
                       fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) {
-                          return child;
-                        }
-                        return Container(
-                          color: Colors.grey[300],
-                          child: const Center(
-                            child: CircularProgressIndicator(),
+                      placeholder: (context, url) => Container(
+                        color: Colors.grey[300],
+                        child: const Center(child: CircularProgressIndicator()),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: Colors.grey[300],
+                        child: const Center(
+                          child: Icon(
+                            Icons.image_not_supported,
+                            size: 50,
+                            color: Colors.grey,
                           ),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey[300],
-                          child: const Center(
-                            child: Icon(
-                              Icons.image_not_supported,
-                              size: 50,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        );
-                      },
+                        ),
+                      ),
                     ),
                   ),
                 );
