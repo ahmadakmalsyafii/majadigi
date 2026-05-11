@@ -27,6 +27,12 @@ import 'package:majadigi/features/beranda/data/repository/beranda_repository_imp
 import 'package:majadigi/features/beranda/domain/repositories/banner_repository.dart';
 import 'package:majadigi/features/beranda/domain/usecases/get_all_banner_usecase.dart';
 import 'package:majadigi/features/beranda/presentation/bloc/beranda_bloc.dart';
+import 'package:majadigi/features/no_darurat/data/datasources/emergency_remote_datasource.dart';
+import 'package:majadigi/features/no_darurat/data/repository/emergency_repository_impl.dart';
+import 'package:majadigi/features/no_darurat/domain/repositories/emergency_repository.dart';
+import 'package:majadigi/features/no_darurat/domain/usecases/get_emergency_numbers_usecase.dart';
+import 'package:majadigi/features/no_darurat/domain/usecases/get_kab_kota_usecase.dart';
+import 'package:majadigi/features/no_darurat/presentation/bloc/emergency/emergency_bloc.dart';
 
 /// Global service locator.
 final sl = GetIt.instance;
@@ -59,6 +65,10 @@ void init(){
   
   sl.registerFactory(() => LayananBloc(sl()));
   sl.registerFactory(() => BerandaBloc(getBannersUseCase: sl()));
+  sl.registerFactory(() => EmergencyBloc(
+    getEmergencyNumbers: sl(),
+    getKabKota: sl(),
+  ));
 
 
 
@@ -72,6 +82,8 @@ void init(){
   sl.registerLazySingleton(() => GetKatalogLayananUseCase(sl()));
   // sl.registerLazySingleton(() => GetCachedUser(sl()));
   sl.registerLazySingleton(() => GetAllBannersUseCase(sl()));
+  sl.registerLazySingleton(() => GetEmergencyNumbersUseCase(sl()));
+  sl.registerLazySingleton(() => GetKabKotaUseCase(sl()));
 
   // Data Sources
   // di.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(di()));
@@ -86,6 +98,9 @@ void init(){
   );
   sl.registerLazySingleton<BannerRemoteDataSource>(
         () => BannerRemoteDataSourceImpl(),
+  );
+  sl.registerLazySingleton<EmergencyRemoteDataSource>(
+        () => EmergencyRemoteDataSourceImpl(sl()),
   );
 
   // Repositories
@@ -108,6 +123,9 @@ void init(){
         () => BerandaRepositoryImpl(
       remoteDataSource: sl(),
     ),
+  );
+  sl.registerLazySingleton<EmergencyRepository>(
+        () => EmergencyRepositoryImpl(remoteDataSource: sl()),
   );
 
 }

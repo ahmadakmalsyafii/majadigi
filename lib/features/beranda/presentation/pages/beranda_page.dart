@@ -7,6 +7,7 @@ import 'package:majadigi/core/di/di.dart';
 import 'package:majadigi/features/beranda/presentation/bloc/beranda_event.dart';
 import 'package:majadigi/features/beranda/presentation/bloc/beranda_state.dart';
 import 'package:majadigi/features/beranda/presentation/widgets/banner_carousel.dart';
+import 'package:majadigi/features/no_darurat/presentation/pages/noDarurat_pages.dart';
 
 class BerandaPage extends StatelessWidget {
   const BerandaPage({super.key});
@@ -100,7 +101,14 @@ class BerandaPage extends StatelessWidget {
                     // Implementasi pencarian di sini
                   },
                 ),
-              )
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const EmergencyNumberPage()),
+                ),
+                child: const Text('Nomor Darurat'),
+              ),
             ],
           ),
         ),
