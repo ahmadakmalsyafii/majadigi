@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
 
 part 'navigation_event.dart';
 part 'navigation_state.dart';
@@ -11,9 +10,9 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
   }
 
   void _onTabChanged(
-      NavigationTabChanged event,
-      Emitter<NavigationState> emit,
-      ) {
+    NavigationTabChanged event,
+    Emitter<NavigationState> emit,
+  ) {
     emit(state.copyWith(currentIndex: event.tabIndex));
   }
 }

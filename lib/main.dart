@@ -11,9 +11,7 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await initializeDateFormatting('id_ID', null);
 
@@ -21,4 +19,3 @@ void main() async {
 
   runApp(const App());
 }
-

@@ -11,7 +11,11 @@ class GetBerandaDataEvent extends BerandaEvent {
   const GetBerandaDataEvent();
 }
 
-class GetAllBannersEvent extends BerandaEvent {
-  const GetAllBannersEvent();
+class GetAllBannerEvent extends BerandaEvent {
+  const GetAllBannerEvent();
+}
+
+class GetAllServiceEvent extends BerandaEvent {
+  const GetAllServiceEvent();
 }
 

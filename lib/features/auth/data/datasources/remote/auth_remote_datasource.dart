@@ -1,28 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:majadigi/core/error/exceptions.dart';
-import 'package:majadigi/core/error/failure.dart';
-import 'package:majadigi/core/utils/mappers/failure_mapper.dart';
 import 'package:majadigi/core/utils/mappers/firebase_auth_helper.dart';
 import 'package:majadigi/features/auth/data/model/user_model.dart';
 
-import 'package:dio/dio.dart';
-
 abstract class AuthRemoteDataSource {
   Future<UserModel> signIn(String email, String password);
-  Future<UserModel> signUp(String email, String password, String name, String NIK, String phoneNumber, DateTime dateOfBirth);
+  Future<UserModel> signUp(
+    String email,
+    String password,
+    String name,
+    String NIK,
+    String phoneNumber,
+    DateTime dateOfBirth,
+  );
   Future<UserModel> signInWithGoogle();
   Future<void> signOut();
   Stream<UserModel> get userStream;
 }
-
 
 class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
   final FirebaseAuth _firebaseAuth;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   AuthRemoteDataSourceImpl({FirebaseAuth? firebaseAuth})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+    : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   Future<void> saveUserData(UserModel user) async {
     await _firestore.collection("users").doc(user.uid).set(user.toJson());
@@ -31,7 +33,9 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
   Future<UserModel> signIn(String email, String password) async {
     try {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: password);
+        email: email,
+        password: password,
+      );
       final user = credential.user;
 
       if (user == null) {
@@ -62,13 +66,22 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
     try {
       await _firebaseAuth.signOut();
     } catch (e) {
-      throw UnknownAuthException(message: 'Gagal melakukan sign out: ${e.toString()}');
+      throw UnknownAuthException(
+        message: 'Gagal melakukan sign out: ${e.toString()}',
+      );
     }
   }
 
   @override
-  Future<UserModel> signUp(String name, String email, String password, String NIK, phoneNumber, DateTime dateOfBirth) async {
-    try{
+  Future<UserModel> signUp(
+    String name,
+    String email,
+    String password,
+    String NIK,
+    phoneNumber,
+    DateTime dateOfBirth,
+  ) async {
+    try {
       final userCredential = _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -92,20 +105,15 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
         await saveUserData(newUser);
       }
 
-
       return UserModel.fromFirebase(user!);
-
     } on FirebaseAuthException catch (e) {
       throw mapFirebaseAuthException(e);
     } catch (e) {
       throw UnknownAuthException(message: e.toString());
     }
-
   }
 
   @override
   // TODO: implement userStream
   Stream<UserModel> get userStream => throw UnimplementedError();
-
-
 }
