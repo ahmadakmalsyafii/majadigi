@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:majadigi/features/beranda/domain/entitiy/banner_entity.dart';
+import 'package:majadigi/features/beranda/domain/entity/banner_entity.dart';
 
 class BannerCarouselWidget extends StatefulWidget {
   final List<BannerEntity> banners;

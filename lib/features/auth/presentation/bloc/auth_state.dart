@@ -1,23 +1,20 @@
-
 import 'package:equatable/equatable.dart';
 import 'package:majadigi/core/error/failure.dart';
-import 'package:majadigi/features/auth/domain/entitiy/user_entity.dart';
+import 'package:majadigi/features/auth/domain/entity/user_entity.dart';
 
-abstract class AuthState  extends Equatable{
+abstract class AuthState extends Equatable {
   const AuthState();
   @override
   List<Object?> get props => [];
 }
 
 class AuthInitial extends AuthState {
-const AuthInitial();
+  const AuthInitial();
 }
-
 
 class AuthLoading extends AuthState {
-const AuthLoading();
+  const AuthLoading();
 }
-
 
 class AuthAuthenticated extends AuthState {
   final UserEntity user;
@@ -31,7 +28,6 @@ class AuthAuthenticated extends AuthState {
 class AuthUnauthenticated extends AuthState {
   const AuthUnauthenticated();
 }
-
 
 class AuthFailure extends AuthState {
   final Failure failure;

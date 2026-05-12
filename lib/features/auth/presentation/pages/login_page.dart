@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_event.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_state.dart';
-import 'package:majadigi/features/auth/presentation/pages/register_page.dart';
 import 'package:majadigi/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:go_router/go_router.dart';
 import '../bloc/auth_bloc.dart';
 
 class LoginPage extends StatefulWidget {
@@ -221,13 +221,7 @@ class _LoginPageState extends State<LoginPage> {
                                     onTap: isLoading
                                         ? null
                                         : () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                          const RegisterPage(),
-                                        ),
-                                      );
+                                      context.push('/register');
                                     },
                                     child: const Text(
                                       'Sign Up',

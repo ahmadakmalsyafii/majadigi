@@ -22,7 +22,7 @@ import 'package:majadigi/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:majadigi/core/network/api_key_manager.dart';
 import 'package:majadigi/core/network/dio_client.dart';
-import 'package:majadigi/features/navigation/presentation/bloc/navigation_bloc.dart';
+import 'package:majadigi/core/router/app_router.dart';
 import 'package:majadigi/features/layanan/data/datasources/layanan_remote_datasource.dart';
 import 'package:majadigi/features/layanan/data/repositories/layanan_repository_impl.dart';
 import 'package:majadigi/features/layanan/domain/repositories/layanan_repository.dart';
@@ -51,7 +51,7 @@ void init() async {
 
   // Factories/BLoCs
   // di.registerFactory<AuthBloc>(() => AuthBloc(di()));
-  sl.registerFactory(() => NavigationBloc());
+  sl.registerLazySingleton(() => AppRouter(sl()));
   sl.registerLazySingleton(
         () => AuthBloc(
       signIn: sl(),

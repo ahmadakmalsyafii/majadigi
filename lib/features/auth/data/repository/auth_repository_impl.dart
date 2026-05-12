@@ -5,7 +5,7 @@ import 'package:majadigi/core/error/failure.dart';
 import 'package:majadigi/core/utils/mappers/failure_mapper.dart';
 import 'package:majadigi/features/auth/data/datasources/local/auth_local_datasource.dart';
 import 'package:majadigi/features/auth/data/datasources/remote/auth_remote_datasource.dart';
-import 'package:majadigi/features/auth/domain/entitiy/user_entity.dart';
+import 'package:majadigi/features/auth/domain/entity/user_entity.dart';
 import 'package:majadigi/features/auth/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl extends AuthRepository {

@@ -1,7 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:majadigi/features/beranda/domain/entitiy/service_entity.dart';
+import 'package:go_router/go_router.dart';
+import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
 
 class ServiceSection extends StatefulWidget {
   final List<ServiceEntity> services;
@@ -77,35 +78,40 @@ class _ServiceSectionState extends State<ServiceSection> {
             childAspectRatio: 0.6,
             children: [
               for (var service in widget.services)
-                Column(
-                  children: [
-                    Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: CachedNetworkImage(
-                        imageUrl: service.icon,
-                        errorWidget: (context, url, error) => const Icon(
-                          Icons.image_not_supported,
-                          color: Colors.grey,
+                InkWell(
+                  onTap: () {
+                    context.push('/detail-layanan', extra: service);
+                  },
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: CachedNetworkImage(
+                          imageUrl: service.icon,
+                          errorWidget: (context, url, error) => const Icon(
+                            Icons.image_not_supported,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      service.name,
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                      const SizedBox(height: 8),
+                      Text(
+                        service.name,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
             ],
           ),

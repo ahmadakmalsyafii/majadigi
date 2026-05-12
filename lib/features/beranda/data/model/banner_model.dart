@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:majadigi/features/beranda/domain/entitiy/banner_entity.dart';
+import 'package:majadigi/features/beranda/domain/entity/banner_entity.dart';
 
 class BannerModel extends BannerEntity{
   const BannerModel({

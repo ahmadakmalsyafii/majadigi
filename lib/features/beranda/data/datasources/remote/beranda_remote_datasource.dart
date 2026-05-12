@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:majadigi/core/error/failure.dart';
@@ -14,11 +13,11 @@ abstract class BerandaRemoteDatasource {
 }
 
 class BerandaRemoteDatasourceImpl implements BerandaRemoteDatasource {
-
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final DioClient _dioClient;
 
-  BerandaRemoteDatasourceImpl({required DioClient dioClient}) : _dioClient = dioClient;
+  BerandaRemoteDatasourceImpl({required DioClient dioClient})
+    : _dioClient = dioClient;
 
   @override
   Future<List<BannerModel>> getAllBanner() async {
@@ -29,26 +28,28 @@ class BerandaRemoteDatasourceImpl implements BerandaRemoteDatasource {
           .get();
       return banners.docs.map((doc) => BannerModel.fromFirestore(doc)).toList();
     } catch (e) {
-      throw ServerFailure();
+      throw ServerFailure(message: e.toString());
     }
   }
 
   @override
   Future<List<ServiceModel>> getAllService() async {
     try {
-      final services = await _firestore
-          .collection('services')
-          .get();
-      return services.docs.map((doc) => ServiceModel.fromFirestore(doc)).toList();
+      final services = await _firestore.collection('services').get();
+      return services.docs
+          .map((doc) => ServiceModel.fromFirestore(doc))
+          .toList();
     } catch (e) {
-      throw ServerFailure();
+      throw ServerFailure(message: e.toString());
     }
   }
 
   @override
   Future<List<JatimAngkaModel>> getJatimAngka() async {
     try {
-      final response = await _dioClient.dio.get('https://api.majadigi.jatimprov.go.id/api/public/jatim-angka');
+      final response = await _dioClient.dio.get(
+        'https://api.majadigi.jatimprov.go.id/api/public/jatim-angka',
+      );
       if (response.statusCode == 200 && response.data['data'] != null) {
         final List<dynamic> data = response.data['data'];
         return data.map((json) => JatimAngkaModel.fromJson(json)).toList();
@@ -58,7 +59,7 @@ class BerandaRemoteDatasourceImpl implements BerandaRemoteDatasource {
     } on DioException catch (e) {
       throw ServerFailure(message: e.message ?? 'Unknown error occurred');
     } catch (e) {
-      throw ServerFailure();
+      throw ServerFailure(message: e.toString());
     }
   }
 }

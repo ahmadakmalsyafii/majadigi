@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:majadigi/core/utils/helpers/input_decoration_helper.dart';
+import 'package:go_router/go_router.dart';
 
 class AuthDatePickerField extends StatelessWidget {
   final String label;
@@ -47,7 +48,7 @@ class AuthDatePickerField extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () => context.pop(),
                   )
                 ],
               ),

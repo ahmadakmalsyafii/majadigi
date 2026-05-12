@@ -1,14 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:majadigi/core/di/di.dart';
+import 'package:majadigi/core/router/app_router.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_event.dart';
-import 'package:majadigi/features/auth/presentation/bloc/auth_state.dart';
-import 'package:majadigi/features/auth/presentation/pages/login_page.dart';
-import 'package:majadigi/features/navigation/presentation/bloc/navigation_bloc.dart';
-import 'package:majadigi/features/navigation/presentation/pages/main_page.dart';
 import 'package:majadigi/features/profile/presentation/bloc/profile_bloc.dart';
+
 class App extends StatelessWidget {
   const App({super.key});
 
@@ -19,14 +16,11 @@ class App extends StatelessWidget {
         BlocProvider<AuthBloc>(
           create: (_) => sl<AuthBloc>()..add(const AuthCheckRequested()),
         ),
-        BlocProvider<NavigationBloc>(
-          create: (context) => sl<NavigationBloc>(),
-        ),
         BlocProvider<ProfileBloc>(
           create: (_) => sl<ProfileBloc>(),
         ),
       ],
-      child: MaterialApp(
+      child: MaterialApp.router(
         title: 'Flutter Auth App',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -47,32 +41,8 @@ class App extends StatelessWidget {
             ),
           ),
         ),
-        home: const _AuthGate(),
+        routerConfig: sl<AppRouter>().router,
       ),
     );
   }
 }
-
-class _AuthGate extends StatelessWidget {
-  const _AuthGate();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        if (state is AuthInitial || state is AuthLoading) {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        } else if (state is AuthAuthenticated) {
-          return const MainPage();
-        }
-
-        return const LoginPage();
-      },
-    );
-  }
-}
-
