@@ -1,4 +1,4 @@
-import 'package:majadigi/features/no_darurat/domain/entity/emergency_number_entity.dart';
+import 'package:majadigi/deffered_feature/no_darurat/domain/entity/emergency_number_entity.dart';
 
 class EmergencyNumberModel extends EmergencyNumberEntity {
   const EmergencyNumberModel({

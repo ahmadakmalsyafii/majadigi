@@ -1,4 +1,4 @@
-import 'package:majadigi/features/beranda/domain/entitiy/jatim_angka_entity.dart';
+import 'package:majadigi/features/beranda/domain/entity/jatim_angka_entity.dart';
 
 class JatimAngkaModel extends JatimAngkaEntity {
   const JatimAngkaModel({

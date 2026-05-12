@@ -5,6 +5,7 @@ import 'package:majadigi/features/auth/presentation/bloc/auth_event.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_state.dart';
 import 'package:majadigi/features/auth/presentation/widgets/auth_date_picker_field.dart';
 import 'package:majadigi/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:go_router/go_router.dart';
 import '../bloc/auth_bloc.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -73,7 +74,7 @@ class _RegisterPageState extends State<RegisterPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
       ),
       body: BlocConsumer<AuthBloc, AuthState>(
@@ -96,7 +97,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   backgroundColor: Colors.green,
                 ),
               );
-            Navigator.pop(context);
+            context.pop();
           }
         },
         builder: (context, state) {
@@ -261,7 +262,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
                         ),
                         GestureDetector(
-                          onTap: isLoading ? null : () => Navigator.pop(context),
+                          onTap: isLoading ? null : () => context.pop(),
                           child: const Text(
                             'Sign In',
                             style: TextStyle(

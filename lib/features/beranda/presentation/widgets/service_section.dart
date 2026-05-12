@@ -1,7 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:majadigi/features/beranda/domain/entitiy/service_entity.dart';
+import 'package:go_router/go_router.dart';
+import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
 
 class ServiceSection extends StatefulWidget {
   final List<ServiceEntity> services;
@@ -78,8 +79,10 @@ class _ServiceSectionState extends State<ServiceSection> {
             childAspectRatio: 0.6,
             children: [
               for (var service in widget.services)
-                GestureDetector(
-                  onTap: () => widget.onServiceTap?.call(service),
+                InkWell(
+                  onTap: () {
+                    context.push('/detail-layanan', extra: service);
+                  },
                   child: Column(
                     children: [
                       Container(

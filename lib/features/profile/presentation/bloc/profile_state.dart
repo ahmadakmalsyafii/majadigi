@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:majadigi/core/error/failure.dart';
-import 'package:majadigi/features/auth/domain/entitiy/user_entity.dart';
+import 'package:majadigi/features/auth/domain/entity/user_entity.dart';
 
 abstract class ProfileState extends Equatable {
   const ProfileState();

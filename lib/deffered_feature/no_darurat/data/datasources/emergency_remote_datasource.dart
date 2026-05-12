@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:majadigi/core/error/exceptions.dart';
 import 'package:majadigi/core/network/dio_client.dart';
 import 'package:majadigi/core/config/app_config.dart';
-import 'package:majadigi/features/no_darurat/data/model/emergency_number_model.dart';
-import 'package:majadigi/features/no_darurat/data/model/kab_kota_model.dart';
+import 'package:majadigi/deffered_feature/no_darurat/data/model/emergency_number_model.dart';
+import 'package:majadigi/deffered_feature/no_darurat/data/model/kab_kota_model.dart';
 
 abstract class EmergencyRemoteDataSource {
   /// Fetch nomor darurat, opsional filter berdasarkan [kabKotaId].

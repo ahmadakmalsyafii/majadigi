@@ -2,9 +2,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:majadigi/core/error/failure.dart';
 import 'package:majadigi/features/beranda/data/datasources/remote/beranda_remote_datasource.dart';
-import 'package:majadigi/features/beranda/domain/entitiy/banner_entity.dart';
-import 'package:majadigi/features/beranda/domain/entitiy/service_entity.dart';
-import 'package:majadigi/features/beranda/domain/entitiy/jatim_angka_entity.dart';
+import 'package:majadigi/features/beranda/domain/entity/banner_entity.dart';
+import 'package:majadigi/features/beranda/domain/entity/jatim_angka_entity.dart';
+import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
 import 'package:majadigi/features/beranda/domain/repositories/banner_repository.dart';
 import 'package:majadigi/features/beranda/domain/repositories/service_repository.dart';
 import 'package:majadigi/features/beranda/domain/repositories/jatim_angka_repository.dart';

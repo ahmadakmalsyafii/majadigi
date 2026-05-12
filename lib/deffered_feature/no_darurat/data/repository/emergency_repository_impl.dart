@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:majadigi/core/error/exceptions.dart';
 import 'package:majadigi/core/error/failure.dart';
-import 'package:majadigi/features/no_darurat/data/datasources/emergency_remote_datasource.dart';
-import 'package:majadigi/features/no_darurat/domain/entity/emergency_number_entity.dart';
-import 'package:majadigi/features/no_darurat/domain/entity/kab_kota_entity.dart';
-import 'package:majadigi/features/no_darurat/domain/repositories/emergency_repository.dart';
+import 'package:majadigi/deffered_feature/no_darurat/data/datasources/emergency_remote_datasource.dart';
+import 'package:majadigi/deffered_feature/no_darurat/domain/entity/emergency_number_entity.dart';
+import 'package:majadigi/deffered_feature/no_darurat/domain/entity/kab_kota_entity.dart';
+import 'package:majadigi/deffered_feature/no_darurat/domain/repositories/emergency_repository.dart';
 
 class EmergencyRepositoryImpl implements EmergencyRepository {
   final EmergencyRemoteDataSource remoteDataSource;

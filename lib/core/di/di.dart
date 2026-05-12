@@ -22,7 +22,7 @@ import 'package:majadigi/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:majadigi/core/network/api_key_manager.dart';
 import 'package:majadigi/core/network/dio_client.dart';
-import 'package:majadigi/features/navigation/presentation/bloc/navigation_bloc.dart';
+import 'package:majadigi/core/router/app_router.dart';
 import 'package:majadigi/features/layanan/data/datasources/layanan_remote_datasource.dart';
 import 'package:majadigi/features/layanan/data/repositories/layanan_repository_impl.dart';
 import 'package:majadigi/features/layanan/domain/repositories/layanan_repository.dart';
@@ -32,12 +32,12 @@ import 'package:majadigi/features/beranda/data/repository/beranda_repository_imp
 import 'package:majadigi/features/beranda/domain/repositories/banner_repository.dart';
 import 'package:majadigi/features/beranda/domain/usecases/get_all_banner_usecase.dart';
 import 'package:majadigi/features/beranda/presentation/bloc/beranda_bloc.dart';
-import 'package:majadigi/features/no_darurat/data/datasources/emergency_remote_datasource.dart';
-import 'package:majadigi/features/no_darurat/data/repository/emergency_repository_impl.dart';
-import 'package:majadigi/features/no_darurat/domain/repositories/emergency_repository.dart';
-import 'package:majadigi/features/no_darurat/domain/usecases/get_emergency_numbers_usecase.dart';
-import 'package:majadigi/features/no_darurat/domain/usecases/get_kab_kota_usecase.dart';
-import 'package:majadigi/features/no_darurat/presentation/bloc/emergency/emergency_bloc.dart';
+import 'package:majadigi/deffered_feature/no_darurat/data/datasources/emergency_remote_datasource.dart';
+import 'package:majadigi/deffered_feature/no_darurat/data/repository/emergency_repository_impl.dart';
+import 'package:majadigi/deffered_feature/no_darurat/domain/repositories/emergency_repository.dart';
+import 'package:majadigi/deffered_feature/no_darurat/domain/usecases/get_emergency_numbers_usecase.dart';
+import 'package:majadigi/deffered_feature/no_darurat/domain/usecases/get_kab_kota_usecase.dart';
+import 'package:majadigi/deffered_feature/no_darurat/presentation/bloc/emergency/emergency_bloc.dart';
 import 'package:majadigi/features/beranda/domain/usecases/get_jatim_angka_usecase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -57,7 +57,7 @@ void init() async {
 
   // Factories/BLoCs
   // di.registerFactory<AuthBloc>(() => AuthBloc(di()));
-  sl.registerFactory(() => NavigationBloc());
+  sl.registerLazySingleton(() => AppRouter(sl()));
   sl.registerLazySingleton(
         () => AuthBloc(
       signIn: sl(),

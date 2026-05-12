@@ -9,11 +9,7 @@ import 'package:majadigi/features/beranda/presentation/bloc/beranda_state.dart';
 import 'package:majadigi/features/beranda/presentation/widgets/banner_carousel.dart';
 import 'package:majadigi/features/beranda/presentation/widgets/searchbar_beranda.dart';
 import 'package:majadigi/features/beranda/presentation/widgets/service_section.dart';
-import 'package:majadigi/features/beranda/presentation/widgets/jatim_angka_section.dart';
-import 'package:majadigi/features/beranda/domain/entitiy/service_entity.dart';
-import 'package:majadigi/features/no_darurat/presentation/pages/noDarurat_pages.dart';
-import 'package:majadigi/deffered_feature/ketersediaan_kamar/presentation/pages/ketersediaan_kamar_page.dart';
-import 'package:majadigi/deffered_feature/pendaftaran_pasien/presentation/pages/pendaftaran_pasien_page.dart';
+import 'package:majadigi/features/beranda/presentation/widgets/jatim_angka_section.dart'; 
 
 class BerandaPage extends StatelessWidget {
   const BerandaPage({super.key});
@@ -135,7 +131,7 @@ class BerandaPage extends StatelessWidget {
                                 ),
                                 child: Column(
                                   children: [
-                                   
+                                    ServiceSection(services: state.services),
                                     const SizedBox(height: 24),
                                     JatimAngkaSection(jatimAngkaList: state.jatimAngka),
                                   ],

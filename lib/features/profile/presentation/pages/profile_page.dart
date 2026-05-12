@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'package:majadigi/features/auth/domain/entitiy/user_entity.dart';
+import 'package:majadigi/features/auth/domain/entity/user_entity.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_event.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_state.dart';
 import 'package:majadigi/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:majadigi/features/profile/presentation/bloc/profile_event.dart';
 import 'package:majadigi/features/profile/presentation/bloc/profile_state.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -304,7 +305,7 @@ class ProfilePage extends StatelessWidget {
               maxLines: 1,
               style: const TextStyle(fontSize: 14, color: Colors.black54),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -538,7 +539,7 @@ class ProfilePage extends StatelessWidget {
                               address: addressCtrl.text,
                             ),
                           );
-                          Navigator.pop(context);
+                          context.pop();
                         },
                         child: const Text(
                           'Simpan Perubahan',
@@ -675,7 +676,7 @@ class ProfilePage extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => context.pop(),
                       ),
                     ],
                   ),

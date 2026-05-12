@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:majadigi/core/error/failure.dart';
-import 'package:majadigi/features/beranda/domain/entitiy/banner_entity.dart';
-import 'package:majadigi/features/beranda/domain/entitiy/service_entity.dart';
-import 'package:majadigi/features/beranda/domain/entitiy/jatim_angka_entity.dart';
+import 'package:majadigi/features/beranda/domain/entity/banner_entity.dart';
+import 'package:majadigi/features/beranda/domain/entity/jatim_angka_entity.dart';
+import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
 
 abstract class BerandaState extends Equatable {
   const BerandaState();

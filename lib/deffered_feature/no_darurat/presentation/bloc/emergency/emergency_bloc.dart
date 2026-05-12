@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:majadigi/features/no_darurat/domain/entity/kab_kota_entity.dart';
-import 'package:majadigi/features/no_darurat/domain/usecases/get_emergency_numbers_usecase.dart';
-import 'package:majadigi/features/no_darurat/domain/usecases/get_kab_kota_usecase.dart';
-import 'package:majadigi/features/no_darurat/presentation/bloc/emergency/emergency_event.dart';
-import 'package:majadigi/features/no_darurat/presentation/bloc/emergency/emergency_state.dart';
+import 'package:majadigi/deffered_feature/no_darurat/domain/entity/kab_kota_entity.dart';
+import 'package:majadigi/deffered_feature/no_darurat/domain/usecases/get_emergency_numbers_usecase.dart';
+import 'package:majadigi/deffered_feature/no_darurat/domain/usecases/get_kab_kota_usecase.dart';
+import 'package:majadigi/deffered_feature/no_darurat/presentation/bloc/emergency/emergency_event.dart';
+import 'package:majadigi/deffered_feature/no_darurat/presentation/bloc/emergency/emergency_state.dart';
 
 class EmergencyBloc extends Bloc<EmergencyEvent, EmergencyState> {
   final GetEmergencyNumbersUseCase _getEmergencyNumbers;

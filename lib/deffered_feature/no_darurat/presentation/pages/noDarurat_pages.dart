@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:majadigi/core/di/di.dart';
-import 'package:majadigi/features/no_darurat/presentation/bloc/emergency/emergency_bloc.dart';
-import 'package:majadigi/features/no_darurat/presentation/bloc/emergency/emergency_event.dart';
-import 'package:majadigi/features/no_darurat/presentation/bloc/emergency/emergency_state.dart';
+import 'package:majadigi/deffered_feature/no_darurat/presentation/bloc/emergency/emergency_bloc.dart';
+import 'package:majadigi/deffered_feature/no_darurat/presentation/bloc/emergency/emergency_event.dart';
+import 'package:majadigi/deffered_feature/no_darurat/presentation/bloc/emergency/emergency_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class EmergencyNumberPage extends StatelessWidget {
@@ -34,235 +34,41 @@ class _EmergencyNumberViewState extends State<_EmergencyNumberView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromRGBO(245, 245, 245, 1),
-      body: Stack(
-        children: [
-          // Background Biru di Atas
-          Container(
-            height: 280,
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              color: Color(0xFF016ACC),
-            ),
-          ),
-          SafeArea(
+    return BlocBuilder<EmergencyBloc, EmergencyState>(
+      builder: (context, state) {
+        if (state is EmergencyLoading) {
+          return const Center(
+            child: CircularProgressIndicator(color: Color(0xFF016ACC)),
+          );
+        } else if (state is EmergencyLoaded) {
+          return _buildLayananView(context, state);
+        } else if (state is EmergencyError) {
+          return Center(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Custom App Bar
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.arrow_back_ios, color: Colors.white, size: 18),
-                            SizedBox(width: 4),
-                            Text("Kembali", style: TextStyle(color: Colors.white, fontSize: 14)),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                const Icon(Icons.wifi_off_rounded, color: Colors.grey, size: 48),
+                const SizedBox(height: 16),
+                Text(
+                  state.message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.grey),
                 ),
-                const SizedBox(height: 80),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Text(
-                    "Nomor Darurat",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Text(
-                    "Hubungi layanan penting dengan cepat",
-                    style: TextStyle(color: Colors.white70, fontSize: 14),
-                  ),
-                ),
-                const SizedBox(height: 15),
-
-                // Toggle Button
-                BlocBuilder<EmergencyBloc, EmergencyState>(
-                  builder: (context, state) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: Container(
-                        height: 50,
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(25),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            _buildTabItem(context, "Tentang", 0, state.tabIndex == 0),
-                            _buildTabItem(context, "Layanan", 1, state.tabIndex == 1),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-
-                // Content Area
-                Expanded(
-                  child: BlocBuilder<EmergencyBloc, EmergencyState>(
-                    builder: (context, state) {
-                      Widget childWidget;
-                      if (state.tabIndex == 0) {
-                        childWidget = _buildTentangView(key: const ValueKey(0));
-                      } else {
-                        if (state is EmergencyLoading) {
-                          childWidget = const Center(
-                            key: ValueKey('loading'),
-                            child: CircularProgressIndicator(color: Color(0xFF016ACC)),
-                          );
-                        } else if (state is EmergencyLoaded) {
-                          childWidget = _buildLayananView(context, state, key: const ValueKey(1));
-                        } else if (state is EmergencyError) {
-                          childWidget = Center(
-                            key: const ValueKey('error'),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.wifi_off_rounded, color: Colors.grey, size: 48),
-                                const SizedBox(height: 16),
-                                Text(
-                                  state.message,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(color: Colors.grey),
-                                ),
-                                const SizedBox(height: 16),
-                                ElevatedButton(
-                                  onPressed: () => context
-                                      .read<EmergencyBloc>()
-                                      .add(const LoadEmergencyData()),
-                                  child: const Text('Coba Lagi'),
-                                ),
-                              ],
-                            ),
-                          );
-                        } else {
-                          childWidget = const SizedBox.shrink(key: ValueKey('empty'));
-                        }
-                      }
-
-                      return AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        transitionBuilder: (child, animation) {
-                          final beginOffset = child.key == const ValueKey(0)
-                              ? const Offset(-1.0, 0.0)
-                              : const Offset(1.0, 0.0);
-                          return SlideTransition(
-                            position: Tween<Offset>(
-                              begin: beginOffset,
-                              end: Offset.zero,
-                            ).animate(CurvedAnimation(
-                                parent: animation, curve: Curves.easeInOut)),
-                            child: child,
-                          );
-                        },
-                        child: childWidget,
-                      );
-                    },
-                  ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => context
+                      .read<EmergencyBloc>()
+                      .add(const LoadEmergencyData()),
+                  child: const Text('Coba Lagi'),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
+          );
+        }
+        return const SizedBox.shrink();
+      },
     );
   }
-
-  Widget _buildTabItem(
-      BuildContext context, String title, int index, bool isSelected) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => context.read<EmergencyBloc>().add(ChangeTab(index)),
-        child: Container(
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF016ACC) : Colors.transparent,
-            borderRadius: BorderRadius.circular(25),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            title,
-            style: TextStyle(
-              color: isSelected ? Colors.white : Colors.grey[700],
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              fontSize: 14,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTentangView({Key? key}) {
-    return SingleChildScrollView(
-      key: key,
-      child: Padding(
-        padding: const EdgeInsets.only(
-            left: 24.0, right: 24.0, top: 16.0, bottom: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Tentang Layanan",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1A1A2E),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  )
-                ],
-              ),
-              child: const Text(
-                "Nomor darurat merupakan layanan cepat tanggap dari pemerintah atau instansi terkait untuk memberikan bantuan kepada masyarakat. Nomor ini dapat dihubungi saat warga menghadapi situasi mendesak, berbahaya, atau yang mengancam nyawa—seperti kecelakaan, kebakaran, bencana alam, gangguan keamanan, hingga kondisi medis gawat darurat.\n\n"
-                "Sejak 2015, pemerintah Indonesia menerapkan Program Layanan Call Center 112 di berbagai daerah di Indonesia. Nomor darurat sengaja dibuat singkat agar mudah diingat dan bisa diakses dengan cepat. Selain Call Center 112, masing-masing wilayah di Indonesia juga memiliki nomor darurat khusus yang bisa mempercepat penanganan. Di Jawa Timur misalnya, tiap instansi menyediakan nomor darurat khusus yang bisa diakses 24 jam dan bebas pulsa.\n\n"
-                "Agar berjalan efektif, warga dihimbau tidak melakukan panggilan iseng. Informasi yang jelas dan tepat saat melapor akan membantu petugas memberikan respon cepat dan tepat sasaran.",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                  height: 1.5,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildLayananView(BuildContext context, EmergencyLoaded state,
       {Key? key}) {
     return Column(
