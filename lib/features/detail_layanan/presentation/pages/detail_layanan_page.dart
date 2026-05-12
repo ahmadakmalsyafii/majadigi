@@ -139,17 +139,6 @@ class _DetailLayananPageState extends State<DetailLayananPage>
     );
   }
 
-  Widget _buildTentangTab() {
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-      children: [
-        _buildListCard('Tentang'),
-        _buildListCard('Operasional'),
-        _buildListCard('Ketentuan Layanan'),
-      ],
-    );
-  }
-
   Widget _buildListCard(String title) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
