@@ -7,7 +7,7 @@ class AppConfig {
     dotenv.env['BASE_URL_MAJADIGI'] ?? 'https://api.majadigi.layanan.go.id';
   static String get apiKeyHargaBahanPokok => dotenv.env['API_KEY_HARGA_BAHAN_POKOK'] ?? '';
   static String get apiKeySaifulAnwar => dotenv.env['API_KEY_SAIFUL_ANWAR'] ?? '';
-  static String get apiKeyDahaHusada => dotenv.env['API_KEY_DAHA'] ?? '';
+  static String get apiKeyDahaHusada => dotenv.env['API_KEY_DAHA_HUSADA'] ?? '';
   static String get apiKeyKarsaHusada => dotenv.env['API_KEY_KARSA_HUSADA'] ?? '';
   static String get apiKeyHaji => dotenv.env['API_KEY_HAJI'] ?? '';
 }

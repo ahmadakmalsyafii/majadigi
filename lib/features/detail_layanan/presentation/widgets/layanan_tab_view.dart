@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
+import 'package:majadigi/deffered_feature/no_darurat/presentation/pages/noDarurat_pages.dart';
 
 class LayananTabView extends StatefulWidget {
   final ServiceEntity service;
@@ -13,6 +15,9 @@ class LayananTabView extends StatefulWidget {
 class _LayananTabViewState extends State<LayananTabView> {
   @override
   Widget build(BuildContext context) {
+    if (widget.service.name == 'Nomor Darurat') {
+      return const EmergencyNumberPage();
+    }
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       children: [
@@ -58,28 +63,39 @@ class _LayananTabViewState extends State<LayananTabView> {
               }
             }
 
-            return Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    featureName,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+            return GestureDetector(
+              onTap: () {
+                if (featureName.toLowerCase().contains('kamar')) {
+                  context.push('/ketersediaan-kamar', extra: widget.service);
+                } else if (featureName.toLowerCase().contains('antrean') || featureName.toLowerCase().contains('antrian')) {
+                  context.push('/antrean-pasien');
+                } else if (featureName.toLowerCase().contains('operasi')) {
+                  context.push('/jadwal-operasi');
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      featureName,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Icon(icon, color: iconColor, size: 28),
-                ],
+                    const SizedBox(height: 12),
+                    Icon(icon, color: iconColor, size: 28),
+                  ],
+                ),
               ),
             );
           },

@@ -6,7 +6,8 @@ import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
 
 class ServiceSection extends StatefulWidget {
   final List<ServiceEntity> services;
-  const ServiceSection({super.key, required this.services});
+  final void Function(ServiceEntity service)? onServiceTap;
+  const ServiceSection({super.key, required this.services, this.onServiceTap});
 
   @override
   State<ServiceSection> createState() => _ServiceSectionState();

@@ -9,10 +9,12 @@ import 'package:majadigi/features/beranda/presentation/bloc/beranda_state.dart';
 import 'package:majadigi/features/beranda/presentation/widgets/banner_carousel.dart';
 import 'package:majadigi/features/beranda/presentation/widgets/searchbar_beranda.dart';
 import 'package:majadigi/features/beranda/presentation/widgets/service_section.dart';
-import 'package:majadigi/features/beranda/presentation/widgets/jatim_angka_section.dart';
+import 'package:majadigi/features/beranda/presentation/widgets/jatim_angka_section.dart'; 
 
 class BerandaPage extends StatelessWidget {
   const BerandaPage({super.key});
+
+  
 
   @override
   Widget build(BuildContext context) {
