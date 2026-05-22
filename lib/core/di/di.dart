@@ -35,6 +35,7 @@ import 'package:majadigi/features/beranda/presentation/bloc/beranda_bloc.dart';
 import 'package:majadigi/features/beranda/domain/usecases/get_jatim_angka_usecase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 /// Global service locator.
 final sl = GetIt.instance;
 
