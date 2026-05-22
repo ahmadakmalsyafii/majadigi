@@ -102,6 +102,5 @@ class _LayananTabViewState extends State<LayananTabView> {
         ),
       ],
     );
-    ;
   }
 }

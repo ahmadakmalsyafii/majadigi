@@ -20,27 +20,50 @@ class TentangTabView extends StatelessWidget {
   Widget _buildAboutCard() {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsetsGeometry.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Tentang ${service.name}",
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+      child: ExpansionTile(
+        shape: Border.all(style: BorderStyle.none),
+        backgroundColor: Colors.white,
+        collapsedBackgroundColor: Colors.white,
+        expansionAnimationStyle: AnimationStyle(
+          curve: Curves.easeInOut,
+          duration: const Duration(milliseconds: 400),
+        ),
+
+        title: Text(
+          "Tentang Layanan",
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
           ),
-          const SizedBox(height: 8),
-          Text(
-            service.about,
-            style: const TextStyle(fontSize: 14, color: Colors.black54),
+        ),
+        tilePadding: EdgeInsetsGeometry.all(16),
+        children: [
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(16),
+                bottomRight: Radius.circular(16),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  service.about,
+                  style: const TextStyle(fontSize: 14, color: Colors.black54),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -50,21 +73,56 @@ class TentangTabView extends StatelessWidget {
   Widget _buildOperationalScheduleCard() {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsetsGeometry.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ExpansionTile(
+        shape: Border.all(style: BorderStyle.none),
+        backgroundColor: Colors.white,
+        collapsedBackgroundColor: Colors.white,
+        expansionAnimationStyle: AnimationStyle(
+          curve: Curves.easeInOut,
+          duration: const Duration(milliseconds: 400),
+        ),
+        title: Text(
+          "Jadwal Layanan",
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        tilePadding: EdgeInsetsGeometry.all(16),
         children: [
-          Text(
-            "Jadwal Operasional",
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(16),
+                bottomRight: Radius.circular(16),
+              ),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  service.websiteUrl,
+                  style: const TextStyle(fontSize: 14, color: Colors.black54),
+                ),
+                Text(service.address),
+                // ListView.builder(itemBuilder: (context, index) {
+                //   final schedule = service.operationalHours;
+                //   return Text(
+                //     "${schedule.hari}: ${schedule.buka} - ${schedule.tutup}",
+                //     style: const TextStyle(fontSize: 14, color: Colors.black54),
+                //   );
+                // },
+                // shrinkWrap: true,)
+              ],
             ),
           ),
         ],
@@ -75,21 +133,49 @@ class TentangTabView extends StatelessWidget {
   Widget _buildTermsAndConditionsCard() {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsetsGeometry.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ExpansionTile(
+        shape: Border.all(style: BorderStyle.none),
+        backgroundColor: Colors.white,
+        collapsedBackgroundColor: Colors.white,
+        expansionAnimationStyle: AnimationStyle(
+          curve: Curves.easeInOut,
+          duration: const Duration(milliseconds: 400),
+        ),
+
+        title: Text(
+          "Ketentuan Layanan",
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        tilePadding: EdgeInsetsGeometry.all(16),
         children: [
-          Text(
-            "Ketentuan Layanan",
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(16),
+                bottomRight: Radius.circular(16),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  service.icon,
+                  style: const TextStyle(fontSize: 14, color: Colors.black54),
+                ),
+              ],
             ),
           ),
         ],
