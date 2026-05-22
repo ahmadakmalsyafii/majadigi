@@ -39,6 +39,23 @@ import 'package:majadigi/deffered_feature/no_darurat/domain/usecases/get_emergen
 import 'package:majadigi/deffered_feature/no_darurat/domain/usecases/get_kab_kota_usecase.dart';
 import 'package:majadigi/deffered_feature/no_darurat/presentation/bloc/emergency/emergency_bloc.dart';
 import 'package:majadigi/features/beranda/domain/usecases/get_jatim_angka_usecase.dart';
+import 'package:majadigi/deffered_feature/ketersediaan_kamar/data/datasources/ketersediaan_kamar_remote_datasource.dart';
+import 'package:majadigi/deffered_feature/ketersediaan_kamar/data/repository/ketersediaan_kamar_repository_impl.dart';
+import 'package:majadigi/deffered_feature/ketersediaan_kamar/domain/repositories/ketersediaan_kamar_repository.dart';
+import 'package:majadigi/deffered_feature/ketersediaan_kamar/domain/usecases/get_room_availability_usecase.dart';
+import 'package:majadigi/deffered_feature/ketersediaan_kamar/presentation/bloc/ketersediaan_kamar_bloc.dart';
+import 'package:majadigi/deffered_feature/antrean_pasien/data/datasources/antrean_remote_datasource.dart';
+import 'package:majadigi/deffered_feature/antrean_pasien/data/repository/antrean_repository_impl.dart';
+import 'package:majadigi/deffered_feature/antrean_pasien/domain/repositories/antrean_repository.dart';
+import 'package:majadigi/deffered_feature/antrean_pasien/domain/usecases/get_antrean_usecase.dart';
+import 'package:majadigi/deffered_feature/antrean_pasien/domain/usecases/get_dokter_usecase.dart';
+import 'package:majadigi/deffered_feature/antrean_pasien/domain/usecases/get_poli_usecase.dart';
+import 'package:majadigi/deffered_feature/antrean_pasien/presentation/bloc/antrean_bloc.dart';
+import 'package:majadigi/deffered_feature/jadwal_operasi/data/datasources/jadwal_operasi_remote_datasource.dart';
+import 'package:majadigi/deffered_feature/jadwal_operasi/data/repository/jadwal_operasi_repository_impl.dart';
+import 'package:majadigi/deffered_feature/jadwal_operasi/domain/repositories/jadwal_operasi_repository.dart';
+import 'package:majadigi/deffered_feature/jadwal_operasi/domain/usecases/get_jadwal_operasi_usecase.dart';
+import 'package:majadigi/deffered_feature/jadwal_operasi/presentation/bloc/jadwal_operasi_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Global service locator.
@@ -85,6 +102,13 @@ void init() async {
     getEmergencyNumbers: sl(),
     getKabKota: sl(),
   ));
+  sl.registerFactory(() => KetersediaanKamarBloc(getRoomAvailability: sl()));
+  sl.registerFactory(() => AntreanBloc(
+    getPoliUseCase: sl(),
+    getDokterUseCase: sl(),
+    getAntreanUseCase: sl(),
+  ));
+  sl.registerFactory(() => JadwalOperasiBloc(getJadwalOperasiUseCase: sl()));
 
 
 
@@ -102,6 +126,11 @@ void init() async {
   sl.registerLazySingleton(() => GetJatimAngkaUseCase(sl()));
   sl.registerLazySingleton(() => GetEmergencyNumbersUseCase(sl()));
   sl.registerLazySingleton(() => GetKabKotaUseCase(sl()));
+  sl.registerLazySingleton(() => GetRoomAvailabilityUseCase(sl()));
+  sl.registerLazySingleton(() => GetPoliUseCase(sl()));
+  sl.registerLazySingleton(() => GetDokterUseCase(sl()));
+  sl.registerLazySingleton(() => GetAntreanUseCase(sl()));
+  sl.registerLazySingleton(() => GetJadwalOperasiUseCase(sl()));
 
   // Data Sources
   // di.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(di()));
@@ -122,6 +151,15 @@ void init() async {
   );
   sl.registerLazySingleton<EmergencyRemoteDataSource>(
         () => EmergencyRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<KetersediaanKamarRemoteDataSource>(
+        () => KetersediaanKamarRemoteDataSourceImpl(dioClient: sl()),
+  );
+  sl.registerLazySingleton<AntreanRemoteDataSource>(
+        () => AntreanRemoteDataSourceImpl(dioClient: sl()),
+  );
+  sl.registerLazySingleton<JadwalOperasiRemoteDataSource>(
+        () => JadwalOperasiRemoteDataSourceImpl(dioClient: sl()),
   );
 
 
@@ -159,6 +197,15 @@ void init() async {
   );
   sl.registerLazySingleton<EmergencyRepository>(
         () => EmergencyRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<KetersediaanKamarRepository>(
+        () => KetersediaanKamarRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<AntreanRepository>(
+        () => AntreanRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<JadwalOperasiRepository>(
+        () => JadwalOperasiRepositoryImpl(remoteDataSource: sl()),
   );
 
 }

@@ -1,4 +1,5 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:majadigi/core/config/app_config.dart';
 
 class ApiKeyManager {
   final FirebaseRemoteConfig _remoteConfig;
@@ -19,19 +20,12 @@ class ApiKeyManager {
   }
 
   String getKey(ApiEndpoint endpoint) {
-    if (!_initialized) throw StateError('ApiKeyManager not initialized');
     return switch (endpoint) {
-      ApiEndpoint.hargaBahanPokok => _remoteConfig.getString(
-        'api_key_harga_bahan_pokok',
-      ),
-      ApiEndpoint.saifulAnwar => _remoteConfig.getString(
-        'api_key_saiful_anwar',
-      ),
-      ApiEndpoint.dahaHusada => _remoteConfig.getString('api_key_daha_husada'),
-      ApiEndpoint.karsaHusada => _remoteConfig.getString(
-        'api_key_karsa_husada',
-      ),
-      ApiEndpoint.haji => _remoteConfig.getString('api_key_haji'),
+      ApiEndpoint.hargaBahanPokok => AppConfig.apiKeyHargaBahanPokok,
+      ApiEndpoint.saifulAnwar => AppConfig.apiKeySaifulAnwar,
+      ApiEndpoint.dahaHusada => AppConfig.apiKeyDahaHusada,
+      ApiEndpoint.karsaHusada => AppConfig.apiKeyKarsaHusada,
+      ApiEndpoint.haji => AppConfig.apiKeyHaji,
       ApiEndpoint.nomorDarurat => '',
     };
   }

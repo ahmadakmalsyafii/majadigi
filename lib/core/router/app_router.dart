@@ -13,6 +13,9 @@ import 'package:majadigi/features/tersimpan/presentation/pages/tersimpan_page.da
 import 'package:majadigi/core/router/go_router_refresh_stream.dart';
 import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
 import 'package:majadigi/features/detail_layanan/presentation/pages/detail_layanan_page.dart';
+import 'package:majadigi/deffered_feature/ketersediaan_kamar/presentation/pages/ketersediaan_kamar_page.dart';
+import 'package:majadigi/deffered_feature/antrean_pasien/presentation/pages/antrean_pasien_page.dart';
+import 'package:majadigi/deffered_feature/jadwal_operasi/presentation/pages/jadwal_operasi_page.dart';
 
 class AppRouter {
   final AuthBloc authBloc;
@@ -72,6 +75,28 @@ class AppRouter {
         builder: (BuildContext context, GoRouterState state) {
           final service = state.extra as ServiceEntity;
           return DetailLayananPage(service: service);
+        },
+      ),
+      GoRoute(
+        path: '/ketersediaan-kamar',
+        name: 'ketersediaan_kamar',
+        builder: (BuildContext context, GoRouterState state) {
+          final service = state.extra as ServiceEntity;
+          return KetersediaanKamarPage(service: service);
+        },
+      ),
+      GoRoute(
+        path: '/antrean-pasien',
+        name: 'antrean_pasien',
+        builder: (BuildContext context, GoRouterState state) {
+          return const AntreanPasienPage();
+        },
+      ),
+      GoRoute(
+        path: '/jadwal-operasi',
+        name: 'jadwal_operasi',
+        builder: (BuildContext context, GoRouterState state) {
+          return const JadwalOperasiPage();
         },
       ),
 
