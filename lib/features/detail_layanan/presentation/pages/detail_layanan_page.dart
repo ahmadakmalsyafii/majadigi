@@ -35,15 +35,10 @@ class _DetailLayananPageState extends State<DetailLayananPage>
       backgroundColor: Colors.grey[50],
       body: Column(
         children: [
-          // Header Section
           Container(
             width: double.infinity,
             decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/main_background.png'),
-                fit: BoxFit.cover,
-              ),
-              color: Colors.blue,
+              color: Color(0xFF0048B5),
             ),
             padding: EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 24),
             child: Column(
@@ -111,7 +106,7 @@ class _DetailLayananPageState extends State<DetailLayananPage>
                 padding: EdgeInsetsGeometry.all(8),
                 dividerColor: Colors.transparent,
                 indicator: BoxDecoration(
-                  color: Colors.blue.shade600,
+                  color: Color(0xFF0065FF),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 labelColor: Colors.white,

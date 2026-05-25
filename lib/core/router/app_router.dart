@@ -6,6 +6,7 @@ import 'package:majadigi/features/auth/presentation/pages/login_page.dart';
 import 'package:majadigi/features/auth/presentation/pages/register_page.dart';
 import 'package:majadigi/features/beranda/presentation/pages/beranda_page.dart';
 import 'package:majadigi/features/layanan/presentation/pages/layanan_page.dart';
+import 'package:majadigi/features/list_layanan/presentation/pages/list_layanan_page.dart';
 import 'package:majadigi/features/navigation/presentation/pages/main_page.dart';
 import 'package:majadigi/features/profile/presentation/pages/profile_page.dart';
 import 'package:majadigi/features/splash_screen/presentation/pages/splash_page.dart';
@@ -99,6 +100,7 @@ class AppRouter {
           return const JadwalOperasiPage();
         },
       ),
+      GoRoute(path: "/semua-layanan", name: "semua_layanan", builder: (BuildContext context, GoRouterState state) => const ListLayananPage()),
 
 
       //BUAT NAV BUTTOMNYA

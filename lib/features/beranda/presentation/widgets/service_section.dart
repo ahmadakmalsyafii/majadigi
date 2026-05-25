@@ -40,7 +40,7 @@ class _ServiceSectionState extends State<ServiceSection> {
             ),
             InkWell(
               onTap: () {
-                // Aksi lihat semua
+                context.push('/semua-layanan');
               },
               child: Row(
                 children: [
@@ -76,7 +76,7 @@ class _ServiceSectionState extends State<ServiceSection> {
             physics: const NeverScrollableScrollPhysics(),
             mainAxisSpacing: 4,
             crossAxisSpacing: 4,
-            childAspectRatio: 0.6,
+            childAspectRatio: 0.95,
             children: [
               for (var service in widget.services)
                 InkWell(

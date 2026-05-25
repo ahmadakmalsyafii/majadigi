@@ -6,12 +6,13 @@ import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
 import 'package:majadigi/features/beranda/domain/usecases/get_all_banner_usecase.dart';
 import 'package:majadigi/features/beranda/domain/usecases/get_all_service_usecase.dart';
 import 'package:majadigi/features/beranda/domain/usecases/get_jatim_angka_usecase.dart';
+import 'package:majadigi/features/beranda/domain/usecases/get_service_section_usecase.dart';
 import 'package:majadigi/features/beranda/presentation/bloc/beranda_event.dart';
 import 'package:majadigi/features/beranda/presentation/bloc/beranda_state.dart';
 
 class BerandaBloc extends Bloc<BerandaEvent, BerandaState> {
   final GetAllBannerUseCase getBannerUseCase;
-  final GetAllServiceUsecase getServiceUseCase;
+  final GetServiceSectionUsecase getServiceUseCase;
   final GetJatimAngkaUseCase getJatimAngkaUseCase;
 
   BerandaBloc({

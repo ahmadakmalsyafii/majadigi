@@ -9,6 +9,7 @@ import 'package:majadigi/features/beranda/data/model/jatim_angka_model.dart';
 abstract class BerandaRemoteDatasource {
   Future<List<BannerModel>> getAllBanner();
   Future<List<ServiceModel>> getAllService();
+  Future<List<ServiceModel>> getServiceSection();
   Future<List<JatimAngkaModel>> getJatimAngka();
 }
 
@@ -44,11 +45,28 @@ class BerandaRemoteDatasourceImpl implements BerandaRemoteDatasource {
     }
   }
 
+
+  @override
+  Future<List<ServiceModel>> getServiceSection() async {
+    try {
+      final services = await _firestore.collection('services').limit(8).get();
+      return services.docs
+          .map((doc) => ServiceModel.fromFirestore(doc))
+          .toList();
+    } catch (e) {
+      throw ServerFailure(message: e.toString());
+    }
+  }
+
   @override
   Future<List<JatimAngkaModel>> getJatimAngka() async {
     try {
       final response = await _dioClient.dio.get(
         'https://api.majadigi.jatimprov.go.id/api/public/jatim-angka',
+        queryParameters: {
+            'page': 1,
+            'limit': 3,
+        }
       );
       if (response.statusCode == 200 && response.data['data'] != null) {
         final List<dynamic> data = response.data['data'];
