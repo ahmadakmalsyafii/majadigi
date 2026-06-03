@@ -20,4 +20,9 @@ class FeatureManagerRepositoryImpl implements FeatureManagerRepository {
   Future<void> removeInstalledStatus(String featureName) {
     return localDataSource.removeInstalledStatus(featureName);
   }
+
+  @override
+  Future<List<String>> getAllInstalledFeatures() {
+    return localDataSource.getAllInstalledFeatures();
+  }
 }

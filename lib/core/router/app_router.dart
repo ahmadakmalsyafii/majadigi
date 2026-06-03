@@ -19,7 +19,13 @@ import 'package:majadigi/deffered_feature/antrean_pasien/presentation/pages/antr
 import 'package:majadigi/deffered_feature/jadwal_operasi/presentation/pages/jadwal_operasi_page.dart' deferred as jadwal_operasi;
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/presentation/pages/harga_bahan_pokok_page.dart' deferred as harga_bahan_pokok;
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/presentation/pages/detail_harga_bahan_pokok_page.dart' deferred as detail_harga_bahan_pokok;
-import 'package:majadigi/deffered_feature/pendaftaran_pasien/presentation/pages/pendaftaran_pasien_page.dart' deferred as pendaftaran_pasien;
+import 'package:majadigi/deffered_feature/bansos/presentation/pages/bansos_page.dart' deferred as bansos;
+import 'package:majadigi/deffered_feature/destinasi_wisata/presentation/pages/destinasi_wisata_page.dart' deferred as destinasi_wisata;
+import 'package:majadigi/deffered_feature/destinasi_wisata/domain/entity/destination_entity.dart';
+import 'package:majadigi/deffered_feature/destinasi_wisata/presentation/pages/detail_destinasi_page.dart';
+import 'package:majadigi/deffered_feature/islamic_center/presentation/pages/islamic_center_page.dart' deferred as islamic_center;
+import 'package:majadigi/deffered_feature/islamic_center/domain/entity/facility_entity.dart';
+import 'package:majadigi/deffered_feature/islamic_center/presentation/pages/islamic_center_facility_detail_page.dart';import 'package:majadigi/deffered_feature/pendaftaran_pasien/presentation/pages/pendaftaran_pasien_page.dart' deferred as pendaftaran_pasien;
 import 'package:majadigi/deffered_feature/klinik_hoaks/domain/entity/klinik_hoaks_clarification_entity.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_hoaks_bloc.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/pages/klinik_hoaks_page.dart' deferred as klinik_hoaks;
@@ -173,6 +179,67 @@ class AppRouter {
               return const Scaffold(body: Center(child: CircularProgressIndicator()));
             },
           );
+        },
+      ),
+      GoRoute(
+        path: '/bansos',
+        name: 'bansos',
+        builder: (BuildContext context, GoRouterState state) {
+          return FutureBuilder(
+            future: bansos.loadLibrary(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return bansos.BansosPage();
+              }
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            },
+          );
+        },
+      ),
+      GoRoute(
+        path: '/destinasi-wisata',
+        name: 'destinasi_wisata',
+        builder: (BuildContext context, GoRouterState state) {
+          return FutureBuilder(
+            future: destinasi_wisata.loadLibrary(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return destinasi_wisata.DestinasiWisataPage();
+              }
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            },
+          );
+        },
+      ),
+      GoRoute(
+        path: '/detail-destinasi',
+        name: 'detail_destinasi',
+        builder: (BuildContext context, GoRouterState state) {
+          final destination = state.extra as DestinationEntity;
+          return DetailDestinasiPage(destination: destination);
+        },
+      ),
+      GoRoute(
+        path: '/islamic-center',
+        name: 'islamic_center',
+        builder: (BuildContext context, GoRouterState state) {
+          return FutureBuilder(
+            future: islamic_center.loadLibrary(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return islamic_center.IslamicCenterPage();
+              }
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            },
+          );
+        },
+      ),
+      GoRoute(
+        path: '/islamic-center-facility-detail',
+        name: 'islamic_center_facility_detail',
+        builder: (BuildContext context, GoRouterState state) {
+          final facility = state.extra as FacilityEntity;
+          return IslamicCenterFacilityDetailPage(facility: facility);
         },
       ),
       GoRoute(path: "/semua-layanan", name: "semua_layanan", builder: (BuildContext context, GoRouterState state) => const ListLayananPage()),

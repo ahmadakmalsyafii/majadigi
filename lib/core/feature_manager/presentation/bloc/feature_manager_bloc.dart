@@ -12,6 +12,12 @@ class FeatureManagerBloc extends Bloc<FeatureManagerEvent, FeatureManagerState> 
     on<CheckFeatureStatusEvent>(_onCheckFeatureStatus);
     on<InstallFeatureEvent>(_onInstallFeature);
     on<UninstallFeatureEvent>(_onUninstallFeature);
+    on<GetAllInstalledFeaturesEvent>(_onGetAllInstalledFeatures);
+  }
+
+  Future<void> _onGetAllInstalledFeatures(GetAllInstalledFeaturesEvent event, Emitter<FeatureManagerState> emit) async {
+    final features = await manageFeatureUsecase.getAllInstalledFeatures();
+    emit(state.copyWith(installedFeatures: features));
   }
 
   Future<void> _onCheckFeatureStatus(CheckFeatureStatusEvent event, Emitter<FeatureManagerState> emit) async {
@@ -70,6 +76,7 @@ class FeatureManagerBloc extends Bloc<FeatureManagerEvent, FeatureManagerState> 
       newStatuses[featureName] = FeatureStatus.installed;
       newProgresses[featureName] = 1.0;
       emit(state.copyWith(statuses: newStatuses, progresses: newProgresses));
+      add(GetAllInstalledFeaturesEvent());
     }
   }
 
@@ -83,5 +90,6 @@ class FeatureManagerBloc extends Bloc<FeatureManagerEvent, FeatureManagerState> 
     newProgresses[event.featureName] = 0.0;
     
     emit(state.copyWith(statuses: newStatuses, progresses: newProgresses));
+    add(GetAllInstalledFeaturesEvent());
   }
 }

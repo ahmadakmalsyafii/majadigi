@@ -53,6 +53,8 @@ dependencies:
   url_launcher: ^6.3.1
   shared_preferences: ^2.5.5
   cached_network_image: ^3.4.1
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
   qr_flutter: ^4.1.0
 
 
@@ -92,6 +94,9 @@ flutter:
     - name: jadwal_operasi
       libraries:
         - lib/deffered_feature/jadwal_operasi/presentation/pages/jadwal_operasi_page.dart
+    - name: destinasi_wisata
+      libraries:
+        - lib/deffered_feature/destinasi_wisata/presentation/pages/destinasi_wisata_page.dart
 
   # To add assets to your application, add an assets section, like this:
   assets:
