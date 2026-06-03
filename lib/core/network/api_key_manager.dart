@@ -27,6 +27,7 @@ class ApiKeyManager {
       ApiEndpoint.karsaHusada => AppConfig.apiKeyKarsaHusada,
       ApiEndpoint.haji => AppConfig.apiKeyHaji,
       ApiEndpoint.nomorDarurat => '',
+      ApiEndpoint.klinikHoaks => AppConfig.apiKeyKlinikHoaks,
     };
   }
 }
@@ -38,4 +39,5 @@ enum ApiEndpoint {
   karsaHusada,
   haji,
   nomorDarurat,
+  klinikHoaks,
 }

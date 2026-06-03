@@ -136,6 +136,7 @@ class _LayananView extends StatelessWidget {
                     hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
                     prefixIcon: const Icon(Icons.search, color: Colors.grey),
                     border: InputBorder.none,
+                    filled: false,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                     isDense: true,
                   ),

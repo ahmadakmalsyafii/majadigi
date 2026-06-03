@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:majadigi/core/di/di.dart';
 import 'package:majadigi/deffered_feature/antrean_pasien/domain/entity/dokter_entity.dart';
 import 'package:majadigi/deffered_feature/antrean_pasien/domain/entity/poli_entity.dart';
@@ -90,7 +91,7 @@ class _AntreanPasienView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
-                onTap: () => Navigator.pop(context),
+                onTap: () => context.pop(),
                 child: const Row(
                   children: [
                     Icon(Icons.arrow_back_ios, color: Colors.white, size: 16),

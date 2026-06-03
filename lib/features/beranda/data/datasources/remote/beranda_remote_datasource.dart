@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:majadigi/core/error/failure.dart';
@@ -36,11 +37,88 @@ class BerandaRemoteDatasourceImpl implements BerandaRemoteDatasource {
   Future<List<ServiceModel>> getAllService() async {
     try {
       final services = await _firestore.collection('services').get();
-      return services.docs
+      
+      // Pastikan setiap rumah sakit memiliki fitur Daftar Pasien di database Firestore
+      await _ensureDaftarPasienExistsInDb(services.docs);
+      
+      // Ambil kembali data snapshot terbaru setelah database berhasil terupdate
+      final updatedServices = await _firestore.collection('services').get();
+      
+      return updatedServices.docs
           .map((doc) => ServiceModel.fromFirestore(doc))
           .toList();
     } catch (e) {
       throw ServerFailure(message: e.toString());
+    }
+  }
+
+  bool _isHospital(String name) {
+    final lower = name.toLowerCase();
+    if (lower.contains('hoaks') || lower.contains('hoax')) {
+      return false;
+    }
+    if (lower.contains('rumah sakit') ||
+        lower.contains('hospital') ||
+        lower.contains('klinik') ||
+        lower.contains('puskesmas') ||
+        lower.contains('rsud') ||
+        lower.contains('rsu') ||
+        lower.contains('rssa')) {
+      return true;
+    }
+    final words = lower.split(RegExp(r'[\s.,\-/]'));
+    return words.contains('rs');
+  }
+
+  Future<void> _ensureDaftarPasienExistsInDb(List<QueryDocumentSnapshot<Map<String, dynamic>>> docs) async {
+    try {
+      for (var doc in docs) {
+        final data = doc.data();
+        final String name = data['name']?.toString() ?? '';
+        final List<dynamic> features = data['feature'] ?? [];
+        
+        final isHospital = _isHospital(name);
+        
+        if (isHospital) {
+          final hasDaftar = features.any((f) {
+            final judul = f['judul']?.toString().toLowerCase() ?? '';
+            return judul.contains('daftar') || judul.contains('pendaftaran');
+          });
+          
+          if (!hasDaftar) {
+            final updatedFeatures = List<dynamic>.from(features);
+            updatedFeatures.add({
+              'id': 'injected_daftar_pasien_${doc.id}',
+              'layananId': doc.id,
+              'judul': 'Daftar Pasien',
+            });
+            
+            await _firestore.collection('services').doc(doc.id).update({
+              'feature': updatedFeatures,
+            });
+          }
+        } else {
+          // Clean up if it was previously injected into a non-hospital service
+          final hasInjectedDaftar = features.any((f) {
+            final id = f['id']?.toString() ?? '';
+            return id == 'injected_daftar_pasien_${doc.id}';
+          });
+          
+          if (hasInjectedDaftar) {
+            final updatedFeatures = features.where((f) {
+              final id = f['id']?.toString() ?? '';
+              return id != 'injected_daftar_pasien_${doc.id}';
+            }).toList();
+            
+            await _firestore.collection('services').doc(doc.id).update({
+              'feature': updatedFeatures,
+            });
+          }
+        }
+      }
+    } catch (e) {
+      // Menulis log error tanpa memicu crash di sisi pengguna
+      debugPrint("Gagal mensinkronisasi fitur pendaftaran pasien di Firestore: $e");
     }
   }
 

@@ -16,6 +16,12 @@ import 'package:majadigi/features/detail_layanan/presentation/pages/detail_layan
 import 'package:majadigi/deffered_feature/ketersediaan_kamar/presentation/pages/ketersediaan_kamar_page.dart';
 import 'package:majadigi/deffered_feature/antrean_pasien/presentation/pages/antrean_pasien_page.dart';
 import 'package:majadigi/deffered_feature/jadwal_operasi/presentation/pages/jadwal_operasi_page.dart';
+import 'package:majadigi/deffered_feature/pendaftaran_pasien/presentation/pages/pendaftaran_pasien_page.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/domain/entity/klinik_hoaks_clarification_entity.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_hoaks_bloc.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/pages/klinik_hoaks_page.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/pages/klinik_hoaks_detail_page.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/pages/laporkan_hoaks_page.dart';
 
 class AppRouter {
   final AuthBloc authBloc;
@@ -72,6 +78,12 @@ class AppRouter {
       GoRoute(
         path: '/detail-layanan',
         name: 'detail_layanan',
+        redirect: (BuildContext context, GoRouterState state) {
+          if (state.extra == null) {
+            return '/';
+          }
+          return null;
+        },
         builder: (BuildContext context, GoRouterState state) {
           final service = state.extra as ServiceEntity;
           return DetailLayananPage(service: service);
@@ -80,6 +92,12 @@ class AppRouter {
       GoRoute(
         path: '/ketersediaan-kamar',
         name: 'ketersediaan_kamar',
+        redirect: (BuildContext context, GoRouterState state) {
+          if (state.extra == null) {
+            return '/';
+          }
+          return null;
+        },
         builder: (BuildContext context, GoRouterState state) {
           final service = state.extra as ServiceEntity;
           return KetersediaanKamarPage(service: service);
@@ -97,6 +115,55 @@ class AppRouter {
         name: 'jadwal_operasi',
         builder: (BuildContext context, GoRouterState state) {
           return const JadwalOperasiPage();
+        },
+      ),
+      GoRoute(
+        path: '/pendaftaran-pasien',
+        name: 'pendaftaran_pasien',
+        redirect: (BuildContext context, GoRouterState state) {
+          if (state.extra == null) {
+            return '/';
+          }
+          return null;
+        },
+        builder: (BuildContext context, GoRouterState state) {
+          final service = state.extra as ServiceEntity;
+          return PendaftaranPasienPage(service: service);
+        },
+      ),
+      GoRoute(
+        path: '/klinik-hoaks',
+        name: 'klinik_hoaks',
+        builder: (BuildContext context, GoRouterState state) {
+          return const KlinikHoaksPage();
+        },
+      ),
+      GoRoute(
+        path: '/klinik-hoaks/detail',
+        name: 'klinik_hoaks_detail',
+        redirect: (BuildContext context, GoRouterState state) {
+          if (state.extra == null) {
+            return '/';
+          }
+          return null;
+        },
+        builder: (BuildContext context, GoRouterState state) {
+          final item = state.extra as KlinikHoaksClarificationEntity;
+          return KlinikHoaksDetailPage(item: item);
+        },
+      ),
+      GoRoute(
+        path: '/klinik-hoaks/lapor',
+        name: 'klinik_hoaks_lapor',
+        redirect: (BuildContext context, GoRouterState state) {
+          if (state.extra == null) {
+            return '/';
+          }
+          return null;
+        },
+        builder: (BuildContext context, GoRouterState state) {
+          final bloc = state.extra as KlinikHoaksBloc;
+          return LaporkanHoaksPage(bloc: bloc);
         },
       ),
 

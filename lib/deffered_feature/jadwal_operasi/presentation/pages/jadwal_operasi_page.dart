@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:majadigi/core/di/di.dart';
 import 'package:majadigi/deffered_feature/jadwal_operasi/domain/entity/jadwal_operasi_entity.dart';
@@ -99,7 +100,7 @@ class _JadwalOperasiViewState extends State<_JadwalOperasiView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
-                onTap: () => Navigator.pop(context),
+                onTap: () => context.pop(),
                 child: const Row(
                   children: [
                     Icon(Icons.arrow_back_ios, color: Colors.white, size: 16),

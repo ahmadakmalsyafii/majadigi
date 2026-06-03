@@ -12,6 +12,7 @@ class ApiKeyInterceptor extends Interceptor {
     RegExp(r'/rsud-daha-husada'): ApiEndpoint.dahaHusada,
     RegExp(r'/rsukarsahusadabatu'): ApiEndpoint.karsaHusada,
     RegExp(r'/rshaji'): ApiEndpoint.haji,
+    RegExp(r'/klinik-hoaks'): ApiEndpoint.klinikHoaks,
   };
 
   @override

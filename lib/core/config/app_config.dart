@@ -10,4 +10,5 @@ class AppConfig {
   static String get apiKeyDahaHusada => dotenv.env['API_KEY_DAHA_HUSADA'] ?? '';
   static String get apiKeyKarsaHusada => dotenv.env['API_KEY_KARSA_HUSADA'] ?? '';
   static String get apiKeyHaji => dotenv.env['API_KEY_HAJI'] ?? '';
+  static String get apiKeyKlinikHoaks => dotenv.env['API_KEY_KLINIK_HOAKS'] ?? dotenv.env['API_KEY_SAIFUL_ANWAR'] ?? '';
 }

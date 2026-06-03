@@ -56,7 +56,22 @@ import 'package:majadigi/deffered_feature/jadwal_operasi/data/repository/jadwal_
 import 'package:majadigi/deffered_feature/jadwal_operasi/domain/repositories/jadwal_operasi_repository.dart';
 import 'package:majadigi/deffered_feature/jadwal_operasi/domain/usecases/get_jadwal_operasi_usecase.dart';
 import 'package:majadigi/deffered_feature/jadwal_operasi/presentation/bloc/jadwal_operasi_bloc.dart';
+import 'package:majadigi/deffered_feature/pendaftaran_pasien/data/datasources/pendaftaran_remote_datasource.dart';
+import 'package:majadigi/deffered_feature/pendaftaran_pasien/data/repository/pendaftaran_repository_impl.dart';
+import 'package:majadigi/deffered_feature/pendaftaran_pasien/domain/repositories/pendaftaran_repository.dart';
+import 'package:majadigi/deffered_feature/pendaftaran_pasien/domain/usecases/get_pendaftaran_doctors_usecase.dart';
+import 'package:majadigi/deffered_feature/pendaftaran_pasien/domain/usecases/get_pendaftaran_polis_usecase.dart';
+import 'package:majadigi/deffered_feature/pendaftaran_pasien/domain/usecases/get_time_slot_quotas_usecase.dart';
+import 'package:majadigi/deffered_feature/pendaftaran_pasien/domain/usecases/save_registration_usecase.dart';
+import 'package:majadigi/deffered_feature/pendaftaran_pasien/presentation/bloc/pendaftaran_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/data/datasources/klinik_hoaks_remote_datasource.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/data/repository/klinik_hoaks_repository_impl.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/domain/repositories/klinik_hoaks_repository.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/domain/usecases/get_klinik_hoaks_stats_usecase.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/domain/usecases/get_klinik_hoaks_clarifications_usecase.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/domain/usecases/report_hoax_usecase.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_hoaks_bloc.dart';
 
 /// Global service locator.
 final sl = GetIt.instance;
@@ -109,6 +124,21 @@ void init() async {
     getAntreanUseCase: sl(),
   ));
   sl.registerFactory(() => JadwalOperasiBloc(getJadwalOperasiUseCase: sl()));
+  sl.registerFactory(
+    () => PendaftaranBloc(
+      getPolis: sl(),
+      getDoctors: sl(),
+      getTimeSlotQuotas: sl(),
+      saveRegistration: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => KlinikHoaksBloc(
+      getStats: sl(),
+      getClarifications: sl(),
+      reportHoax: sl(),
+    ),
+  );
 
 
 
@@ -131,6 +161,13 @@ void init() async {
   sl.registerLazySingleton(() => GetDokterUseCase(sl()));
   sl.registerLazySingleton(() => GetAntreanUseCase(sl()));
   sl.registerLazySingleton(() => GetJadwalOperasiUseCase(sl()));
+  sl.registerLazySingleton(() => GetPendaftaranPolisUseCase(sl()));
+  sl.registerLazySingleton(() => GetPendaftaranDoctorsUseCase(sl()));
+  sl.registerLazySingleton(() => GetTimeSlotQuotasUseCase(sl()));
+  sl.registerLazySingleton(() => SaveRegistrationUseCase(sl()));
+  sl.registerLazySingleton(() => GetKlinikHoaksStatsUseCase(repository: sl()));
+  sl.registerLazySingleton(() => GetKlinikHoaksClarificationsUseCase(repository: sl()));
+  sl.registerLazySingleton(() => ReportHoaxUseCase(repository: sl()));
 
   // Data Sources
   // di.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(di()));
@@ -160,6 +197,12 @@ void init() async {
   );
   sl.registerLazySingleton<JadwalOperasiRemoteDataSource>(
         () => JadwalOperasiRemoteDataSourceImpl(dioClient: sl()),
+  );
+  sl.registerLazySingleton<PendaftaranRemoteDataSource>(
+        () => PendaftaranRemoteDataSourceImpl(firestore: sl()),
+  );
+  sl.registerLazySingleton<KlinikHoaksRemoteDataSource>(
+    () => KlinikHoaksRemoteDataSourceImpl(dioClient: sl()),
   );
 
 
@@ -206,6 +249,12 @@ void init() async {
   );
   sl.registerLazySingleton<JadwalOperasiRepository>(
         () => JadwalOperasiRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<PendaftaranRepository>(
+        () => PendaftaranRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<KlinikHoaksRepository>(
+    () => KlinikHoaksRepositoryImpl(remoteDataSource: sl()),
   );
 
 }
