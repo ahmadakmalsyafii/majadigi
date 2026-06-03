@@ -7,6 +7,8 @@ import 'package:majadigi/deffered_feature/klinik_hoaks/domain/entity/klinik_hoak
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_hoaks_bloc.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_hoaks_event.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_hoaks_state.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_bloc.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_event.dart';
 
 class KlinikHoaksPage extends StatelessWidget {
   const KlinikHoaksPage({super.key});
@@ -123,6 +125,50 @@ class _KlinikHoaksViewState extends State<_KlinikHoaksView> {
                 CustomHeader(
                   title: 'Klinik Hoaks',
                   subtitle: 'Verifikasi & klarifikasi informasi resmi',
+                  trailing: InkWell(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Hapus Fitur'),
+                            content: const Text('Apakah Anda yakin ingin menghapus fitur ini dari perangkat?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Batal'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  sl<FeatureManagerBloc>().add(const UninstallFeatureEvent('klinik_hoaks'));
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Fitur berhasil dihapus')),
+                                  );
+                                },
+                                child: const Text('Ya'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.delete_outline, color: Colors.white, size: 16),
+                          SizedBox(width: 4),
+                          Text('Hapus', style: TextStyle(color: Colors.white, fontSize: 14)),
+                        ],
+                      ),
+                    ),
+                  ),
                   subtitleWidget: LayoutBuilder(builder: (context, constraints) {
                     final cardWidth = (constraints.maxWidth - 24) / 4;
                     return Row(

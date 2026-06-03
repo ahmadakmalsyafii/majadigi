@@ -2,10 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:majadigi/core/di/di.dart';
+import 'package:majadigi/features/beranda/domain/entity/operational_hour_entity.dart';
+import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
 import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_bloc.dart';
 import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_event.dart';
 import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_state.dart';
 import 'package:majadigi/core/widgets/custom_header.dart';
+
+const defaultHospitalService = ServiceEntity(
+  id: 'rssa',
+  name: 'RSUD Dr. Saiful Anwar',
+  icon: 'assets/icons/hospital.png',
+  about: 'Rumah Sakit Umum Daerah Dr. Saiful Anwar',
+  description: 'Layanan kesehatan RSUD Dr. Saiful Anwar',
+  address: 'Jl. Jaksa Agung Suprapto No.2, Malang',
+  websiteUrl: 'https://rsusaifulanwar.jatimprov.go.id',
+  features: [],
+  operationalHours: OperationalHourEntity(
+    hari: 'Senin - Minggu',
+    buka: '00:00',
+    tutup: '23:59',
+  ),
+);
 
 class TersimpanPage extends StatefulWidget {
   const TersimpanPage({super.key});
@@ -36,9 +54,19 @@ class _TersimpanPageState extends State<TersimpanPage> {
         bgColor = Colors.blue.shade50;
         break;
       case 'antrean_pasien':
+        iconData = Icons.people_outline;
+        iconColor = Colors.green;
+        bgColor = Colors.green.shade50;
+        break;
+      case 'pendaftaran_pasien':
         iconData = Icons.person_add_alt_1;
         iconColor = Colors.orange;
         bgColor = Colors.orange.shade50;
+        break;
+      case 'klinik_hoaks':
+        iconData = Icons.gavel_rounded;
+        iconColor = Colors.redAccent;
+        bgColor = Colors.red.shade50;
         break;
       case 'jadwal_operasi':
         iconData = Icons.local_hospital;
@@ -87,7 +115,11 @@ class _TersimpanPageState extends State<TersimpanPage> {
       case 'ketersediaan_kamar':
         return 'Ketersediaan Kamar';
       case 'antrean_pasien':
+        return 'Antrean Pasien';
+      case 'pendaftaran_pasien':
         return 'Daftar Pasien';
+      case 'klinik_hoaks':
+        return 'Klinik Hoaks';
       case 'jadwal_operasi':
         return 'Jadwal Operasi';
       case 'bansos':
@@ -106,10 +138,16 @@ class _TersimpanPageState extends State<TersimpanPage> {
   void _navigateToFeature(BuildContext context, String featureKey) {
     switch (featureKey) {
       case 'ketersediaan_kamar':
-        context.push('/ketersediaan-kamar');
+        context.push('/ketersediaan-kamar', extra: defaultHospitalService);
         break;
       case 'antrean_pasien':
         context.push('/antrean-pasien');
+        break;
+      case 'pendaftaran_pasien':
+        context.push('/pendaftaran-pasien', extra: defaultHospitalService);
+        break;
+      case 'klinik_hoaks':
+        context.push('/klinik-hoaks');
         break;
       case 'jadwal_operasi':
         context.push('/jadwal-operasi');

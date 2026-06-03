@@ -13,6 +13,8 @@ import 'package:majadigi/deffered_feature/pendaftaran_pasien/domain/entity/penda
 import 'package:majadigi/deffered_feature/pendaftaran_pasien/presentation/bloc/pendaftaran_bloc.dart';
 import 'package:majadigi/deffered_feature/pendaftaran_pasien/presentation/bloc/pendaftaran_event.dart';
 import 'package:majadigi/deffered_feature/pendaftaran_pasien/presentation/bloc/pendaftaran_state.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_bloc.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_event.dart';
 
 class PendaftaranPasienPage extends StatelessWidget {
   final ServiceEntity service;
@@ -145,6 +147,50 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
             children: [
               CustomHeader(
                 title: 'Pendaftaran Pasien',
+                trailing: InkWell(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Hapus Fitur'),
+                          content: const Text('Apakah Anda yakin ingin menghapus fitur ini dari perangkat?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Batal'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                sl<FeatureManagerBloc>().add(const UninstallFeatureEvent('pendaftaran_pasien'));
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Fitur berhasil dihapus')),
+                                );
+                              },
+                              child: const Text('Ya'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.delete_outline, color: Colors.white, size: 16),
+                        SizedBox(width: 4),
+                        Text('Hapus', style: TextStyle(color: Colors.white, fontSize: 14)),
+                      ],
+                    ),
+                  ),
+                ),
                 onBackPressed: () {
                   if (state.currentStep == 3) {
                     Navigator.pop(context);

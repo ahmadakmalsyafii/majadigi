@@ -17,7 +17,8 @@ android {
         ":harga_bahan_pokok",
         ":ketersediaan_kamar",
         ":antrean_pasien",
-        ":jadwal_operasi"
+        ":jadwal_operasi",
+        ":destinasi_wisata"
     )
 
     compileOptions {
