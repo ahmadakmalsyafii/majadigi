@@ -15,4 +15,8 @@ class ManageFeatureUsecase {
   Future<void> removeInstalledStatus(String featureName) {
     return repository.removeInstalledStatus(featureName);
   }
+
+  Future<List<String>> getAllInstalledFeatures() {
+    return repository.getAllInstalledFeatures();
+  }
 }

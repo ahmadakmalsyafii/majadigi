@@ -66,11 +66,26 @@ import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/usecases/get_
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/usecases/get_commodity_detail_usecase.dart';
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/usecases/get_city_price_list_usecase.dart';
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/presentation/bloc/harga_bahan_pokok_bloc.dart';
+import 'package:majadigi/deffered_feature/bansos/data/datasources/bansos_remote_datasource.dart';
+import 'package:majadigi/deffered_feature/bansos/data/repository/bansos_repository_impl.dart';
+import 'package:majadigi/deffered_feature/bansos/domain/repositories/bansos_repository.dart';
+import 'package:majadigi/deffered_feature/bansos/domain/usecases/get_bansos_by_nik_usecase.dart';
+import 'package:majadigi/deffered_feature/bansos/presentation/bloc/bansos_bloc.dart';
+import 'package:majadigi/deffered_feature/destinasi_wisata/data/datasources/destination_remote_datasource.dart';
+import 'package:majadigi/deffered_feature/destinasi_wisata/data/repository/destination_repository_impl.dart';
+import 'package:majadigi/deffered_feature/destinasi_wisata/domain/repositories/destination_repository.dart';
+import 'package:majadigi/deffered_feature/destinasi_wisata/domain/usecases/get_destinations_usecase.dart';
+import 'package:majadigi/deffered_feature/destinasi_wisata/presentation/bloc/destination_bloc.dart';
 import 'package:majadigi/core/feature_manager/data/datasources/feature_manager_local_datasource.dart';
 import 'package:majadigi/core/feature_manager/data/repositories/feature_manager_repository_impl.dart';
 import 'package:majadigi/core/feature_manager/domain/repositories/feature_manager_repository.dart';
 import 'package:majadigi/core/feature_manager/domain/usecases/manage_feature_usecase.dart';
 import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_bloc.dart';
+import 'package:majadigi/deffered_feature/islamic_center/data/datasources/islamic_center_remote_datasource.dart';
+import 'package:majadigi/deffered_feature/islamic_center/data/repository/islamic_center_repository_impl.dart';
+import 'package:majadigi/deffered_feature/islamic_center/domain/repositories/islamic_center_repository.dart';
+import 'package:majadigi/deffered_feature/islamic_center/domain/usecases/get_facilities_usecase.dart';
+import 'package:majadigi/deffered_feature/islamic_center/presentation/bloc/islamic_center_bloc.dart';
 
 /// Global service locator.
 final sl = GetIt.instance;
@@ -131,8 +146,11 @@ void init() async {
       getCityPriceList: sl(),
     ),
   );
+  sl.registerFactory(() => BansosBloc(getBansosByNik: sl()));
+  sl.registerFactory(() => DestinationBloc(getDestinationsUseCase: sl()));
 
   sl.registerFactory(() => ListLayananBloc(getAllServiceUsecase: sl()));
+  sl.registerFactory(() => IslamicCenterBloc(getFacilitiesUseCase: sl()));
 
   // Use Cases
   // di.registerLazySingleton<AuthUseCase>(() => AuthUseCaseImpl(di()));
@@ -156,6 +174,9 @@ void init() async {
   sl.registerLazySingleton(() => GetCommodityPriceListUseCase(sl()));
   sl.registerLazySingleton(() => GetCommodityDetailUseCase(sl()));
   sl.registerLazySingleton(() => GetCityPriceListUseCase(sl()));
+  sl.registerLazySingleton(() => GetBansosByNikUseCase(sl()));
+  sl.registerLazySingleton(() => GetDestinationsUseCase(sl()));
+  sl.registerLazySingleton(() => GetFacilitiesUseCase(sl()));
 
   // Data Sources
   // di.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(di()));
@@ -188,6 +209,15 @@ void init() async {
   );
   sl.registerLazySingleton<HargaBahanPokokRemoteDataSource>(
     () => HargaBahanPokokRemoteDataSourceImpl(dioClient: sl()),
+  );
+  sl.registerLazySingleton<BansosRemoteDataSource>(
+    () => BansosRemoteDataSourceImpl(firestore: sl()),
+  );
+  sl.registerLazySingleton<DestinationRemoteDataSource>(
+    () => DestinationRemoteDataSourceImpl(firestore: sl()),
+  );
+  sl.registerLazySingleton<IslamicCenterRemoteDataSource>(
+    () => IslamicCenterRemoteDataSourceImpl(firestore: sl()),
   );
 
   // Repositories
@@ -228,6 +258,15 @@ void init() async {
   );
   sl.registerLazySingleton<HargaBahanPokokRepository>(
     () => HargaBahanPokokRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<BansosRepository>(
+    () => BansosRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<DestinationRepository>(
+    () => DestinationRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<IslamicCenterRepository>(
+    () => IslamicCenterRepositoryImpl(remoteDataSource: sl()),
   );
 
   sl.registerLazySingleton<FeatureManagerLocalDataSource>(

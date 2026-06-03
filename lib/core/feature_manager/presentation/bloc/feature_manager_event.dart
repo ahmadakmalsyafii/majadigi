@@ -28,3 +28,5 @@ class UninstallFeatureEvent extends FeatureManagerEvent {
   @override
   List<Object> get props => [featureName];
 }
+
+class GetAllInstalledFeaturesEvent extends FeatureManagerEvent {}

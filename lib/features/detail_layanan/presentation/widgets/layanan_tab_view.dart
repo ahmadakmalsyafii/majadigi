@@ -17,6 +17,12 @@ import 'package:majadigi/deffered_feature/antrean_pasien/presentation/pages/antr
     deferred as antrean_pasien;
 import 'package:majadigi/deffered_feature/jadwal_operasi/presentation/pages/jadwal_operasi_page.dart'
     deferred as jadwal_operasi;
+import 'package:majadigi/deffered_feature/bansos/presentation/pages/bansos_page.dart'
+    deferred as bansos;
+import 'package:majadigi/deffered_feature/destinasi_wisata/presentation/pages/destinasi_wisata_page.dart'
+    deferred as destinasi_wisata;
+import 'package:majadigi/deffered_feature/islamic_center/presentation/pages/islamic_center_page.dart'
+    deferred as islamic_center;
 
 class LayananTabView extends StatefulWidget {
   final ServiceEntity service;
@@ -39,6 +45,9 @@ class _LayananTabViewState extends State<LayananTabView> {
     );
     _featureManagerBloc.add(const CheckFeatureStatusEvent('antrean_pasien'));
     _featureManagerBloc.add(const CheckFeatureStatusEvent('jadwal_operasi'));
+    _featureManagerBloc.add(const CheckFeatureStatusEvent('bansos'));
+    _featureManagerBloc.add(const CheckFeatureStatusEvent('destinasi_wisata'));
+    _featureManagerBloc.add(const CheckFeatureStatusEvent('islamic_center'));
   }
 
   @override
@@ -67,15 +76,25 @@ class _LayananTabViewState extends State<LayananTabView> {
             mainAxisSpacing: 16,
             childAspectRatio: 1.2,
           ),
-          itemCount: widget.service.features.isNotEmpty
-              ? widget.service.features.length
-              : 2,
+          itemCount: (widget.service.name == 'Program Bansos' || widget.service.name.toLowerCase().contains('islamic'))
+              ? 1
+              : widget.service.features.isNotEmpty
+                  ? widget.service.features.length
+                  : 2,
           itemBuilder: (context, index) {
             String featureName = '';
             IconData icon = Icons.apps;
             Color iconColor = Colors.blue;
 
-            if (widget.service.features.isNotEmpty) {
+            if (widget.service.name == 'Program Bansos') {
+              featureName = 'Cek Penerima Bansos';
+              icon = Icons.search;
+              iconColor = Colors.green;
+            } else if (widget.service.name.toLowerCase().contains('islamic')) {
+              featureName = 'Islamic Center';
+              icon = Icons.mosque;
+              iconColor = Colors.green;
+            } else if (widget.service.features.isNotEmpty) {
               featureName = widget.service.features[index].judul;
               icon = Icons.local_hospital;
               iconColor = Colors.blue;
@@ -91,6 +110,12 @@ class _LayananTabViewState extends State<LayananTabView> {
               }
             }
 
+            if (widget.service.name.toLowerCase().contains('sidita')) {
+              featureName = 'Destinasi Wisata';
+              icon = Icons.map;
+              iconColor = Colors.green;
+            }
+
             final isHargaBahanPokok = featureName.toLowerCase().contains(
               'harga bahan pokok',
             );
@@ -99,6 +124,9 @@ class _LayananTabViewState extends State<LayananTabView> {
                 featureName.toLowerCase().contains('antrean') ||
                 featureName.toLowerCase().contains('antrian');
             final isOperasi = featureName.toLowerCase().contains('operasi');
+            final isBansos = featureName.toLowerCase().contains('bansos');
+            final isDestinasi = featureName.toLowerCase().contains('destinasi') || featureName.toLowerCase().contains('wisata') || featureName.toLowerCase().contains('sidita');
+            final isIslamicCenter = featureName.toLowerCase().contains('islamic');
 
             String featureKey = '';
             if (isHargaBahanPokok)
@@ -109,6 +137,12 @@ class _LayananTabViewState extends State<LayananTabView> {
               featureKey = 'antrean_pasien';
             else if (isOperasi)
               featureKey = 'jadwal_operasi';
+            else if (isBansos)
+              featureKey = 'bansos';
+            else if (isDestinasi)
+              featureKey = 'destinasi_wisata';
+            else if (isIslamicCenter)
+              featureKey = 'islamic_center';
 
             final isDeferred = featureKey.isNotEmpty;
 
@@ -156,6 +190,15 @@ class _LayananTabViewState extends State<LayananTabView> {
                                     else if (featureKey == 'jadwal_operasi')
                                       loadFuture = () =>
                                           jadwal_operasi.loadLibrary();
+                                    else if (featureKey == 'bansos')
+                                      loadFuture = () =>
+                                          bansos.loadLibrary();
+                                    else if (featureKey == 'destinasi_wisata')
+                                      loadFuture = () =>
+                                          destinasi_wisata.loadLibrary();
+                                    else if (featureKey == 'islamic_center')
+                                      loadFuture = () =>
+                                          islamic_center.loadLibrary();
                                     else
                                       loadFuture = () =>
                                           harga_bahan_pokok.loadLibrary();
@@ -186,6 +229,12 @@ class _LayananTabViewState extends State<LayananTabView> {
                           context.push('/antrean-pasien');
                         } else if (featureKey == 'jadwal_operasi') {
                           context.push('/jadwal-operasi');
+                        } else if (featureKey == 'bansos') {
+                          context.push('/bansos');
+                        } else if (featureKey == 'destinasi_wisata') {
+                          context.push('/destinasi-wisata');
+                        } else if (featureKey == 'islamic_center') {
+                          context.push('/islamic-center');
                         } else {
                           context.push('/harga-bahan-pokok');
                         }
