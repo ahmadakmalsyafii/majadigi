@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:majadigi/core/widgets/custom_header.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_hoaks_bloc.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_hoaks_event.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_hoaks_state.dart';
@@ -208,66 +209,9 @@ class _LaporkanHoaksPageState extends State<LaporkanHoaksPage> {
                 Column(
                   children: [
                     // Header Section dengan gradasi
-                    Container(
-                      width: double.infinity,
-                      decoration: const BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/images/main_background.png'),
-                          fit: BoxFit.cover,
-                        ),
-                        gradient: LinearGradient(
-                          colors: [Colors.blue, Colors.blueAccent],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                      ),
-                      padding: const EdgeInsets.only(
-                        top: 48,
-                        left: 24,
-                        right: 24,
-                        bottom: 24,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Back Button
-                          InkWell(
-                            onTap: () => context.pop(),
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.arrow_back_ios,
-                                  color: Colors.white,
-                                  size: 16,
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  'Kembali',
-                                  style: TextStyle(color: Colors.white, fontSize: 16),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          const Text(
-                            'Laporkan Hoaks',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Bantu masyarakat dari informasi menyesatkan',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
+                    const CustomHeader(
+                      title: 'Laporkan Hoaks',
+                      subtitle: 'Bantu masyarakat dari informasi menyesatkan',
                     ),
 
                     // Formulir Pengisian

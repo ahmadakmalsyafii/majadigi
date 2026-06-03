@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/domain/entity/klinik_hoaks_clarification_entity.dart';
+import 'package:majadigi/core/widgets/custom_header.dart';
 
 class KlinikHoaksDetailPage extends StatelessWidget {
   final KlinikHoaksClarificationEntity item;
@@ -40,49 +41,11 @@ class KlinikHoaksDetailPage extends StatelessWidget {
       body: Column(
         children: [
           // Header Section dengan Background Image & Gradasi
-          Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/main_background.png'),
-                fit: BoxFit.cover,
-              ),
-              gradient: LinearGradient(
-                colors: [Colors.blue, Colors.blueAccent],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-            padding: const EdgeInsets.only(
-              top: 48,
-              left: 24,
-              right: 24,
-              bottom: 24,
-            ),
-            child: Column(
+          CustomHeader(
+            title: '"$cleanTitleText"',
+            subtitleWidget: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Back Button
-                InkWell(
-                  onTap: () => context.pop(),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        'Kembali',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Kategori Tag
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
@@ -97,17 +60,6 @@ class KlinikHoaksDetailPage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.0,
                     ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                // Title
-                Text(
-                  '"$cleanTitleText"',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    height: 1.3,
                   ),
                 ),
                 const SizedBox(height: 8),

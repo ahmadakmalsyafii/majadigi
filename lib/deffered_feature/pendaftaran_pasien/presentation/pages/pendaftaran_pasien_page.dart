@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:majadigi/core/widgets/custom_header.dart';
 import 'package:intl/intl.dart';
 import 'package:majadigi/core/di/di.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_bloc.dart';
@@ -142,7 +143,18 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
           backgroundColor: const Color(0xFFF5F5F5),
           body: Column(
             children: [
-              _buildHeader(context, state),
+              CustomHeader(
+                title: 'Pendaftaran Pasien',
+                onBackPressed: () {
+                  if (state.currentStep == 3) {
+                    Navigator.pop(context);
+                  } else if (state.currentStep > 0) {
+                    context.read<PendaftaranBloc>().add(PrevStepEvent());
+                  } else {
+                    Navigator.pop(context);
+                  }
+                },
+              ),
               _buildStepIndicator(context, state),
               Expanded(
                 child: state.isLoading
@@ -160,53 +172,7 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
     );
   }
 
-  Widget _buildHeader(BuildContext context, PendaftaranState state) {
-    return Container(
-      width: double.infinity,
-      decoration: const BoxDecoration(color: Color(0xFF016ACC)),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  if (state.currentStep == 3) {
-                    Navigator.pop(context);
-                  } else if (state.currentStep > 0) {
-                    context.read<PendaftaranBloc>().add(PrevStepEvent());
-                  } else {
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Row(
-                  children: [
-                    Icon(Icons.arrow_back_ios, color: Colors.white, size: 16),
-                    SizedBox(width: 4),
-                    Text('Kembali', style: TextStyle(color: Colors.white, fontSize: 14)),
-                  ],
-                ),
-              ),
-              const Expanded(
-                child: Center(
-                  child: Text(
-                    'Pendaftaran Pasien',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 60),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildStepIndicator(BuildContext context, PendaftaranState state) {
     return Container(

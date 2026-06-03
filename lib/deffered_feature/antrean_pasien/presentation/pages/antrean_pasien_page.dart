@@ -8,6 +8,9 @@ import 'package:majadigi/deffered_feature/antrean_pasien/presentation/bloc/antre
 import 'package:majadigi/deffered_feature/antrean_pasien/presentation/bloc/antrean_event.dart';
 import 'package:majadigi/deffered_feature/antrean_pasien/presentation/bloc/antrean_state.dart';
 import 'package:majadigi/deffered_feature/antrean_pasien/presentation/widgets/status_antrean_bottom_sheet.dart';
+import 'package:majadigi/core/widgets/custom_header.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_bloc.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_event.dart';
 
 class AntreanPasienPage extends StatelessWidget {
   const AntreanPasienPage({super.key});
@@ -42,7 +45,53 @@ class _AntreanPasienView extends StatelessWidget {
         },
         child: Column(
           children: [
-            _buildHeader(context),
+            CustomHeader(
+              title: 'Antrean Pasien',
+              trailing: InkWell(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('Hapus Fitur'),
+                        content: const Text('Apakah Anda yakin ingin menghapus fitur ini dari perangkat?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Batal'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              sl<FeatureManagerBloc>().add(const UninstallFeatureEvent('antrean_pasien'));
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Fitur berhasil dihapus')),
+                              );
+                            },
+                            child: const Text('Ya'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.delete_outline, color: Colors.white, size: 16),
+                      SizedBox(width: 4),
+                      Text('Hapus', style: TextStyle(color: Colors.white, fontSize: 14)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
@@ -77,44 +126,6 @@ class _AntreanPasienView extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Color(0xFF016ACC),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () => context.pop(),
-                child: const Row(
-                  children: [
-                    Icon(Icons.arrow_back_ios, color: Colors.white, size: 16),
-                    SizedBox(width: 4),
-                    Text('Kembali', style: TextStyle(color: Colors.white, fontSize: 14)),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Antrean Pasien',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildPoliDropdown() {
     return BlocBuilder<AntreanBloc, AntreanState>(

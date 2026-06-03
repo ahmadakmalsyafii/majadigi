@@ -13,6 +13,13 @@ android {
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
+    dynamicFeatures += setOf(
+        ":harga_bahan_pokok",
+        ":ketersediaan_kamar",
+        ":antrean_pasien",
+        ":jadwal_operasi"
+    )
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -44,4 +51,9 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation("com.google.android.play:feature-delivery:2.1.0")
+    implementation("com.google.android.play:feature-delivery-ktx:2.1.0")
 }

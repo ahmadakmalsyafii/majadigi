@@ -1,8 +1,27 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
-import 'package:majadigi/deffered_feature/no_darurat/presentation/pages/noDarurat_pages.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_bloc.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_event.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_state.dart';
+import 'package:majadigi/core/feature_manager/domain/entities/feature_status.dart';
+import 'package:majadigi/core/di/di.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/presentation/pages/harga_bahan_pokok_page.dart'
+    deferred as harga_bahan_pokok;
+import 'package:majadigi/deffered_feature/ketersediaan_kamar/presentation/pages/ketersediaan_kamar_page.dart'
+    deferred as ketersediaan_kamar;
+import 'package:majadigi/deffered_feature/antrean_pasien/presentation/pages/antrean_pasien_page.dart'
+    deferred as antrean_pasien;
+import 'package:majadigi/deffered_feature/jadwal_operasi/presentation/pages/jadwal_operasi_page.dart'
+    deferred as jadwal_operasi;
+import 'package:majadigi/deffered_feature/pendaftaran_pasien/presentation/pages/pendaftaran_pasien_page.dart'
+    deferred as pendaftaran_pasien;
+import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/pages/klinik_hoaks_page.dart'
+    deferred as klinik_hoaks;
+import 'package:majadigi/deffered_feature/no_darurat/presentation/pages/noDarurat_pages.dart'
+    deferred as no_darurat;
 
 class LayananTabView extends StatefulWidget {
   final ServiceEntity service;
@@ -13,10 +32,26 @@ class LayananTabView extends StatefulWidget {
 }
 
 class _LayananTabViewState extends State<LayananTabView> {
+  late FeatureManagerBloc _featureManagerBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _featureManagerBloc = sl<FeatureManagerBloc>();
+    _featureManagerBloc.add(const CheckFeatureStatusEvent('harga_bahan_pokok'));
+    _featureManagerBloc.add(
+      const CheckFeatureStatusEvent('ketersediaan_kamar'),
+    );
+    _featureManagerBloc.add(const CheckFeatureStatusEvent('antrean_pasien'));
+    _featureManagerBloc.add(const CheckFeatureStatusEvent('jadwal_operasi'));
+    _featureManagerBloc.add(const CheckFeatureStatusEvent('pendaftaran_pasien'));
+    _featureManagerBloc.add(const CheckFeatureStatusEvent('klinik_hoaks'));
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.service.name == 'Nomor Darurat') {
-      return const EmergencyNumberPage();
+      return const DeferredEmergencyNumberPage();
     }
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
@@ -63,44 +98,190 @@ class _LayananTabViewState extends State<LayananTabView> {
               }
             }
 
-            return GestureDetector(
-              onTap: () {
-                if (featureName.toLowerCase().contains('kamar')) {
-                  context.push('/ketersediaan-kamar', extra: widget.service);
-                } else if (featureName.toLowerCase().contains('antrean') || featureName.toLowerCase().contains('antrian')) {
-                  context.push('/antrean-pasien');
-                } else if (featureName.toLowerCase().contains('operasi')) {
-                  context.push('/jadwal-operasi');
-                } else if (featureName.toLowerCase().contains('daftar') || featureName.toLowerCase().contains('pendaftaran')) {
-                  context.push('/pendaftaran-pasien', extra: widget.service);
-                } else if (featureName.toLowerCase().contains('hoaks') || featureName.toLowerCase().contains('hoax')) {
-                  context.push('/klinik-hoaks');
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      featureName,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
+            final isHargaBahanPokok = featureName.toLowerCase().contains(
+              'harga bahan pokok',
+            );
+            final isKamar = featureName.toLowerCase().contains('kamar');
+            final isAntrean =
+                featureName.toLowerCase().contains('antrean') ||
+                featureName.toLowerCase().contains('antrian');
+            final isOperasi = featureName.toLowerCase().contains('operasi');
+            final isPendaftaran =
+                featureName.toLowerCase().contains('daftar') ||
+                featureName.toLowerCase().contains('pendaftaran');
+            final isHoaks =
+                featureName.toLowerCase().contains('hoaks') ||
+                featureName.toLowerCase().contains('hoax');
+
+            String featureKey = '';
+            if (isHargaBahanPokok)
+              featureKey = 'harga_bahan_pokok';
+            else if (isKamar)
+              featureKey = 'ketersediaan_kamar';
+            else if (isAntrean)
+              featureKey = 'antrean_pasien';
+            else if (isOperasi)
+              featureKey = 'jadwal_operasi';
+            else if (isPendaftaran)
+              featureKey = 'pendaftaran_pasien';
+            else if (isHoaks)
+              featureKey = 'klinik_hoaks';
+
+            final isDeferred = featureKey.isNotEmpty;
+
+            return BlocBuilder<FeatureManagerBloc, FeatureManagerState>(
+              bloc: _featureManagerBloc,
+              builder: (context, state) {
+                final status = isDeferred
+                    ? state.getStatus(featureKey)
+                    : FeatureStatus.installed;
+                final progress = isDeferred
+                    ? state.getProgress(featureKey)
+                    : 0.0;
+
+                final isNotInstalled = status == FeatureStatus.notInstalled;
+                final isInstalling = status == FeatureStatus.installing;
+
+                return GestureDetector(
+                  onTap: () {
+                    if (isDeferred) {
+                      if (isNotInstalled) {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text('Unduh Fitur'),
+                              content: const Text(
+                                'Fitur ini belum diunduh. Apakah Anda ingin mengunduhnya sekarang?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Batal'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+
+                                    Future<void> Function() loadFuture;
+                                    if (featureKey == 'ketersediaan_kamar')
+                                      loadFuture = () =>
+                                          ketersediaan_kamar.loadLibrary();
+                                    else if (featureKey == 'antrean_pasien')
+                                      loadFuture = () =>
+                                          antrean_pasien.loadLibrary();
+                                    else if (featureKey == 'jadwal_operasi')
+                                      loadFuture = () =>
+                                          jadwal_operasi.loadLibrary();
+                                    else if (featureKey == 'pendaftaran_pasien')
+                                      loadFuture = () =>
+                                          pendaftaran_pasien.loadLibrary();
+                                    else if (featureKey == 'klinik_hoaks')
+                                      loadFuture = () =>
+                                          klinik_hoaks.loadLibrary();
+                                    else
+                                      loadFuture = () =>
+                                          harga_bahan_pokok.loadLibrary();
+
+                                    _featureManagerBloc.add(
+                                      InstallFeatureEvent(
+                                        featureName: featureKey,
+                                        loadLibraryFuture: loadFuture,
+                                      ),
+                                    );
+                                  },
+                                  child: const Text('Ya'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        return;
+                      } else if (isInstalling) {
+                        return;
+                      } else {
+                        if (featureKey == 'ketersediaan_kamar') {
+                          context.push(
+                            '/ketersediaan-kamar',
+                            extra: widget.service,
+                          );
+                        } else if (featureKey == 'antrean_pasien') {
+                          context.push('/antrean-pasien');
+                        } else if (featureKey == 'jadwal_operasi') {
+                          context.push('/jadwal-operasi');
+                        } else if (featureKey == 'pendaftaran_pasien') {
+                          context.push(
+                            '/pendaftaran-pasien',
+                            extra: widget.service,
+                          );
+                        } else if (featureKey == 'klinik_hoaks') {
+                          context.push('/klinik-hoaks');
+                        } else {
+                          context.push('/harga-bahan-pokok');
+                        }
+                        return;
+                      }
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: isNotInstalled || isInstalling
+                          ? Colors.grey.shade300
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.grey.shade200),
                     ),
-                    const SizedBox(height: 12),
-                    Icon(icon, color: iconColor, size: 28),
-                  ],
-                ),
-              ),
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.center,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                featureName,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: isNotInstalled || isInstalling
+                                      ? Colors.grey.shade600
+                                      : Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Icon(
+                                icon,
+                                color: isNotInstalled || isInstalling
+                                    ? Colors.grey.shade500
+                                    : iconColor,
+                                size: 28,
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (isNotInstalled)
+                          const Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Icon(
+                              Icons.download_rounded,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        if (isInstalling)
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: LinearProgressIndicator(value: progress),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             );
           },
         ),
@@ -141,5 +322,40 @@ class _LayananTabViewState extends State<LayananTabView> {
         lower.contains('rsu') ||
         lower.contains('rssa') ||
         lower.split(RegExp(r'[\s.,\-/]')).contains('rs');
+  }
+}
+
+class DeferredEmergencyNumberPage extends StatefulWidget {
+  const DeferredEmergencyNumberPage({super.key});
+
+  @override
+  State<DeferredEmergencyNumberPage> createState() => _DeferredEmergencyNumberPageState();
+}
+
+class _DeferredEmergencyNumberPageState extends State<DeferredEmergencyNumberPage> {
+  bool _loaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    no_darurat.loadLibrary().then((_) {
+      if (mounted) {
+        setState(() {
+          _loaded = true;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_loaded) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+    return no_darurat.EmergencyNumberPage();
   }
 }

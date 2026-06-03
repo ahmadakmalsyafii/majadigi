@@ -2,6 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/data/datasources/klinik_hoaks_remote_datasource.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/domain/repositories/klinik_hoaks_repository.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/data/repository/klinik_hoaks_repository_impl.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/domain/usecases/get_klinik_hoaks_clarifications_usecase.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/domain/usecases/get_klinik_hoaks_stats_usecase.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/domain/usecases/report_hoax_usecase.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_hoaks_bloc.dart';
 import 'package:majadigi/features/auth/data/datasources/local/auth_local_datasource.dart';
 import 'package:majadigi/features/auth/data/datasources/remote/auth_remote_datasource.dart';
 import 'package:majadigi/features/auth/data/repository/auth_repository_impl.dart';
@@ -14,6 +21,8 @@ import 'package:majadigi/features/beranda/data/datasources/remote/beranda_remote
 import 'package:majadigi/features/beranda/domain/repositories/jatim_angka_repository.dart';
 import 'package:majadigi/features/beranda/domain/repositories/service_repository.dart';
 import 'package:majadigi/features/beranda/domain/usecases/get_all_service_usecase.dart';
+import 'package:majadigi/features/beranda/domain/usecases/get_service_section_usecase.dart';
+import 'package:majadigi/features/list_layanan/presentation/bloc/list_layanan_bloc.dart';
 import 'package:majadigi/features/profile/data/datasources/profile_remote_datasource.dart';
 import 'package:majadigi/features/profile/data/repository/profile_repository_impl.dart';
 import 'package:majadigi/features/profile/domain/repositories/profile_repository.dart';
@@ -65,24 +74,30 @@ import 'package:majadigi/deffered_feature/pendaftaran_pasien/domain/usecases/get
 import 'package:majadigi/deffered_feature/pendaftaran_pasien/domain/usecases/save_registration_usecase.dart';
 import 'package:majadigi/deffered_feature/pendaftaran_pasien/presentation/bloc/pendaftaran_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:majadigi/deffered_feature/klinik_hoaks/data/datasources/klinik_hoaks_remote_datasource.dart';
-import 'package:majadigi/deffered_feature/klinik_hoaks/data/repository/klinik_hoaks_repository_impl.dart';
-import 'package:majadigi/deffered_feature/klinik_hoaks/domain/repositories/klinik_hoaks_repository.dart';
-import 'package:majadigi/deffered_feature/klinik_hoaks/domain/usecases/get_klinik_hoaks_stats_usecase.dart';
-import 'package:majadigi/deffered_feature/klinik_hoaks/domain/usecases/get_klinik_hoaks_clarifications_usecase.dart';
-import 'package:majadigi/deffered_feature/klinik_hoaks/domain/usecases/report_hoax_usecase.dart';
-import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_hoaks_bloc.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/data/datasources/harga_bahan_pokok_remote_data_source.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/data/repositories/harga_bahan_pokok_repository_impl.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/repositories/harga_bahan_pokok_repository.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/usecases/get_commodity_price_list_usecase.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/usecases/get_commodity_detail_usecase.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/usecases/get_city_price_list_usecase.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/presentation/bloc/harga_bahan_pokok_bloc.dart';
+import 'package:majadigi/core/feature_manager/data/datasources/feature_manager_local_datasource.dart';
+import 'package:majadigi/core/feature_manager/data/repositories/feature_manager_repository_impl.dart';
+import 'package:majadigi/core/feature_manager/domain/repositories/feature_manager_repository.dart';
+import 'package:majadigi/core/feature_manager/domain/usecases/manage_feature_usecase.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_bloc.dart';
 
 /// Global service locator.
 final sl = GetIt.instance;
 
 void init() async {
-
   // External dependencies
   final sharedpreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton<SharedPreferences>(() => sharedpreferences);
   sl.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
-  sl.registerLazySingleton<FirebaseRemoteConfig>(() => FirebaseRemoteConfig.instance);
+  sl.registerLazySingleton<FirebaseRemoteConfig>(
+    () => FirebaseRemoteConfig.instance,
+  );
   sl.registerLazySingleton(() => ApiKeyManager(sl()));
   sl.registerLazySingleton(() => DioClient(sl()));
   sl.registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance);
@@ -91,38 +106,38 @@ void init() async {
   // di.registerFactory<AuthBloc>(() => AuthBloc(di()));
   sl.registerLazySingleton(() => AppRouter(sl()));
   sl.registerLazySingleton(
-        () => AuthBloc(
+    () => AuthBloc(
       signIn: sl(),
       signOut: sl(),
       signUp: sl(),
-          getCachedUser: sl(),
+      getCachedUser: sl(),
     ),
   );
 
+  sl.registerFactory(() => ProfileBloc(updateProfile: sl()));
+
+  sl.registerFactory(() => LayananBloc(
+    getAllServiceUseCase: sl(),
+    getKatalogLayananUseCase: sl(),
+  ));
   sl.registerFactory(
-        () => ProfileBloc(
-      updateProfile: sl(),
+    () => BerandaBloc(
+      getBannerUseCase: sl(),
+      getServiceUseCase: sl(),
+      getJatimAngkaUseCase: sl(),
     ),
   );
-  
-  sl.registerFactory(() => LayananBloc(sl()));
   sl.registerFactory(
-          () => BerandaBloc(
-              getBannerUseCase: sl(),
-              getServiceUseCase: sl(),
-              getJatimAngkaUseCase: sl(),
-          )
+    () => EmergencyBloc(getEmergencyNumbers: sl(), getKabKota: sl()),
   );
-  sl.registerFactory(() => EmergencyBloc(
-    getEmergencyNumbers: sl(),
-    getKabKota: sl(),
-  ));
   sl.registerFactory(() => KetersediaanKamarBloc(getRoomAvailability: sl()));
-  sl.registerFactory(() => AntreanBloc(
-    getPoliUseCase: sl(),
-    getDokterUseCase: sl(),
-    getAntreanUseCase: sl(),
-  ));
+  sl.registerFactory(
+    () => AntreanBloc(
+      getPoliUseCase: sl(),
+      getDokterUseCase: sl(),
+      getAntreanUseCase: sl(),
+    ),
+  );
   sl.registerFactory(() => JadwalOperasiBloc(getJadwalOperasiUseCase: sl()));
   sl.registerFactory(
     () => PendaftaranBloc(
@@ -139,9 +154,15 @@ void init() async {
       reportHoax: sl(),
     ),
   );
+  sl.registerFactory(
+    () => HargaBahanPokokBloc(
+      getCommodityPriceList: sl(),
+      getCommodityDetail: sl(),
+      getCityPriceList: sl(),
+    ),
+  );
 
-
-
+  sl.registerFactory(() => ListLayananBloc(getAllServiceUsecase: sl()));
 
   // Use Cases
   // di.registerLazySingleton<AuthUseCase>(() => AuthUseCaseImpl(di()));
@@ -168,35 +189,39 @@ void init() async {
   sl.registerLazySingleton(() => GetKlinikHoaksStatsUseCase(repository: sl()));
   sl.registerLazySingleton(() => GetKlinikHoaksClarificationsUseCase(repository: sl()));
   sl.registerLazySingleton(() => ReportHoaxUseCase(repository: sl()));
+  sl.registerLazySingleton(() => GetServiceSectionUsecase(sl()));
+  sl.registerLazySingleton(() => GetCommodityPriceListUseCase(sl()));
+  sl.registerLazySingleton(() => GetCommodityDetailUseCase(sl()));
+  sl.registerLazySingleton(() => GetCityPriceListUseCase(sl()));
 
   // Data Sources
   // di.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(di()));
   sl.registerLazySingleton<AuthRemoteDataSource>(
-        () => AuthRemoteDataSourceImpl(firebaseAuth: sl()),
+    () => AuthRemoteDataSourceImpl(firebaseAuth: sl()),
   );
   sl.registerLazySingleton<AuthLocalDataSource>(
-          ()=> AuthLocalDataSourceImpl(sharedPreferences: sl()),
+    () => AuthLocalDataSourceImpl(sharedPreferences: sl()),
   );
   sl.registerLazySingleton<ProfileRemoteDataSource>(
-        () => ProfileRemoteDataSourceImpl(firebaseAuth: sl()),
+    () => ProfileRemoteDataSourceImpl(firebaseAuth: sl()),
   );
   sl.registerLazySingleton<LayananRemoteDataSource>(
-        () => LayananRemoteDataSourceImpl(sl()),
+    () => LayananRemoteDataSourceImpl(sl()),
   );
   sl.registerLazySingleton<BerandaRemoteDatasource>(
-        () => BerandaRemoteDatasourceImpl(dioClient: sl()),
+    () => BerandaRemoteDatasourceImpl(dioClient: sl()),
   );
   sl.registerLazySingleton<EmergencyRemoteDataSource>(
-        () => EmergencyRemoteDataSourceImpl(sl()),
+    () => EmergencyRemoteDataSourceImpl(sl()),
   );
   sl.registerLazySingleton<KetersediaanKamarRemoteDataSource>(
-        () => KetersediaanKamarRemoteDataSourceImpl(dioClient: sl()),
+    () => KetersediaanKamarRemoteDataSourceImpl(dioClient: sl()),
   );
   sl.registerLazySingleton<AntreanRemoteDataSource>(
-        () => AntreanRemoteDataSourceImpl(dioClient: sl()),
+    () => AntreanRemoteDataSourceImpl(dioClient: sl()),
   );
   sl.registerLazySingleton<JadwalOperasiRemoteDataSource>(
-        () => JadwalOperasiRemoteDataSourceImpl(dioClient: sl()),
+    () => JadwalOperasiRemoteDataSourceImpl(dioClient: sl()),
   );
   sl.registerLazySingleton<PendaftaranRemoteDataSource>(
         () => PendaftaranRemoteDataSourceImpl(firestore: sl()),
@@ -204,51 +229,45 @@ void init() async {
   sl.registerLazySingleton<KlinikHoaksRemoteDataSource>(
     () => KlinikHoaksRemoteDataSourceImpl(dioClient: sl()),
   );
-
+  sl.registerLazySingleton<HargaBahanPokokRemoteDataSource>(
+    () => HargaBahanPokokRemoteDataSourceImpl(dioClient: sl()),
+  );
 
   // Repositories
   // di.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(di()));
   sl.registerLazySingleton<AuthRepository>(
-        () => AuthRepositoryImpl(
+    () => AuthRepositoryImpl(
       remoteDataSource: sl(),
       localDataSource: sl(),
       firebaseAuth: sl(),
     ),
   );
   sl.registerLazySingleton<ProfileRepository>(
-        () => ProfileRepositoryImpl(
-      remoteDataSource: sl(),
-    ),
+    () => ProfileRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<LayananRepository>(
-        () => LayananRepositoryImpl(remoteDataSource: sl()),
+    () => LayananRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<BannerRepository>(
-        () => BerandaRepositoryImpl(
-      remoteDataSource: sl(),
-    ),
+    () => BerandaRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<ServiceRepository>(
-        () => BerandaRepositoryImpl(
-      remoteDataSource: sl(),
-    ),
+    () => BerandaRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<JatimAngkaRepository>(
-        () => BerandaRepositoryImpl(
-      remoteDataSource: sl(),
-    ),
+    () => BerandaRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<EmergencyRepository>(
-        () => EmergencyRepositoryImpl(remoteDataSource: sl()),
+    () => EmergencyRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<KetersediaanKamarRepository>(
-        () => KetersediaanKamarRepositoryImpl(remoteDataSource: sl()),
+    () => KetersediaanKamarRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<AntreanRepository>(
-        () => AntreanRepositoryImpl(remoteDataSource: sl()),
+    () => AntreanRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<JadwalOperasiRepository>(
-        () => JadwalOperasiRepositoryImpl(remoteDataSource: sl()),
+    () => JadwalOperasiRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<PendaftaranRepository>(
         () => PendaftaranRepositoryImpl(remoteDataSource: sl()),
@@ -256,5 +275,16 @@ void init() async {
   sl.registerLazySingleton<KlinikHoaksRepository>(
     () => KlinikHoaksRepositoryImpl(remoteDataSource: sl()),
   );
+  sl.registerLazySingleton<HargaBahanPokokRepository>(
+    () => HargaBahanPokokRepositoryImpl(remoteDataSource: sl()),
+  );
 
+  sl.registerLazySingleton<FeatureManagerLocalDataSource>(
+    () => FeatureManagerLocalDataSourceImpl(sharedPreferences: sl()),
+  );
+  sl.registerLazySingleton<FeatureManagerRepository>(
+    () => FeatureManagerRepositoryImpl(localDataSource: sl()),
+  );
+  sl.registerLazySingleton(() => ManageFeatureUsecase(sl()));
+  sl.registerFactory(() => FeatureManagerBloc(manageFeatureUsecase: sl()));
 }

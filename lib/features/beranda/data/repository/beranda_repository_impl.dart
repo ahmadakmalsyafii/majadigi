@@ -40,6 +40,18 @@ class BerandaRepositoryImpl implements BannerRepository, ServiceRepository, Jati
   }
 
   @override
+  Future<Either<Failure, List<ServiceEntity>>> getServiceSection() async {
+    try {
+      final services = await remoteDataSource.getServiceSection();
+      return Right(services);
+    } on ServerFailure catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<JatimAngkaEntity>>> getJatimAngka() async {
     try {
       final jatimAngka = await remoteDataSource.getJatimAngka();

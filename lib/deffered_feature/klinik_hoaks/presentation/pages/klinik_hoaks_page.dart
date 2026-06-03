@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:majadigi/core/di/di.dart';
+import 'package:majadigi/core/widgets/custom_header.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/domain/entity/klinik_hoaks_clarification_entity.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_hoaks_bloc.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_hoaks_event.dart';
@@ -119,97 +120,37 @@ class _KlinikHoaksViewState extends State<_KlinikHoaksView> {
             return Column(
               children: [
                 // Header dengan gradasi & Statistik
-                Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/main_background.png'),
-                      fit: BoxFit.cover,
-                    ),
-                    gradient: LinearGradient(
-                      colors: [Colors.blue, Colors.blueAccent],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                  ),
-                  padding: const EdgeInsets.only(
-                    top: 48,
-                    left: 20,
-                    right: 20,
-                    bottom: 24,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Back Button
-                      InkWell(
-                        onTap: () => context.pop(),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.arrow_back_ios,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                            SizedBox(width: 4),
-                            Text(
-                              'Kembali',
-                              style: TextStyle(color: Colors.white, fontSize: 16),
-                            ),
-                          ],
+                CustomHeader(
+                  title: 'Klinik Hoaks',
+                  subtitle: 'Verifikasi & klarifikasi informasi resmi',
+                  subtitleWidget: LayoutBuilder(builder: (context, constraints) {
+                    final cardWidth = (constraints.maxWidth - 24) / 4;
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildStatCard(
+                          '${state.stats.jmlHoaksYtd}',
+                          'Berita Hoaks',
+                          cardWidth,
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Klinik Hoaks',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                        _buildStatCard(
+                          '${state.stats.jmlDisinformasiYtd}',
+                          'Disinformasi',
+                          cardWidth,
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Verifikasi & klarifikasi informasi resmi',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: 14,
+                        _buildStatCard(
+                          '${state.stats.jmlFaktaYtd}',
+                          'Fakta',
+                          cardWidth,
                         ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Grid Statistik 4 Box (Glassmorphic look)
-                      LayoutBuilder(builder: (context, constraints) {
-                        final cardWidth = (constraints.maxWidth - 24) / 4;
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _buildStatCard(
-                              '${state.stats.jmlHoaksYtd}',
-                              'Berita Hoaks',
-                              cardWidth,
-                            ),
-                            _buildStatCard(
-                              '${state.stats.jmlDisinformasiYtd}',
-                              'Disinformasi',
-                              cardWidth,
-                            ),
-                            _buildStatCard(
-                              '${state.stats.jmlFaktaYtd}',
-                              'Fakta',
-                              cardWidth,
-                            ),
-                            _buildStatCard(
-                              '${state.stats.jmlHateSpeechYtd}',
-                              'Hate Speech',
-                              cardWidth,
-                            ),
-                          ],
-                        );
-                      }),
-                    ],
-                  ),
+                        _buildStatCard(
+                          '${state.stats.jmlHateSpeechYtd}',
+                          'Hate Speech',
+                          cardWidth,
+                        ),
+                      ],
+                    );
+                  }),
                 ),
 
                 // Area Pencarian & Kategori

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="harga_bahan_pokokName">harga_bahan_pokok</string>
+    <string name="ketersediaan_kamarName">ketersediaan_kamar</string>
+    <string name="antrean_pasienName">antrean_pasien</string>
+    <string name="jadwal_operasiName">jadwal_operasi</string>
+</resources>
+

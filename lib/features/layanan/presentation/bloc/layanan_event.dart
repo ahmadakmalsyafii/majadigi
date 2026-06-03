@@ -7,4 +7,13 @@ abstract class LayananEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class FetchKatalogLayanan extends LayananEvent {}
+class FetchLayananData extends LayananEvent {}
+
+class SearchLayananEvent extends LayananEvent {
+  final String query;
+
+  const SearchLayananEvent(this.query);
+
+  @override
+  List<Object?> get props => [query];
+}

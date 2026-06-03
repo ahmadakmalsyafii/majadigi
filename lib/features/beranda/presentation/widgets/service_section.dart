@@ -40,7 +40,7 @@ class _ServiceSectionState extends State<ServiceSection> {
             ),
             InkWell(
               onTap: () {
-                // Aksi lihat semua
+                context.push('/semua-layanan');
               },
               child: Row(
                 children: [

@@ -14,8 +14,6 @@ import 'package:majadigi/features/beranda/presentation/widgets/jatim_angka_secti
 class BerandaPage extends StatelessWidget {
   const BerandaPage({super.key});
 
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
