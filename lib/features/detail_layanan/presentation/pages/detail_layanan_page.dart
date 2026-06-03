@@ -3,6 +3,7 @@ import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
 import 'package:go_router/go_router.dart';
 import 'package:majadigi/features/detail_layanan/presentation/widgets/layanan_tab_view.dart';
 import 'package:majadigi/features/detail_layanan/presentation/widgets/tentang_tab_view.dart';
+import 'package:majadigi/core/widgets/custom_header.dart';
 
 class DetailLayananPage extends StatefulWidget {
   final ServiceEntity service;
@@ -35,52 +36,11 @@ class _DetailLayananPageState extends State<DetailLayananPage>
       backgroundColor: Colors.grey[50],
       body: Column(
         children: [
-          Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              color: Color(0xFF0048B5),
-            ),
-            padding: EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                InkWell(
-                  onTap: () => context.pop(),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 4),
-                      const Text(
-                        'Kembali',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  widget.service.name,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  widget.service.address.isNotEmpty
-                      ? widget.service.address
-                      : widget.service.description,
-                  style: const TextStyle(color: Colors.white, fontSize: 14),
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
+          CustomHeader(
+            title: widget.service.name,
+            subtitle: widget.service.address.isNotEmpty
+                ? widget.service.address
+                : widget.service.description,
           ),
 
           // Custom TabBar

@@ -5,7 +5,11 @@ import 'package:majadigi/deffered_feature/ketersediaan_kamar/domain/entity/room_
 import 'package:majadigi/deffered_feature/ketersediaan_kamar/presentation/bloc/ketersediaan_kamar_bloc.dart';
 import 'package:majadigi/deffered_feature/ketersediaan_kamar/presentation/bloc/ketersediaan_kamar_event.dart';
 import 'package:majadigi/deffered_feature/ketersediaan_kamar/presentation/bloc/ketersediaan_kamar_state.dart';
+import 'package:majadigi/deffered_feature/ketersediaan_kamar/presentation/bloc/ketersediaan_kamar_state.dart';
 import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
+import 'package:majadigi/core/widgets/custom_header.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_bloc.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_event.dart';
 
 class KetersediaanKamarPage extends StatelessWidget {
   final ServiceEntity service;
@@ -32,7 +36,78 @@ class _KetersediaanKamarView extends StatelessWidget {
       backgroundColor: const Color(0xFFF5F5F5),
       body: Column(
         children: [
-          _buildHeader(context),
+          CustomHeader(
+            title: service.name,
+            subtitleWidget: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  service.address,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 12,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                BlocBuilder<KetersediaanKamarBloc, KetersediaanKamarState>(
+                  builder: (context, state) {
+                    if (state is KetersediaanKamarLoaded) {
+                      return Text(
+                        'Terakhir Diperbarui: ${state.data.summary.lastUpdate}',
+                        style: const TextStyle(color: Colors.white54, fontSize: 11),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ],
+            ),
+            trailing: InkWell(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('Hapus Fitur'),
+                      content: const Text('Apakah Anda yakin ingin menghapus fitur ini dari perangkat?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Batal'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            sl<FeatureManagerBloc>().add(const UninstallFeatureEvent('ketersediaan_kamar'));
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Fitur berhasil dihapus')),
+                            );
+                          },
+                          child: const Text('Ya'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.delete_outline, color: Colors.white, size: 16),
+                    SizedBox(width: 4),
+                    Text('Hapus', style: TextStyle(color: Colors.white, fontSize: 14)),
+                  ],
+                ),
+              ),
+            ),
+          ),
           Expanded(
             child: BlocBuilder<KetersediaanKamarBloc, KetersediaanKamarState>(
               builder: (context, state) {
@@ -81,76 +156,6 @@ class _KetersediaanKamarView extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  // ── Header biru ────────────────────────────────────────────────────────────
-
-  Widget _buildHeader(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: const BoxDecoration(color: Color(0xFF016ACC)),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Top bar: kembali
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.arrow_back_ios, color: Colors.white, size: 16),
-                        SizedBox(width: 4),
-                        Text('Kembali', style: TextStyle(color: Colors.white, fontSize: 14)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // Hospital name
-              Text(
-                service.name,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 6),
-
-              // Address
-              Text(
-                service.address,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 12,
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 10),
-              BlocBuilder<KetersediaanKamarBloc, KetersediaanKamarState>(
-                builder: (context, state) {
-                  if (state is KetersediaanKamarLoaded) {
-                    return Text(
-                      'Terakhir Diperbarui: ${state.data.summary.lastUpdate}',
-                      style: const TextStyle(color: Colors.white54, fontSize: 11),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

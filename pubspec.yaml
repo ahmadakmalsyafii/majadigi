@@ -77,6 +77,20 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  
+  deferred-components:
+    - name: harga_bahan_pokok
+      libraries:
+        - lib/deffered_feature/harga_bahan_pokok/presentation/pages/harga_bahan_pokok_page.dart
+    - name: ketersediaan_kamar
+      libraries:
+        - lib/deffered_feature/ketersediaan_kamar/presentation/pages/ketersediaan_kamar_page.dart
+    - name: antrean_pasien
+      libraries:
+        - lib/deffered_feature/antrean_pasien/presentation/pages/antrean_pasien_page.dart
+    - name: jadwal_operasi
+      libraries:
+        - lib/deffered_feature/jadwal_operasi/presentation/pages/jadwal_operasi_page.dart
 
   # To add assets to your application, add an assets section, like this:
   assets:

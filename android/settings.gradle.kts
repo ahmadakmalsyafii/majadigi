@@ -25,5 +25,8 @@ plugins {
     // END: FlutterFire Configuration
     id("org.jetbrains.kotlin.android") version "2.2.20" apply false
 }
-
-include(":app")
+include(":app")
+include(":harga_bahan_pokok")
+include(":ketersediaan_kamar")
+include(":antrean_pasien")
+include(":jadwal_operasi")

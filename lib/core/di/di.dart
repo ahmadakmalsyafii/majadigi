@@ -59,6 +59,18 @@ import 'package:majadigi/deffered_feature/jadwal_operasi/domain/repositories/jad
 import 'package:majadigi/deffered_feature/jadwal_operasi/domain/usecases/get_jadwal_operasi_usecase.dart';
 import 'package:majadigi/deffered_feature/jadwal_operasi/presentation/bloc/jadwal_operasi_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/data/datasources/harga_bahan_pokok_remote_data_source.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/data/repositories/harga_bahan_pokok_repository_impl.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/repositories/harga_bahan_pokok_repository.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/usecases/get_commodity_price_list_usecase.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/usecases/get_commodity_detail_usecase.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/usecases/get_city_price_list_usecase.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/presentation/bloc/harga_bahan_pokok_bloc.dart';
+import 'package:majadigi/core/feature_manager/data/datasources/feature_manager_local_datasource.dart';
+import 'package:majadigi/core/feature_manager/data/repositories/feature_manager_repository_impl.dart';
+import 'package:majadigi/core/feature_manager/domain/repositories/feature_manager_repository.dart';
+import 'package:majadigi/core/feature_manager/domain/usecases/manage_feature_usecase.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_bloc.dart';
 
 /// Global service locator.
 final sl = GetIt.instance;
@@ -112,6 +124,13 @@ void init() async {
     ),
   );
   sl.registerFactory(() => JadwalOperasiBloc(getJadwalOperasiUseCase: sl()));
+  sl.registerFactory(
+    () => HargaBahanPokokBloc(
+      getCommodityPriceList: sl(),
+      getCommodityDetail: sl(),
+      getCityPriceList: sl(),
+    ),
+  );
 
   sl.registerFactory(() => ListLayananBloc(getAllServiceUsecase: sl()));
 
@@ -134,6 +153,9 @@ void init() async {
   sl.registerLazySingleton(() => GetAntreanUseCase(sl()));
   sl.registerLazySingleton(() => GetJadwalOperasiUseCase(sl()));
   sl.registerLazySingleton(() => GetServiceSectionUsecase(sl()));
+  sl.registerLazySingleton(() => GetCommodityPriceListUseCase(sl()));
+  sl.registerLazySingleton(() => GetCommodityDetailUseCase(sl()));
+  sl.registerLazySingleton(() => GetCityPriceListUseCase(sl()));
 
   // Data Sources
   // di.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(di()));
@@ -163,6 +185,9 @@ void init() async {
   );
   sl.registerLazySingleton<JadwalOperasiRemoteDataSource>(
     () => JadwalOperasiRemoteDataSourceImpl(dioClient: sl()),
+  );
+  sl.registerLazySingleton<HargaBahanPokokRemoteDataSource>(
+    () => HargaBahanPokokRemoteDataSourceImpl(dioClient: sl()),
   );
 
   // Repositories
@@ -201,4 +226,16 @@ void init() async {
   sl.registerLazySingleton<JadwalOperasiRepository>(
     () => JadwalOperasiRepositoryImpl(remoteDataSource: sl()),
   );
+  sl.registerLazySingleton<HargaBahanPokokRepository>(
+    () => HargaBahanPokokRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<FeatureManagerLocalDataSource>(
+    () => FeatureManagerLocalDataSourceImpl(sharedPreferences: sl()),
+  );
+  sl.registerLazySingleton<FeatureManagerRepository>(
+    () => FeatureManagerRepositoryImpl(localDataSource: sl()),
+  );
+  sl.registerLazySingleton(() => ManageFeatureUsecase(sl()));
+  sl.registerFactory(() => FeatureManagerBloc(manageFeatureUsecase: sl()));
 }

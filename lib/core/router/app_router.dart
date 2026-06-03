@@ -14,9 +14,11 @@ import 'package:majadigi/features/tersimpan/presentation/pages/tersimpan_page.da
 import 'package:majadigi/core/router/go_router_refresh_stream.dart';
 import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
 import 'package:majadigi/features/detail_layanan/presentation/pages/detail_layanan_page.dart';
-import 'package:majadigi/deffered_feature/ketersediaan_kamar/presentation/pages/ketersediaan_kamar_page.dart';
-import 'package:majadigi/deffered_feature/antrean_pasien/presentation/pages/antrean_pasien_page.dart';
-import 'package:majadigi/deffered_feature/jadwal_operasi/presentation/pages/jadwal_operasi_page.dart';
+import 'package:majadigi/deffered_feature/ketersediaan_kamar/presentation/pages/ketersediaan_kamar_page.dart' deferred as ketersediaan_kamar;
+import 'package:majadigi/deffered_feature/antrean_pasien/presentation/pages/antrean_pasien_page.dart' deferred as antrean_pasien;
+import 'package:majadigi/deffered_feature/jadwal_operasi/presentation/pages/jadwal_operasi_page.dart' deferred as jadwal_operasi;
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/presentation/pages/harga_bahan_pokok_page.dart' deferred as harga_bahan_pokok;
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/presentation/pages/detail_harga_bahan_pokok_page.dart' deferred as detail_harga_bahan_pokok;
 
 class AppRouter {
   final AuthBloc authBloc;
@@ -83,21 +85,76 @@ class AppRouter {
         name: 'ketersediaan_kamar',
         builder: (BuildContext context, GoRouterState state) {
           final service = state.extra as ServiceEntity;
-          return KetersediaanKamarPage(service: service);
+          return FutureBuilder(
+            future: ketersediaan_kamar.loadLibrary(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return ketersediaan_kamar.KetersediaanKamarPage(service: service);
+              }
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            },
+          );
         },
       ),
       GoRoute(
         path: '/antrean-pasien',
         name: 'antrean_pasien',
         builder: (BuildContext context, GoRouterState state) {
-          return const AntreanPasienPage();
+          return FutureBuilder(
+            future: antrean_pasien.loadLibrary(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return antrean_pasien.AntreanPasienPage();
+              }
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            },
+          );
         },
       ),
       GoRoute(
         path: '/jadwal-operasi',
         name: 'jadwal_operasi',
         builder: (BuildContext context, GoRouterState state) {
-          return const JadwalOperasiPage();
+          return FutureBuilder(
+            future: jadwal_operasi.loadLibrary(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return jadwal_operasi.JadwalOperasiPage();
+              }
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            },
+          );
+        },
+      ),
+      GoRoute(
+        path: '/harga-bahan-pokok',
+        name: 'harga_bahan_pokok',
+        builder: (BuildContext context, GoRouterState state) {
+          return FutureBuilder(
+            future: harga_bahan_pokok.loadLibrary(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return harga_bahan_pokok.HargaBahanPokokPage();
+              }
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            },
+          );
+        },
+      ),
+      GoRoute(
+        path: '/detail-harga-bahan-pokok',
+        name: 'detail_harga_bahan_pokok',
+        builder: (BuildContext context, GoRouterState state) {
+          final bpId = state.extra as int;
+          return FutureBuilder(
+            future: detail_harga_bahan_pokok.loadLibrary(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return detail_harga_bahan_pokok.DetailHargaBahanPokokPage(bpId: bpId);
+              }
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            },
+          );
         },
       ),
       GoRoute(path: "/semua-layanan", name: "semua_layanan", builder: (BuildContext context, GoRouterState state) => const ListLayananPage()),

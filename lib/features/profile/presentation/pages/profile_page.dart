@@ -43,7 +43,6 @@ class ProfilePage extends StatelessWidget {
                       children: [
                         _buildHeader(),
                         const SizedBox(height: 20),
-                        _buildRiwayatAktivitas(),
                         const SizedBox(height: 20),
                         _buildInfoSection(context, state.user),
                         const SizedBox(height: 20),

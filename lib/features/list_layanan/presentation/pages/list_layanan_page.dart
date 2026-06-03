@@ -7,7 +7,6 @@ import 'package:majadigi/core/widgets/custom_search_bar.dart';
 import 'package:majadigi/features/list_layanan/presentation/bloc/list_layanan_bloc.dart';
 import 'package:majadigi/features/list_layanan/presentation/bloc/list_layanan_state.dart';
 
-
 import '../../../../../core/di/di.dart';
 import '../bloc/list_layanan_event.dart';
 
@@ -26,7 +25,7 @@ class ListLayananPage extends StatelessWidget {
               builder: (context) {
                 return Column(
                   children: [
-                    CustomHeader(
+                    const CustomHeader(
                       title: 'Cari Layanan',
                       subtitle: 'Temukan layanan sesuai kebutuhanmu.',
                     ),
@@ -77,7 +76,7 @@ class ListLayananPage extends StatelessWidget {
                           child: Row(
                             children: [
                               Container(
-                                margin: EdgeInsetsGeometry.symmetric(horizontal: 12),
+                                margin: const EdgeInsets.symmetric(horizontal: 12),
                                 width: 60,
                                 height: 60,
                                 child: Padding(

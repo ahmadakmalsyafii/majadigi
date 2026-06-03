@@ -6,6 +6,9 @@ import 'package:majadigi/deffered_feature/jadwal_operasi/domain/entity/jadwal_op
 import 'package:majadigi/deffered_feature/jadwal_operasi/presentation/bloc/jadwal_operasi_bloc.dart';
 import 'package:majadigi/deffered_feature/jadwal_operasi/presentation/bloc/jadwal_operasi_event.dart';
 import 'package:majadigi/deffered_feature/jadwal_operasi/presentation/bloc/jadwal_operasi_state.dart';
+import 'package:majadigi/core/widgets/custom_header.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_bloc.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_event.dart';
 
 class JadwalOperasiPage extends StatelessWidget {
   const JadwalOperasiPage({super.key});
@@ -62,7 +65,53 @@ class _JadwalOperasiViewState extends State<_JadwalOperasiView> {
       backgroundColor: const Color(0xFFF5F5F5),
       body: Column(
         children: [
-          _buildHeader(context),
+          CustomHeader(
+            title: 'Jadwal Operasi',
+            trailing: InkWell(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('Hapus Fitur'),
+                      content: const Text('Apakah Anda yakin ingin menghapus fitur ini dari perangkat?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Batal'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            sl<FeatureManagerBloc>().add(const UninstallFeatureEvent('jadwal_operasi'));
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Fitur berhasil dihapus')),
+                            );
+                          },
+                          child: const Text('Ya'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.delete_outline, color: Colors.white, size: 16),
+                    SizedBox(width: 4),
+                    Text('Hapus', style: TextStyle(color: Colors.white, fontSize: 14)),
+                  ],
+                ),
+              ),
+            ),
+          ),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
@@ -85,44 +134,6 @@ class _JadwalOperasiViewState extends State<_JadwalOperasiView> {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Color(0xFF016ACC),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: const Row(
-                  children: [
-                    Icon(Icons.arrow_back_ios, color: Colors.white, size: 16),
-                    SizedBox(width: 4),
-                    Text('Kembali', style: TextStyle(color: Colors.white, fontSize: 14)),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Jadwal Operasi',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildSummaryCards() {
     return BlocBuilder<JadwalOperasiBloc, JadwalOperasiState>(

@@ -9,20 +9,57 @@ import 'package:majadigi/features/layanan/presentation/bloc/layanan_event.dart';
 import 'package:majadigi/features/layanan/presentation/bloc/layanan_state.dart';
 import 'package:majadigi/features/list_layanan/presentation/bloc/list_layanan_bloc.dart';
 
-class LayananPage extends StatelessWidget {
+class LayananPage extends StatefulWidget {
   const LayananPage({super.key});
+
+  @override
+  State<LayananPage> createState() => _LayananPageState();
+}
+
+class _LayananPageState extends State<LayananPage> {
+  int visibleCount = 20;
+  bool isLoadingMore = false;
+
+  void _loadMore() async {
+    if (isLoadingMore) return;
+    setState(() { isLoadingMore = true; });
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (mounted) {
+      setState(() {
+        visibleCount += 20;
+        isLoadingMore = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => sl<LayananBloc>()..add(FetchLayananData()),
-      child: const _LayananView(),
+      child: _LayananView(
+        visibleCount: visibleCount,
+        isLoadingMore: isLoadingMore,
+        onLoadMore: _loadMore,
+        onSearch: () {
+          setState(() { visibleCount = 20; });
+        },
+      ),
     );
   }
 }
 
 class _LayananView extends StatelessWidget {
-  const _LayananView();
+  final int visibleCount;
+  final bool isLoadingMore;
+  final VoidCallback onLoadMore;
+  final VoidCallback onSearch;
+
+  const _LayananView({
+    required this.visibleCount,
+    required this.isLoadingMore,
+    required this.onLoadMore,
+    required this.onSearch,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +84,7 @@ class _LayananView extends StatelessWidget {
                     child: CustomSearchBar(
                       hintText: 'Cari layanan...',
                       onChanged: (value) {
+                        onSearch();
                         context.read<LayananBloc>().add(SearchLayananEvent(value));
                       },
                     ),
@@ -56,52 +94,79 @@ class _LayananView extends StatelessWidget {
             }
           ),
           Expanded(
-            child: BlocBuilder<LayananBloc, LayananState>(
-              builder: (context, state) {
-                if (state is LayananLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is LayananLoaded) {
-                  final services = state.filteredServices;
-                  final katalog = state.filteredKatalogLayanan;
-                  final totalCount = services.length + katalog.length;
-
-                  if (totalCount == 0) {
-                    return const Center(child: Text("Tidak ada layanan ditemukan"));
-                  }
-
-                  return ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    itemCount: totalCount,
-                    separatorBuilder: (context, index) => const SizedBox(height: 8),
-                    itemBuilder: (context, index) {
-                      if (index < services.length) {
-                        final item = services[index];
-                        return _buildListItem(
-                          context,
-                          name: item.name,
-                          iconUrl: item.icon,
-                          onTap: () {
-                            context.pushNamed('detail_layanan', extra: item);
-                          },
-                        );
-                      } else {
-                        final item = katalog[index - services.length];
-                        return _buildListItem(
-                          context,
-                          name: item.nama,
-                          iconUrl: item.icon,
-                          onTap: () {
-                            // TODO: Add routing for katalog if needed
-                          },
-                        );
-                      }
-                    },
-                  );
-                } else if (state is LayananError) {
-                  return Center(child: Text(state.message));
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (ScrollNotification scrollInfo) {
+                if (!isLoadingMore && scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50) {
+                  onLoadMore();
                 }
-                return const SizedBox.shrink();
+                return false;
               },
+              child: BlocBuilder<LayananBloc, LayananState>(
+                builder: (context, state) {
+                  if (state is LayananLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is LayananLoaded) {
+                    final services = state.filteredServices;
+                    final katalog = state.filteredKatalogLayanan;
+                    final totalCount = services.length + katalog.length;
+
+                    if (totalCount == 0) {
+                      return const Center(child: Text("Tidak ada layanan ditemukan"));
+                    }
+
+                    final int currentCount = visibleCount < totalCount ? visibleCount : totalCount;
+                    final bool hasMore = currentCount < totalCount;
+
+                    return ListView.separated(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      itemCount: currentCount + (hasMore ? 1 : 0),
+                      separatorBuilder: (context, index) => const SizedBox(height: 8),
+                      itemBuilder: (context, index) {
+                        if (index == currentCount) {
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 24.0),
+                            child: Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+                                  SizedBox(width: 8),
+                                  Text('Memuat...', style: TextStyle(color: Colors.grey)),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+
+                        if (index < services.length) {
+                          final item = services[index];
+                          return _buildListItem(
+                            context,
+                            name: item.name,
+                            iconUrl: item.icon,
+                            onTap: () {
+                              context.pushNamed('detail_layanan', extra: item);
+                            },
+                          );
+                        } else {
+                          final item = katalog[index - services.length];
+                          return _buildListItem(
+                            context,
+                            name: item.nama,
+                            iconUrl: item.icon,
+                            onTap: () {
+                              // TODO: Add routing for katalog if needed
+                            },
+                          );
+                        }
+                      },
+                    );
+                  } else if (state is LayananError) {
+                    return Center(child: Text(state.message));
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
             ),
           ),
         ],
