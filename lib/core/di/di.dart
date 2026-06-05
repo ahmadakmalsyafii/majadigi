@@ -325,5 +325,5 @@ void init() async {
     () => FeatureManagerRepositoryImpl(localDataSource: sl()),
   );
   sl.registerLazySingleton(() => ManageFeatureUsecase(sl()));
-  sl.registerFactory(() => FeatureManagerBloc(manageFeatureUsecase: sl()));
+  sl.registerLazySingleton(() => FeatureManagerBloc(manageFeatureUsecase: sl()));
 }

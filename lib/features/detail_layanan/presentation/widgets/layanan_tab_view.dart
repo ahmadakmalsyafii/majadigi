@@ -27,7 +27,8 @@ import 'package:majadigi/deffered_feature/pendaftaran_pasien/presentation/pages/
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/pages/klinik_hoaks_page.dart'
     deferred as klinik_hoaks;
 import 'package:majadigi/deffered_feature/no_darurat/presentation/pages/noDarurat_pages.dart'
-    deferred as no_darurat;
+deferred as no_darurat;
+
 
 class LayananTabView extends StatefulWidget {
   final ServiceEntity service;
@@ -55,13 +56,11 @@ class _LayananTabViewState extends State<LayananTabView> {
     _featureManagerBloc.add(const CheckFeatureStatusEvent('islamic_center'));
     _featureManagerBloc.add(const CheckFeatureStatusEvent('pendaftaran_pasien'));
     _featureManagerBloc.add(const CheckFeatureStatusEvent('klinik_hoaks'));
+    _featureManagerBloc.add(const CheckFeatureStatusEvent('no_darurat'));
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.service.name == 'Nomor Darurat') {
-      return const DeferredEmergencyNumberPage();
-    }
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       children: [
@@ -140,6 +139,7 @@ class _LayananTabViewState extends State<LayananTabView> {
             final isHoaks =
                 featureName.toLowerCase().contains('hoaks') ||
                 featureName.toLowerCase().contains('hoax');
+            final isDarurat = featureName.toLowerCase().contains('darurat');
 
             String featureKey = '';
             if (isHargaBahanPokok)
@@ -160,6 +160,8 @@ class _LayananTabViewState extends State<LayananTabView> {
               featureKey = 'pendaftaran_pasien';
             else if (isHoaks)
               featureKey = 'klinik_hoaks';
+            else if (isDarurat)
+              featureKey = 'no_darurat';
 
             final isDeferred = featureKey.isNotEmpty;
 
@@ -222,6 +224,9 @@ class _LayananTabViewState extends State<LayananTabView> {
                                     else if (featureKey == 'klinik_hoaks')
                                       loadFuture = () =>
                                           klinik_hoaks.loadLibrary();
+                                    else if (featureKey == 'no_darurat')
+                                      loadFuture = () =>
+                                          no_darurat.loadLibrary();
                                     else
                                       loadFuture = () =>
                                           harga_bahan_pokok.loadLibrary();
@@ -265,6 +270,8 @@ class _LayananTabViewState extends State<LayananTabView> {
                           );
                         } else if (featureKey == 'klinik_hoaks') {
                           context.push('/klinik-hoaks');
+                        } else if (featureKey == 'no_darurat') {
+                          context.push('/no-darurat');
                         } else {
                           context.push('/harga-bahan-pokok');
                         }
@@ -345,6 +352,7 @@ class _LayananTabViewState extends State<LayananTabView> {
     if (lower.contains('antrean') || lower.contains('antrian')) return Icons.people_outline;
     if (lower.contains('operasi')) return Icons.schedule;
     if (lower.contains('hoaks') || lower.contains('hoax')) return Icons.gavel_rounded;
+    if (lower.contains('darurat')) return Icons.contact_phone;
     return Icons.apps;
   }
 
@@ -355,6 +363,7 @@ class _LayananTabViewState extends State<LayananTabView> {
     if (lower.contains('antrean') || lower.contains('antrian')) return Colors.green;
     if (lower.contains('operasi')) return Colors.red;
     if (lower.contains('hoaks') || lower.contains('hoax')) return Colors.redAccent;
+    if (lower.contains('darurat')) return Colors.red;
     return Colors.blue;
   }
 
@@ -371,40 +380,5 @@ class _LayananTabViewState extends State<LayananTabView> {
         lower.contains('rsu') ||
         lower.contains('rssa') ||
         lower.split(RegExp(r'[\s.,\-/]')).contains('rs');
-  }
-}
-
-class DeferredEmergencyNumberPage extends StatefulWidget {
-  const DeferredEmergencyNumberPage({super.key});
-
-  @override
-  State<DeferredEmergencyNumberPage> createState() => _DeferredEmergencyNumberPageState();
-}
-
-class _DeferredEmergencyNumberPageState extends State<DeferredEmergencyNumberPage> {
-  bool _loaded = false;
-
-  @override
-  void initState() {
-    super.initState();
-    no_darurat.loadLibrary().then((_) {
-      if (mounted) {
-        setState(() {
-          _loaded = true;
-        });
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (!_loaded) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-    return no_darurat.EmergencyNumberPage();
   }
 }

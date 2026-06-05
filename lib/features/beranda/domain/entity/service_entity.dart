@@ -8,11 +8,9 @@ class ServiceEntity extends Equatable {
   final String icon;
   final String about;
   final String description;
-
   final String address;
   final String websiteUrl;
   final List<FeatureEntity> features;
-
   final OperationalHourEntity operationalHours;
 
 

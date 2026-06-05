@@ -31,6 +31,7 @@ import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/pages/klinik_hoaks_page.dart' deferred as klinik_hoaks;
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/pages/klinik_hoaks_detail_page.dart' deferred as klinik_hoaks_detail;
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/pages/laporkan_hoaks_page.dart' deferred as laporkan_hoaks;
+import 'package:majadigi/deffered_feature/no_darurat/presentation/pages/noDarurat_pages.dart' deferred as no_darurat;
 
 class AppRouter {
   final AuthBloc authBloc;
@@ -38,7 +39,7 @@ class AppRouter {
   AppRouter(this.authBloc);
 
   late final GoRouter router = GoRouter(
-    initialLocation: '/',
+    initialLocation: '/splash',
     refreshListenable: GoRouterRefreshStream(authBloc.stream),
     redirect: (BuildContext context, GoRouterState state) {
       final authState = authBloc.state;
@@ -47,17 +48,17 @@ class AppRouter {
       final bool isLoggingIn =
           state.matchedLocation == '/login' ||
           state.matchedLocation == '/register';
-      // final bool isSplash = state.matchedLocation == '/splash';
+      final bool isSplash = state.matchedLocation == '/splash';
 
-      // if (authState is AuthInitial || authState is AuthLoading) {
-      //   return '/splash';
-      // }
+      if (isSplash) {
+        return null;
+      }
 
       if (!isAuth && !isLoggingIn) {
         return '/login';
       }
 
-      if (isAuth && (isLoggingIn)) {
+      if (isAuth && isLoggingIn) {
         return '/';
       }
 
@@ -274,6 +275,21 @@ class AppRouter {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return klinik_hoaks.KlinikHoaksPage();
+              }
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            },
+          );
+        },
+      ),
+      GoRoute(
+        path: '/no-darurat',
+        name: 'no_darurat',
+        builder: (BuildContext context, GoRouterState state) {
+          return FutureBuilder(
+            future: no_darurat.loadLibrary(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return no_darurat.EmergencyNumberPage();
               }
               return const Scaffold(body: Center(child: CircularProgressIndicator()));
             },

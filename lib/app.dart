@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:majadigi/core/di/di.dart';
 import 'package:majadigi/core/router/app_router.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_bloc.dart';
@@ -25,6 +26,7 @@ class App extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorSchemeSeed: Colors.indigo,
+          textTheme: GoogleFonts.urbanistTextTheme(),
           useMaterial3: true,
           inputDecorationTheme: InputDecorationTheme(
             border: OutlineInputBorder(

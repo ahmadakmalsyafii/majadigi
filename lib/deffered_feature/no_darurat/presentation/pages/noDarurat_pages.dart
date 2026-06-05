@@ -5,6 +5,10 @@ import 'package:majadigi/deffered_feature/no_darurat/presentation/bloc/emergency
 import 'package:majadigi/deffered_feature/no_darurat/presentation/bloc/emergency/emergency_event.dart';
 import 'package:majadigi/deffered_feature/no_darurat/presentation/bloc/emergency/emergency_state.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:go_router/go_router.dart';
+import 'package:majadigi/core/widgets/custom_header.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_bloc.dart';
+import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_event.dart';
 
 class EmergencyNumberPage extends StatelessWidget {
   const EmergencyNumberPage({super.key});
@@ -34,39 +38,100 @@ class _EmergencyNumberViewState extends State<_EmergencyNumberView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<EmergencyBloc, EmergencyState>(
-      builder: (context, state) {
-        if (state is EmergencyLoading) {
-          return const Center(
-            child: CircularProgressIndicator(color: Color(0xFF016ACC)),
-          );
-        } else if (state is EmergencyLoaded) {
-          return _buildLayananView(context, state);
-        } else if (state is EmergencyError) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.wifi_off_rounded, color: Colors.grey, size: 48),
-                const SizedBox(height: 16),
-                Text(
-                  state.message,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.grey),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => context
-                      .read<EmergencyBloc>()
-                      .add(const LoadEmergencyData()),
-                  child: const Text('Coba Lagi'),
-                ),
-              ],
+    return Scaffold(
+      backgroundColor: Colors.grey.shade50,
+      body: Column(
+        children: [
+          _buildHeader(context),
+          Expanded(
+            child: BlocBuilder<EmergencyBloc, EmergencyState>(
+              builder: (context, state) {
+                if (state is EmergencyLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF016ACC)),
+                  );
+                } else if (state is EmergencyLoaded) {
+                  return _buildLayananView(context, state);
+                } else if (state is EmergencyError) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.wifi_off_rounded, color: Colors.grey, size: 48),
+                        const SizedBox(height: 16),
+                        Text(
+                          state.message,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () => context
+                              .read<EmergencyBloc>()
+                              .add(const LoadEmergencyData()),
+                          child: const Text('Coba Lagi'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return CustomHeader(
+      title: 'Kontak Darurat',
+      subtitle: 'Daftar nomor darurat',
+      trailing: InkWell(
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Hapus Fitur'),
+                content: const Text('Apakah Anda yakin ingin menghapus fitur ini dari perangkat?'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Batal'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      sl<FeatureManagerBloc>().add(const UninstallFeatureEvent('no_darurat'));
+                      Navigator.pop(context);
+                      context.pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Fitur berhasil dihapus')),
+                      );
+                    },
+                    child: const Text('Ya'),
+                  ),
+                ],
+              );
+            },
           );
-        }
-        return const SizedBox.shrink();
-      },
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.white),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: const Row(
+            children: [
+              Icon(Icons.delete_outline, color: Colors.white, size: 16),
+              SizedBox(width: 4),
+              Text('Hapus', style: TextStyle(color: Colors.white, fontSize: 14)),
+            ],
+          ),
+        ),
+      ),
     );
   }
   Widget _buildLayananView(BuildContext context, EmergencyLoaded state,
