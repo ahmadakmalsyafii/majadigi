@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:majadigi/core/error/exceptions.dart';
 import 'package:majadigi/core/network/dio_client.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/data/model/klinik_hoaks_stats_model.dart';
@@ -17,18 +19,118 @@ abstract class KlinikHoaksRemoteDataSource {
 
 class KlinikHoaksRemoteDataSourceImpl implements KlinikHoaksRemoteDataSource {
   final DioClient dioClient;
+  final SharedPreferences sharedPreferences;
   final String _baseUrl = 'https://api-splp.layanan.go.id/t/jatimprov.go.id/klinik-hoaks/v1/mobile';
 
-  KlinikHoaksRemoteDataSourceImpl({required this.dioClient});
+  // Cache keys
+  static const _statsHoaksKey = 'klinik_hoaks_stats_hoaks';
+  static const _statsDisinformasiKey = 'klinik_hoaks_stats_disinformasi';
+  static const _statsFaktaKey = 'klinik_hoaks_stats_fakta';
+  static const _statsHateKey = 'klinik_hoaks_stats_hate';
+  static const _statsCacheTimeKey = 'klinik_hoaks_stats_cache_time';
+  static const _clarificationsCacheKey = 'klinik_hoaks_clarifications_cache';
+  static const _clarificationsCacheTimeKey = 'klinik_hoaks_clarifications_cache_time';
+
+  // Cache berlaku selama 6 jam
+  static const _cacheDuration = Duration(hours: 6);
+
+  // Timeout lebih pendek untuk stats (data kecil)
+  static const _statsTimeout = Duration(seconds: 5);
+
+  KlinikHoaksRemoteDataSourceImpl({
+    required this.dioClient,
+    required this.sharedPreferences,
+  });
+
+  /// Cek apakah cache masih valid berdasarkan timestamp
+  bool _isCacheValid(String cacheTimeKey) {
+    final cachedTime = sharedPreferences.getInt(cacheTimeKey);
+    if (cachedTime == null) return false;
+    final cachedAt = DateTime.fromMillisecondsSinceEpoch(cachedTime);
+    return DateTime.now().difference(cachedAt) < _cacheDuration;
+  }
+
+  /// Simpan timestamp cache saat ini
+  Future<void> _setCacheTime(String cacheTimeKey) async {
+    await sharedPreferences.setInt(
+      cacheTimeKey,
+      DateTime.now().millisecondsSinceEpoch,
+    );
+  }
+
+  // ─── STATS ────────────────────────────────────────────────────────────
+
+  /// Ambil stats dari cache jika masih valid
+  KlinikHoaksStatsModel? _getCachedStats() {
+    if (!_isCacheValid(_statsCacheTimeKey)) return null;
+
+    final hoaks = sharedPreferences.getInt(_statsHoaksKey);
+    final disinformasi = sharedPreferences.getInt(_statsDisinformasiKey);
+    final fakta = sharedPreferences.getInt(_statsFaktaKey);
+    final hate = sharedPreferences.getInt(_statsHateKey);
+
+    if (hoaks == null || disinformasi == null || fakta == null || hate == null) {
+      return null;
+    }
+
+    debugPrint('[KlinikHoaks] Menggunakan stats dari cache');
+    return KlinikHoaksStatsModel(
+      jmlHoaksYtd: hoaks,
+      jmlDisinformasiYtd: disinformasi,
+      jmlFaktaYtd: fakta,
+      jmlHateSpeechYtd: hate,
+    );
+  }
+
+  /// Ambil stats dari cache TANPA cek expiry (untuk fallback saat error)
+  KlinikHoaksStatsModel? _getStaleCachedStats() {
+    final hoaks = sharedPreferences.getInt(_statsHoaksKey);
+    final disinformasi = sharedPreferences.getInt(_statsDisinformasiKey);
+    final fakta = sharedPreferences.getInt(_statsFaktaKey);
+    final hate = sharedPreferences.getInt(_statsHateKey);
+
+    if (hoaks == null || disinformasi == null || fakta == null || hate == null) {
+      return null;
+    }
+
+    debugPrint('[KlinikHoaks] Menggunakan stats dari stale cache (fallback)');
+    return KlinikHoaksStatsModel(
+      jmlHoaksYtd: hoaks,
+      jmlDisinformasiYtd: disinformasi,
+      jmlFaktaYtd: fakta,
+      jmlHateSpeechYtd: hate,
+    );
+  }
+
+  /// Simpan stats ke cache
+  Future<void> _cacheStats(KlinikHoaksStatsModel stats) async {
+    await Future.wait([
+      sharedPreferences.setInt(_statsHoaksKey, stats.jmlHoaksYtd),
+      sharedPreferences.setInt(_statsDisinformasiKey, stats.jmlDisinformasiYtd),
+      sharedPreferences.setInt(_statsFaktaKey, stats.jmlFaktaYtd),
+      sharedPreferences.setInt(_statsHateKey, stats.jmlHateSpeechYtd),
+      _setCacheTime(_statsCacheTimeKey),
+    ]);
+  }
 
   @override
   Future<KlinikHoaksStatsModel> getStats() async {
+    // 1. Cek cache valid terlebih dahulu
+    final cached = _getCachedStats();
+    if (cached != null) return cached;
+
+    // 2. Fetch dari API dengan timeout yang lebih pendek
     try {
+      final statsOptions = Options(
+        receiveTimeout: _statsTimeout,
+        sendTimeout: _statsTimeout,
+      );
+
       final responses = await Future.wait([
-        dioClient.dio.get('$_baseUrl/getjmlhoaksytd'),
-        dioClient.dio.get('$_baseUrl/getjmldisinformasiytd'),
-        dioClient.dio.get('$_baseUrl/getjmlfaktaytd'),
-        dioClient.dio.get('$_baseUrl/getjmlhateytd'),
+        dioClient.dio.get('$_baseUrl/getjmlhoaksytd', options: statsOptions),
+        dioClient.dio.get('$_baseUrl/getjmldisinformasiytd', options: statsOptions),
+        dioClient.dio.get('$_baseUrl/getjmlfaktaytd', options: statsOptions),
+        dioClient.dio.get('$_baseUrl/getjmlhateytd', options: statsOptions),
       ]);
 
       int hoaks = 0;
@@ -68,14 +170,26 @@ class KlinikHoaksRemoteDataSourceImpl implements KlinikHoaksRemoteDataSource {
         }
       }
 
-      return KlinikHoaksStatsModel.fromJson(
+      final stats = KlinikHoaksStatsModel.fromJson(
         hoaks: hoaks,
         disinformasi: disinformasi,
         fakta: fakta,
         hateSpeech: hateSpeech,
       );
+
+      // Simpan ke cache untuk visit berikutnya
+      await _cacheStats(stats);
+
+      return stats;
     } catch (e) {
-      debugPrint("Gagal memuat statistik dari server ($e), menggunakan data simulasi.");
+      debugPrint("[KlinikHoaks] Gagal memuat statistik dari server ($e)");
+
+      // 3. Fallback ke stale cache (data lama tapi masih ada)
+      final staleCache = _getStaleCachedStats();
+      if (staleCache != null) return staleCache;
+
+      // 4. Fallback terakhir: data simulasi
+      debugPrint("[KlinikHoaks] Menggunakan data simulasi untuk stats");
       return const KlinikHoaksStatsModel(
         jmlHoaksYtd: 566,
         jmlDisinformasiYtd: 34,
@@ -85,18 +199,83 @@ class KlinikHoaksRemoteDataSourceImpl implements KlinikHoaksRemoteDataSource {
     }
   }
 
+  // ─── CLARIFICATIONS ───────────────────────────────────────────────────
+
+  /// Ambil clarifications dari cache jika masih valid
+  List<KlinikHoaksClarificationModel>? _getCachedClarifications() {
+    if (!_isCacheValid(_clarificationsCacheTimeKey)) return null;
+
+    final jsonString = sharedPreferences.getString(_clarificationsCacheKey);
+    if (jsonString == null) return null;
+
+    try {
+      final List<dynamic> decoded = json.decode(jsonString);
+      debugPrint('[KlinikHoaks] Menggunakan clarifications dari cache (${decoded.length} items)');
+      return decoded
+          .map((item) => KlinikHoaksClarificationModel.fromJson(item))
+          .toList();
+    } catch (e) {
+      debugPrint('[KlinikHoaks] Gagal parse cache clarifications: $e');
+      return null;
+    }
+  }
+
+  /// Ambil clarifications dari cache TANPA cek expiry (untuk fallback)
+  List<KlinikHoaksClarificationModel>? _getStaleCachedClarifications() {
+    final jsonString = sharedPreferences.getString(_clarificationsCacheKey);
+    if (jsonString == null) return null;
+
+    try {
+      final List<dynamic> decoded = json.decode(jsonString);
+      debugPrint('[KlinikHoaks] Menggunakan clarifications dari stale cache (${decoded.length} items)');
+      return decoded
+          .map((item) => KlinikHoaksClarificationModel.fromJson(item))
+          .toList();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Simpan clarifications ke cache sebagai JSON string
+  Future<void> _cacheClarifications(List<KlinikHoaksClarificationModel> data) async {
+    final jsonString = json.encode(data.map((item) => item.toJson()).toList());
+    await Future.wait([
+      sharedPreferences.setString(_clarificationsCacheKey, jsonString),
+      _setCacheTime(_clarificationsCacheTimeKey),
+    ]);
+  }
+
   @override
   Future<List<KlinikHoaksClarificationModel>> getClarifications() async {
+    // 1. Cek cache valid terlebih dahulu
+    final cached = _getCachedClarifications();
+    if (cached != null) return cached;
+
+    // 2. Fetch dari API
     try {
       final response = await dioClient.dio.get('$_baseUrl/getklarifikasiterkini');
       if (response.statusCode == 200 && response.data != null) {
         final List<dynamic> data = response.data['data'] ?? [];
-        return data.map((json) => KlinikHoaksClarificationModel.fromJson(json)).toList();
+        final clarifications = data
+            .map((json) => KlinikHoaksClarificationModel.fromJson(json))
+            .toList();
+
+        // Simpan ke cache
+        await _cacheClarifications(clarifications);
+
+        return clarifications;
       } else {
         throw ServerException(message: 'Gagal mengambil data klarifikasi');
       }
     } catch (e) {
-      debugPrint("Gagal memuat klarifikasi dari server ($e), menggunakan data simulasi.");
+      debugPrint("[KlinikHoaks] Gagal memuat klarifikasi dari server ($e)");
+
+      // 3. Fallback ke stale cache
+      final staleCache = _getStaleCachedClarifications();
+      if (staleCache != null) return staleCache;
+
+      // 4. Fallback terakhir: data simulasi
+      debugPrint("[KlinikHoaks] Menggunakan data simulasi untuk clarifications");
       return [
         const KlinikHoaksClarificationModel(
           id: 369,

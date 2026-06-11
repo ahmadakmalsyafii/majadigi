@@ -15,6 +15,17 @@ class KlinikHoaksInitial extends KlinikHoaksState {}
 
 class KlinikHoaksLoading extends KlinikHoaksState {}
 
+/// State ketika stats sudah dimuat tapi clarifications masih loading.
+/// Memungkinkan UI menampilkan statistik terlebih dahulu (progressive loading).
+class KlinikHoaksPartialLoaded extends KlinikHoaksState {
+  final KlinikHoaksStatsEntity stats;
+
+  const KlinikHoaksPartialLoaded({required this.stats});
+
+  @override
+  List<Object?> get props => [stats];
+}
+
 class KlinikHoaksLoaded extends KlinikHoaksState {
   final KlinikHoaksStatsEntity stats;
   final List<KlinikHoaksClarificationEntity> allClarifications;

@@ -25,25 +25,37 @@ class KlinikHoaksBloc extends Bloc<KlinikHoaksEvent, KlinikHoaksState> {
     Emitter<KlinikHoaksState> emit,
   ) async {
     emit(KlinikHoaksLoading());
+
+    // Jalankan kedua future secara paralel
     final statsFuture = getStats();
     final clarificationsFuture = getClarifications();
 
+    // Tunggu stats terlebih dahulu — tampilkan partial UI segera
     final statsResult = await statsFuture;
-    final clarificationsResult = await clarificationsFuture;
 
     statsResult.fold(
       (failure) => emit(KlinikHoaksError(message: failure.message)),
       (stats) {
-        clarificationsResult.fold(
-          (failure) => emit(KlinikHoaksError(message: failure.message)),
-          (clarifications) {
-            emit(KlinikHoaksLoaded(
-              stats: stats,
-              allClarifications: clarifications,
-              filteredClarifications: clarifications,
-            ));
-          },
-        );
+        // Emit partial state: UI bisa langsung menampilkan statistik
+        emit(KlinikHoaksPartialLoaded(stats: stats));
+      },
+    );
+
+    // Jika stats gagal, tidak perlu lanjut ke clarifications
+    if (state is KlinikHoaksError) return;
+
+    // Tunggu clarifications selesai
+    final clarificationsResult = await clarificationsFuture;
+
+    clarificationsResult.fold(
+      (failure) => emit(KlinikHoaksError(message: failure.message)),
+      (clarifications) {
+        final currentStats = (state as KlinikHoaksPartialLoaded).stats;
+        emit(KlinikHoaksLoaded(
+          stats: currentStats,
+          allClarifications: clarifications,
+          filteredClarifications: clarifications,
+        ));
       },
     );
   }

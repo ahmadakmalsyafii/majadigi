@@ -248,7 +248,10 @@ void init() async {
         () => PendaftaranRemoteDataSourceImpl(firestore: sl()),
   );
   sl.registerLazySingleton<KlinikHoaksRemoteDataSource>(
-    () => KlinikHoaksRemoteDataSourceImpl(dioClient: sl()),
+    () => KlinikHoaksRemoteDataSourceImpl(
+      dioClient: sl(),
+      sharedPreferences: sl(),
+    ),
   );
   sl.registerLazySingleton<HargaBahanPokokRemoteDataSource>(
     () => HargaBahanPokokRemoteDataSourceImpl(dioClient: sl()),
