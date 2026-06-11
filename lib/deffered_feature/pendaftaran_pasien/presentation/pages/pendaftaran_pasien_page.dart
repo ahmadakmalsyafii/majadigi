@@ -57,12 +57,12 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
     return list;
   }
 
-
   bool _isTimeSlotPassed(DateTime? selectedDate, String timeSlot) {
     if (selectedDate == null) return false;
 
     final now = DateTime.now();
-    final isToday = selectedDate.year == now.year &&
+    final isToday =
+        selectedDate.year == now.year &&
         selectedDate.month == now.month &&
         selectedDate.day == now.day;
 
@@ -135,9 +135,9 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
     return BlocConsumer<PendaftaranBloc, PendaftaranState>(
       listener: (context, state) {
         if (state.errorMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage!)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
         }
       },
       builder: (context, state) {
@@ -154,7 +154,9 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
                       builder: (context) {
                         return AlertDialog(
                           title: const Text('Hapus Fitur'),
-                          content: const Text('Apakah Anda yakin ingin menghapus fitur ini dari perangkat?'),
+                          content: const Text(
+                            'Apakah Anda yakin ingin menghapus fitur ini dari perangkat?',
+                          ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
@@ -162,11 +164,17 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
                             ),
                             TextButton(
                               onPressed: () {
-                                sl<FeatureManagerBloc>().add(const UninstallFeatureEvent('pendaftaran_pasien'));
+                                sl<FeatureManagerBloc>().add(
+                                  const UninstallFeatureEvent(
+                                    'pendaftaran_pasien',
+                                  ),
+                                );
                                 Navigator.pop(context);
                                 Navigator.pop(context);
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Fitur berhasil dihapus')),
+                                  const SnackBar(
+                                    content: Text('Fitur berhasil dihapus'),
+                                  ),
                                 );
                               },
                               child: const Text('Ya'),
@@ -177,16 +185,26 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
                     );
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.white),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: const Row(
                       children: [
-                        Icon(Icons.delete_outline, color: Colors.white, size: 16),
+                        Icon(
+                          Icons.delete_outline,
+                          color: Colors.white,
+                          size: 16,
+                        ),
                         SizedBox(width: 4),
-                        Text('Hapus', style: TextStyle(color: Colors.white, fontSize: 14)),
+                        Text(
+                          'Hapus',
+                          style: TextStyle(color: Colors.white, fontSize: 14),
+                        ),
                       ],
                     ),
                   ),
@@ -212,13 +230,13 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
               ),
             ],
           ),
-          bottomNavigationBar: state.currentStep < 3 ? _buildBottomBar(context, state, currentUser) : null,
+          bottomNavigationBar: state.currentStep < 3
+              ? _buildBottomBar(context, state, currentUser)
+              : null,
         );
       },
     );
   }
-
-
 
   Widget _buildStepIndicator(BuildContext context, PendaftaranState state) {
     return Container(
@@ -241,7 +259,7 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
           if (state.currentStep == 2) ...[
             const SizedBox(height: 20),
             _buildDateSelector(context, state),
-          ]
+          ],
         ],
       ),
     );
@@ -299,7 +317,11 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
       children: [
         const Text(
           'Pilih Tanggal',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF1A1A2E)),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+            color: Color(0xFF1A1A2E),
+          ),
         ),
         const SizedBox(height: 12),
         SizedBox(
@@ -309,7 +331,8 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
             itemCount: _generatedDates.length,
             itemBuilder: (context, index) {
               final date = _generatedDates[index];
-              final isSelected = state.selectedDate != null &&
+              final isSelected =
+                  state.selectedDate != null &&
                   state.selectedDate!.year == date.year &&
                   state.selectedDate!.month == date.month &&
                   state.selectedDate!.day == date.day;
@@ -319,14 +342,19 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
               final bulan = DateFormat('MMM', 'id_ID').format(date);
 
               return GestureDetector(
-                onTap: () => context.read<PendaftaranBloc>().add(SelectDateEvent(date)),
+                onTap: () =>
+                    context.read<PendaftaranBloc>().add(SelectDateEvent(date)),
                 child: Container(
                   width: 70,
                   margin: const EdgeInsets.only(right: 12),
                   decoration: BoxDecoration(
                     color: isSelected ? const Color(0xFF016ACC) : Colors.white,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: isSelected ? const Color(0xFF016ACC) : Colors.grey.shade300),
+                    border: Border.all(
+                      color: isSelected
+                          ? const Color(0xFF016ACC)
+                          : Colors.grey.shade300,
+                    ),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -334,7 +362,9 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
                       Text(
                         hari,
                         style: TextStyle(
-                          color: isSelected ? Colors.white70 : Colors.grey.shade600,
+                          color: isSelected
+                              ? Colors.white70
+                              : Colors.grey.shade600,
                           fontSize: 10,
                         ),
                       ),
@@ -342,7 +372,9 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
                       Text(
                         tanggal,
                         style: TextStyle(
-                          color: isSelected ? Colors.white : const Color(0xFF1A1A2E),
+                          color: isSelected
+                              ? Colors.white
+                              : const Color(0xFF1A1A2E),
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -350,7 +382,9 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
                       Text(
                         bulan,
                         style: TextStyle(
-                          color: isSelected ? Colors.white70 : Colors.grey.shade600,
+                          color: isSelected
+                              ? Colors.white70
+                              : Colors.grey.shade600,
                           fontSize: 10,
                         ),
                       ),
@@ -365,7 +399,10 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
     );
   }
 
-  Widget _buildCurrentStepContent(BuildContext context, PendaftaranState state) {
+  Widget _buildCurrentStepContent(
+    BuildContext context,
+    PendaftaranState state,
+  ) {
     switch (state.currentStep) {
       case 0:
         return _buildStepPoli(context, state);
@@ -417,23 +454,31 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
           child: filteredPolis.isEmpty
               ? const Center(child: Text('Poliklinik tidak ditemukan'))
               : ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 20).copyWith(bottom: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                  ).copyWith(bottom: 20),
                   itemCount: filteredPolis.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final poli = filteredPolis[index];
                     final isSelected = state.selectedPoli?.id == poli.id;
                     return GestureDetector(
                       onTap: () {
-                        context.read<PendaftaranBloc>().add(SelectPoliEvent(poli));
+                        context.read<PendaftaranBloc>().add(
+                          SelectPoliEvent(poli),
+                        );
                       },
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFFE8F4FD) : Colors.white,
+                          color: isSelected
+                              ? const Color(0xFFE8F4FD)
+                              : Colors.white,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: isSelected ? const Color(0xFF016ACC) : Colors.grey.shade200,
+                            color: isSelected
+                                ? const Color(0xFF016ACC)
+                                : Colors.grey.shade200,
                             width: isSelected ? 2 : 1,
                           ),
                         ),
@@ -443,19 +488,44 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(poli.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                Text(
+                                  poli.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
                                 const SizedBox(height: 4),
-                                Text('${poli.doctorsCount} Dokter tersedia', style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+                                Text(
+                                  '${poli.doctorsCount} Dokter tersedia',
+                                  style: TextStyle(
+                                    color: Colors.grey.shade600,
+                                    fontSize: 13,
+                                  ),
+                                ),
                               ],
                             ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                const Text('Kuota Total', style: TextStyle(color: Colors.grey, fontSize: 11)),
+                                const Text(
+                                  'Kuota Total',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 11,
+                                  ),
+                                ),
                                 const SizedBox(height: 2),
-                                Text('${poli.quota}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color(0xFF016ACC))),
+                                Text(
+                                  '${poli.quota}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Color(0xFF016ACC),
+                                  ),
+                                ),
                               ],
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -480,7 +550,7 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
     return ListView.separated(
       padding: const EdgeInsets.all(20),
       itemCount: state.doctors.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final doc = state.doctors[index];
         final isSelected = state.selectedDoctor?.id == doc.id;
@@ -499,7 +569,9 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
               color: isSelected ? const Color(0xFFE8F4FD) : Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? const Color(0xFF016ACC) : Colors.grey.shade200,
+                color: isSelected
+                    ? const Color(0xFF016ACC)
+                    : Colors.grey.shade200,
                 width: isSelected ? 2 : 1,
               ),
             ),
@@ -516,38 +588,62 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(doc.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                      Text(doc.spesialis, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                      Text(
+                        doc.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                      Text(
+                        doc.spesialis,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 12,
+                        ),
+                      ),
                       const SizedBox(height: 12),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
+                          const Icon(
+                            Icons.calendar_today,
+                            size: 14,
+                            color: Colors.grey,
+                          ),
                           const SizedBox(width: 6),
-                          Expanded(child: Text(doc.jadwal, style: const TextStyle(fontSize: 12, color: Colors.grey))),
+                          Expanded(
+                            child: Text(
+                              doc.jadwal,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 6),
                       Row(
                         children: [
                           Icon(
-                            Icons.people_outline, 
-                            size: 16, 
+                            Icons.people_outline,
+                            size: 16,
                             color: sisaKuota == 0 ? Colors.red : Colors.green,
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            sisaKuota == 0 
-                                ? 'Kuota Hari Ini: Habis' 
-                                : 'Sisa Kuota Hari ini: $sisaKuota', 
+                            sisaKuota == 0
+                                ? 'Kuota Hari Ini: Habis'
+                                : 'Sisa Kuota Hari ini: $sisaKuota',
                             style: TextStyle(
-                              fontSize: 12, 
-                              fontWeight: FontWeight.bold, 
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
                               color: sisaKuota == 0 ? Colors.red : Colors.green,
                             ),
                           ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -570,7 +666,8 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
       );
     }
 
-    final List<String> availableTimes = state.selectedDoctor?.availableTimes ?? [];
+    final List<String> availableTimes =
+        state.selectedDoctor?.availableTimes ?? [];
 
     if (availableTimes.isEmpty) {
       return const Center(
@@ -585,7 +682,10 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        const Text('Pilih Waktu', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+        const Text(
+          'Pilih Waktu',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+        ),
         const SizedBox(height: 12),
         GridView.builder(
           shrinkWrap: true,
@@ -607,13 +707,25 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
             final isSelected = state.selectedTime == time;
 
             return GestureDetector(
-              onTap: isFull ? null : () => context.read<PendaftaranBloc>().add(SelectTimeEvent(time)),
+              onTap: isFull
+                  ? null
+                  : () => context.read<PendaftaranBloc>().add(
+                      SelectTimeEvent(time),
+                    ),
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: isFull ? Colors.grey.shade100 : (isSelected ? const Color(0xFFE8F4FD) : Colors.white),
+                  color: isFull
+                      ? Colors.grey.shade100
+                      : (isSelected ? const Color(0xFFE8F4FD) : Colors.white),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: isFull ? Colors.grey.shade200 : (isSelected ? const Color(0xFF016ACC) : Colors.grey.shade300)),
+                  border: Border.all(
+                    color: isFull
+                        ? Colors.grey.shade200
+                        : (isSelected
+                              ? const Color(0xFF016ACC)
+                              : Colors.grey.shade300),
+                  ),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -622,14 +734,20 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
                       time,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: isFull ? Colors.grey : (isSelected ? const Color(0xFF016ACC) : const Color(0xFF1A1A2E)),
+                        color: isFull
+                            ? Colors.grey
+                            : (isSelected
+                                  ? const Color(0xFF016ACC)
+                                  : const Color(0xFF1A1A2E)),
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       isPassed
                           ? 'Terlewat'
-                          : (isQuotaFull ? 'Penuh' : 'Sisa Kuota: $remainingQuota'),
+                          : (isQuotaFull
+                                ? 'Penuh'
+                                : 'Sisa Kuota: $remainingQuota'),
                       style: TextStyle(
                         fontSize: 11,
                         color: isPassed
@@ -665,7 +783,11 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
             const SizedBox(height: 16),
             const Text(
               'Pendaftaran Berhasil!',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1A1A2E)),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1A1A2E),
+              ),
             ),
             const SizedBox(height: 8),
             const Text(
@@ -694,7 +816,9 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
                     padding: const EdgeInsets.all(20),
                     decoration: const BoxDecoration(
                       color: Color(0xFF016ACC),
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -705,7 +829,11 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
                         ),
                         Text(
                           ticket.queueNumber,
-                          style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -722,8 +850,12 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
                         const Divider(height: 30),
                         Row(
                           children: [
-                            Expanded(child: _ticketInfoRow('Tanggal', ticket.date)),
-                            Expanded(child: _ticketInfoRow('Waktu', ticket.time)),
+                            Expanded(
+                              child: _ticketInfoRow('Tanggal', ticket.date),
+                            ),
+                            Expanded(
+                              child: _ticketInfoRow('Waktu', ticket.time),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 30),
@@ -753,7 +885,10 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        const Text('Scan QR Code ini di mesin antrean', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                        const Text(
+                          'Scan QR Code ini di mesin antrean',
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
                       ],
                     ),
                   ),
@@ -770,9 +905,18 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF016ACC),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
                 ),
-                child: const Text('Kembali ke Beranda', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                child: const Text(
+                  'Kembali ke Beranda',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ],
@@ -787,17 +931,32 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
       children: [
         Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(color: Color(0xFF1A1A2E), fontSize: 15, fontWeight: FontWeight.bold)),
+        Text(
+          value,
+          style: const TextStyle(
+            color: Color(0xFF1A1A2E),
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ],
     );
   }
 
   // ─── BOTTOM NAVIGATION BAR (Action Buttons) ────────────────────────────────
-  Widget _buildBottomBar(BuildContext context, PendaftaranState state, UserEntity? user) {
+  Widget _buildBottomBar(
+    BuildContext context,
+    PendaftaranState state,
+    UserEntity? user,
+  ) {
     bool isNextEnabled = false;
     if (state.currentStep == 0) isNextEnabled = state.selectedPoli != null;
     if (state.currentStep == 1) isNextEnabled = state.selectedDoctor != null;
-    if (state.currentStep == 2) isNextEnabled = state.selectedDate != null && state.selectedTime != null && !state.isSubmitting;
+    if (state.currentStep == 2)
+      isNextEnabled =
+          state.selectedDate != null &&
+          state.selectedTime != null &&
+          !state.isSubmitting;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -819,13 +978,19 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
                 ? () {
                     if (state.currentStep == 2) {
                       if (user != null) {
-                        context.read<PendaftaranBloc>().add(SubmitRegistrationEvent(
-                              user: user,
-                              hospitalName: widget.service.name,
-                            ));
+                        context.read<PendaftaranBloc>().add(
+                          SubmitRegistrationEvent(
+                            user: user,
+                            hospitalName: widget.service.name,
+                          ),
+                        );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('User belum terautentikasi. Silakan login kembali.')),
+                          const SnackBar(
+                            content: Text(
+                              'User belum terautentikasi. Silakan login kembali.',
+                            ),
+                          ),
                         );
                       }
                     } else {
@@ -844,14 +1009,21 @@ class _PendaftaranPasienViewState extends State<_PendaftaranPasienView> {
                 ? const SizedBox(
                     width: 24,
                     height: 24,
-                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
                   )
                 : Text(
-                    state.currentStep == 2 ? 'Konfirmasi Pendaftaran' : 'Lanjutkan',
+                    state.currentStep == 2
+                        ? 'Konfirmasi Pendaftaran'
+                        : 'Lanjutkan',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: isNextEnabled ? Colors.white : Colors.grey.shade500,
+                      color: isNextEnabled
+                          ? Colors.white
+                          : Colors.grey.shade500,
                     ),
                   ),
           ),

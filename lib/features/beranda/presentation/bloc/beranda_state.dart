@@ -4,87 +4,67 @@ import 'package:majadigi/features/beranda/domain/entity/banner_entity.dart';
 import 'package:majadigi/features/beranda/domain/entity/jatim_angka_entity.dart';
 import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
 
-abstract class BerandaState extends Equatable {
-  const BerandaState();
+enum BerandaSectionStatus { initial, loading, loaded, error }
 
-  @override
-  List<Object?> get props => [];
-}
-
-class BerandaInitial extends BerandaState {
-  const BerandaInitial();
-}
-
-class BerandaLoading extends BerandaState {
-  const BerandaLoading();
-}
-
-class BerandaLoadingBanners extends BerandaState {
-  const BerandaLoadingBanners();
-}
-
-class BerandaLoadingServices extends BerandaState{
-  const BerandaLoadingServices();
-}
-
-class BerandaLoadedServices extends BerandaState {
-  final List<ServiceEntity> services;
-
-  const BerandaLoadedServices({required this.services});
-
-  @override
-  List<Object?> get props => [services];
-}
-
-class BerandaLoadedBanners extends BerandaState {
+class BerandaState extends Equatable {
+  final BerandaSectionStatus bannerStatus;
   final List<BannerEntity> banners;
+  final String bannerError;
 
-  const BerandaLoadedBanners({required this.banners});
-
-  @override
-  List<Object?> get props => [banners];
-}
-
-class BerandaLoaded extends BerandaState {
+  final BerandaSectionStatus serviceStatus;
   final List<ServiceEntity> services;
-  final List<BannerEntity> banners;
+  final String serviceError;
+
+  final BerandaSectionStatus jatimAngkaStatus;
   final List<JatimAngkaEntity> jatimAngka;
+  final String jatimAngkaError;
 
-  const BerandaLoaded({required this.services, required this.banners, required this.jatimAngka});
+  const BerandaState({
+    this.bannerStatus = BerandaSectionStatus.initial,
+    this.banners = const [],
+    this.bannerError = '',
+    this.serviceStatus = BerandaSectionStatus.initial,
+    this.services = const [],
+    this.serviceError = '',
+    this.jatimAngkaStatus = BerandaSectionStatus.initial,
+    this.jatimAngka = const [],
+    this.jatimAngkaError = '',
+  });
+
+  BerandaState copyWith({
+    BerandaSectionStatus? bannerStatus,
+    List<BannerEntity>? banners,
+    String? bannerError,
+    BerandaSectionStatus? serviceStatus,
+    List<ServiceEntity>? services,
+    String? serviceError,
+    BerandaSectionStatus? jatimAngkaStatus,
+    List<JatimAngkaEntity>? jatimAngka,
+    String? jatimAngkaError,
+  }) {
+    return BerandaState(
+      bannerStatus: bannerStatus ?? this.bannerStatus,
+      banners: banners ?? this.banners,
+      bannerError: bannerError ?? this.bannerError,
+      serviceStatus: serviceStatus ?? this.serviceStatus,
+      services: services ?? this.services,
+      serviceError: serviceError ?? this.serviceError,
+      jatimAngkaStatus: jatimAngkaStatus ?? this.jatimAngkaStatus,
+      jatimAngka: jatimAngka ?? this.jatimAngka,
+      jatimAngkaError: jatimAngkaError ?? this.jatimAngkaError,
+    );
+  }
 
   @override
-  List<Object?> get props => [services, banners, jatimAngka];
+  List<Object?> get props => [
+        bannerStatus,
+        banners,
+        bannerError,
+        serviceStatus,
+        services,
+        serviceError,
+        jatimAngkaStatus,
+        jatimAngka,
+        jatimAngkaError,
+      ];
 }
-
-class BannerError extends BerandaState {
-  final String message;
-  final Failure failure;
-
-  const BannerError({required this.message, required this.failure});
-
-  @override
-  List<Object?> get props => [message, failure];
-}
-
-class ServiceError extends BerandaState {
-  final String message;
-  final Failure failure;
-
-  const ServiceError({required this.message, required this.failure});
-
-  @override
-  List<Object?> get props => [message, failure];
-}
-
-
-
-class BerandaError extends BerandaState {
-  final String message;
-  final Failure failure;
-
-  const BerandaError({required this.message, required this.failure});
-
-  @override
-  List<Object?> get props => [message, failure];
-}
-

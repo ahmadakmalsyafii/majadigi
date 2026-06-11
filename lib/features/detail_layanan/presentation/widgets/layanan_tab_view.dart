@@ -27,8 +27,7 @@ import 'package:majadigi/deffered_feature/pendaftaran_pasien/presentation/pages/
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/pages/klinik_hoaks_page.dart'
     deferred as klinik_hoaks;
 import 'package:majadigi/deffered_feature/no_darurat/presentation/pages/noDarurat_pages.dart'
-deferred as no_darurat;
-
+    deferred as no_darurat;
 
 class LayananTabView extends StatefulWidget {
   final ServiceEntity service;
@@ -54,7 +53,9 @@ class _LayananTabViewState extends State<LayananTabView> {
     _featureManagerBloc.add(const CheckFeatureStatusEvent('bansos'));
     _featureManagerBloc.add(const CheckFeatureStatusEvent('destinasi_wisata'));
     _featureManagerBloc.add(const CheckFeatureStatusEvent('islamic_center'));
-    _featureManagerBloc.add(const CheckFeatureStatusEvent('pendaftaran_pasien'));
+    _featureManagerBloc.add(
+      const CheckFeatureStatusEvent('pendaftaran_pasien'),
+    );
     _featureManagerBloc.add(const CheckFeatureStatusEvent('klinik_hoaks'));
     _featureManagerBloc.add(const CheckFeatureStatusEvent('no_darurat'));
   }
@@ -80,13 +81,15 @@ class _LayananTabViewState extends State<LayananTabView> {
             crossAxisCount: 2,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
-            childAspectRatio: 1.2,
+            childAspectRatio: 1.0,
           ),
-          itemCount: (widget.service.name == 'Program Bansos' || widget.service.name.toLowerCase().contains('islamic'))
+          itemCount:
+              (widget.service.name == 'Program Bansos' ||
+                  widget.service.name.toLowerCase().contains('islamic'))
               ? 1
               : widget.service.features.isNotEmpty
-                  ? widget.service.features.length
-                  : (_isHospital(widget.service.name) ? 2 : 0),
+              ? widget.service.features.length
+              : (_isHospital(widget.service.name) ? 2 : 0),
           itemBuilder: (context, index) {
             String featureName = '';
             IconData icon = Icons.apps;
@@ -131,8 +134,13 @@ class _LayananTabViewState extends State<LayananTabView> {
                 featureName.toLowerCase().contains('antrian');
             final isOperasi = featureName.toLowerCase().contains('operasi');
             final isBansos = featureName.toLowerCase().contains('bansos');
-            final isDestinasi = featureName.toLowerCase().contains('destinasi') || featureName.toLowerCase().contains('wisata') || featureName.toLowerCase().contains('sidita');
-            final isIslamicCenter = featureName.toLowerCase().contains('islamic');
+            final isDestinasi =
+                featureName.toLowerCase().contains('destinasi') ||
+                featureName.toLowerCase().contains('wisata') ||
+                featureName.toLowerCase().contains('sidita');
+            final isIslamicCenter = featureName.toLowerCase().contains(
+              'islamic',
+            );
             final isPendaftaran =
                 featureName.toLowerCase().contains('daftar') ||
                 featureName.toLowerCase().contains('pendaftaran');
@@ -142,9 +150,9 @@ class _LayananTabViewState extends State<LayananTabView> {
             final isDarurat = featureName.toLowerCase().contains('darurat');
 
             String featureKey = '';
-            if (isHargaBahanPokok)
+            if (isHargaBahanPokok) {
               featureKey = 'harga_bahan_pokok';
-            else if (isKamar)
+            } else if (isKamar)
               featureKey = 'ketersediaan_kamar';
             else if (isAntrean)
               featureKey = 'antrean_pasien';
@@ -200,18 +208,17 @@ class _LayananTabViewState extends State<LayananTabView> {
                                     Navigator.pop(context);
 
                                     Future<void> Function() loadFuture;
-                                    if (featureKey == 'ketersediaan_kamar')
+                                    if (featureKey == 'ketersediaan_kamar') {
                                       loadFuture = () =>
                                           ketersediaan_kamar.loadLibrary();
-                                    else if (featureKey == 'antrean_pasien')
+                                    } else if (featureKey == 'antrean_pasien')
                                       loadFuture = () =>
                                           antrean_pasien.loadLibrary();
                                     else if (featureKey == 'jadwal_operasi')
                                       loadFuture = () =>
                                           jadwal_operasi.loadLibrary();
                                     else if (featureKey == 'bansos')
-                                      loadFuture = () =>
-                                          bansos.loadLibrary();
+                                      loadFuture = () => bansos.loadLibrary();
                                     else if (featureKey == 'destinasi_wisata')
                                       loadFuture = () =>
                                           destinasi_wisata.loadLibrary();
@@ -295,15 +302,19 @@ class _LayananTabViewState extends State<LayananTabView> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                featureName,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: isNotInstalled || isInstalling
-                                      ? Colors.grey.shade600
-                                      : Colors.black87,
+                              Flexible(
+                                child: Text(
+                                  featureName,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: isNotInstalled || isInstalling
+                                        ? Colors.grey.shade600
+                                        : Colors.black87,
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 12),
@@ -348,10 +359,13 @@ class _LayananTabViewState extends State<LayananTabView> {
   IconData _getIconForFeature(String name) {
     final lower = name.toLowerCase();
     if (lower.contains('kamar')) return Icons.bed;
-    if (lower.contains('daftar') || lower.contains('pendaftaran')) return Icons.person_add_alt_1;
-    if (lower.contains('antrean') || lower.contains('antrian')) return Icons.people_outline;
+    if (lower.contains('daftar') || lower.contains('pendaftaran'))
+      return Icons.person_add_alt_1;
+    if (lower.contains('antrean') || lower.contains('antrian'))
+      return Icons.people_outline;
     if (lower.contains('operasi')) return Icons.schedule;
-    if (lower.contains('hoaks') || lower.contains('hoax')) return Icons.gavel_rounded;
+    if (lower.contains('hoaks') || lower.contains('hoax'))
+      return Icons.gavel_rounded;
     if (lower.contains('darurat')) return Icons.contact_phone;
     return Icons.apps;
   }
@@ -359,10 +373,13 @@ class _LayananTabViewState extends State<LayananTabView> {
   Color _getColorForFeature(String name) {
     final lower = name.toLowerCase();
     if (lower.contains('kamar')) return Colors.blue;
-    if (lower.contains('daftar') || lower.contains('pendaftaran')) return Colors.orange;
-    if (lower.contains('antrean') || lower.contains('antrian')) return Colors.green;
+    if (lower.contains('daftar') || lower.contains('pendaftaran'))
+      return Colors.orange;
+    if (lower.contains('antrean') || lower.contains('antrian'))
+      return Colors.green;
     if (lower.contains('operasi')) return Colors.red;
-    if (lower.contains('hoaks') || lower.contains('hoax')) return Colors.redAccent;
+    if (lower.contains('hoaks') || lower.contains('hoax'))
+      return Colors.redAccent;
     if (lower.contains('darurat')) return Colors.red;
     return Colors.blue;
   }

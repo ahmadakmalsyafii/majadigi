@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:majadigi/core/di/di.dart';
 import 'package:majadigi/deffered_feature/ketersediaan_kamar/domain/entity/room_availability_entity.dart';
 import 'package:majadigi/deffered_feature/ketersediaan_kamar/presentation/bloc/ketersediaan_kamar_bloc.dart';
 import 'package:majadigi/deffered_feature/ketersediaan_kamar/presentation/bloc/ketersediaan_kamar_event.dart';
-import 'package:majadigi/deffered_feature/ketersediaan_kamar/presentation/bloc/ketersediaan_kamar_state.dart';
 import 'package:majadigi/deffered_feature/ketersediaan_kamar/presentation/bloc/ketersediaan_kamar_state.dart';
 import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
 import 'package:majadigi/core/widgets/custom_header.dart';
@@ -20,7 +18,8 @@ class KetersediaanKamarPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<KetersediaanKamarBloc>()..add(FetchRoomAvailability(service.name)),
+      create: (_) =>
+          sl<KetersediaanKamarBloc>()..add(FetchRoomAvailability(service.name)),
       child: _KetersediaanKamarView(service: service),
     );
   }
@@ -56,7 +55,10 @@ class _KetersediaanKamarView extends StatelessWidget {
                     if (state is KetersediaanKamarLoaded) {
                       return Text(
                         'Terakhir Diperbarui: ${state.data.summary.lastUpdate}',
-                        style: const TextStyle(color: Colors.white54, fontSize: 11),
+                        style: const TextStyle(
+                          color: Colors.white54,
+                          fontSize: 11,
+                        ),
                       );
                     }
                     return const SizedBox.shrink();
@@ -71,7 +73,9 @@ class _KetersediaanKamarView extends StatelessWidget {
                   builder: (context) {
                     return AlertDialog(
                       title: const Text('Hapus Fitur'),
-                      content: const Text('Apakah Anda yakin ingin menghapus fitur ini dari perangkat?'),
+                      content: const Text(
+                        'Apakah Anda yakin ingin menghapus fitur ini dari perangkat?',
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
@@ -79,11 +83,15 @@ class _KetersediaanKamarView extends StatelessWidget {
                         ),
                         TextButton(
                           onPressed: () {
-                            sl<FeatureManagerBloc>().add(const UninstallFeatureEvent('ketersediaan_kamar'));
+                            sl<FeatureManagerBloc>().add(
+                              const UninstallFeatureEvent('ketersediaan_kamar'),
+                            );
                             Navigator.pop(context);
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Fitur berhasil dihapus')),
+                              const SnackBar(
+                                content: Text('Fitur berhasil dihapus'),
+                              ),
                             );
                           },
                           child: const Text('Ya'),
@@ -94,7 +102,10 @@ class _KetersediaanKamarView extends StatelessWidget {
                 );
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.white),
                   borderRadius: BorderRadius.circular(16),
@@ -103,7 +114,10 @@ class _KetersediaanKamarView extends StatelessWidget {
                   children: [
                     Icon(Icons.delete_outline, color: Colors.white, size: 16),
                     SizedBox(width: 4),
-                    Text('Hapus', style: TextStyle(color: Colors.white, fontSize: 14)),
+                    Text(
+                      'Hapus',
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
                   ],
                 ),
               ),
@@ -121,7 +135,11 @@ class _KetersediaanKamarView extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.error_outline, color: Colors.grey, size: 48),
+                        const Icon(
+                          Icons.error_outline,
+                          color: Colors.grey,
+                          size: 48,
+                        ),
                         const SizedBox(height: 16),
                         Text(
                           state.message,
@@ -131,7 +149,9 @@ class _KetersediaanKamarView extends StatelessWidget {
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () {
-                            context.read<KetersediaanKamarBloc>().add(FetchRoomAvailability(service.name));
+                            context.read<KetersediaanKamarBloc>().add(
+                              FetchRoomAvailability(service.name),
+                            );
                           },
                           child: const Text('Coba Lagi'),
                         ),
@@ -141,7 +161,10 @@ class _KetersediaanKamarView extends StatelessWidget {
                 } else if (state is KetersediaanKamarLoaded) {
                   final data = state.data;
                   return SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 20,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -282,7 +305,7 @@ class _KetersediaanKamarView extends StatelessWidget {
 
   Widget _buildRoomCard(RoomDetailEntity room) {
     double progress = room.total > 0 ? room.available / room.total : 0;
-    
+
     // Tentukan warna berdasarkan rasio ketersediaan
     Color barColor;
     if (progress > 0.5) {

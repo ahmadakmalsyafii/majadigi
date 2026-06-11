@@ -732,7 +732,7 @@ class ProfilePage extends StatelessWidget {
               const SizedBox(width: 4),
               const Text(
                 'Pria',
-                style: const TextStyle(fontSize: 14, color: Colors.black54),
+                style: TextStyle(fontSize: 14, color: Colors.black54),
               ),
             ],
           ),
@@ -757,7 +757,7 @@ class ProfilePage extends StatelessWidget {
               const SizedBox(width: 4),
               const Text(
                 'Wanita',
-                style: const TextStyle(fontSize: 14, color: Colors.black54),
+                style: TextStyle(fontSize: 14, color: Colors.black54),
               ),
             ],
           ),

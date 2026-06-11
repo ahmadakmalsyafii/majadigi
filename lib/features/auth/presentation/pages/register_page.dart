@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart'; // Tambahkan import cupertino
+// Tambahkan import cupertino
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_event.dart';
 import 'package:majadigi/features/auth/presentation/bloc/auth_state.dart';
@@ -60,7 +60,6 @@ class _RegisterPageState extends State<RegisterPage> {
         _selectedDate!,
       ),
     );
-
   }
 
   @override
@@ -105,7 +104,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
           return SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 8.0,
+              ),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -129,11 +131,13 @@ class _RegisterPageState extends State<RegisterPage> {
 
                     // --- Nama Lengkap ---
                     AuthTextField(
-                        label: "Nama Lengkap",
-                        hintText: "Masukkan Nama",
-                        controller: _nameController,
-                        textInputAction: TextInputAction.next,
-                        validator: (value) => value?.trim().isEmpty == true ? 'Nama tidak boleh kosong' : null,
+                      label: "Nama Lengkap",
+                      hintText: "Masukkan Nama",
+                      controller: _nameController,
+                      textInputAction: TextInputAction.next,
+                      validator: (value) => value?.trim().isEmpty == true
+                          ? 'Nama tidak boleh kosong'
+                          : null,
                     ),
                     const SizedBox(height: 16),
 
@@ -145,12 +149,15 @@ class _RegisterPageState extends State<RegisterPage> {
                       textInputAction: TextInputAction.next,
                       controller: _emailController,
                       validator: (value) {
-                        if (value == null || value.trim().isEmpty) return 'Email tidak boleh kosong';
-                        if (!RegExp(r'^[\w.+-]+@[\w-]+\.[a-z]{2,}$').hasMatch(value.trim())) {
+                        if (value == null || value.trim().isEmpty)
+                          return 'Email tidak boleh kosong';
+                        if (!RegExp(
+                          r'^[\w.+-]+@[\w-]+\.[a-z]{2,}$',
+                        ).hasMatch(value.trim())) {
                           return 'Masukkan email yang valid';
                         }
                         return null;
-                        },
+                      },
                     ),
                     const SizedBox(height: 16),
 
@@ -161,7 +168,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.next,
                       controller: _nikController,
-                      validator: (value) => value?.trim().isEmpty == true ? 'NIK tidak boleh kosong' : null,
+                      validator: (value) => value?.trim().isEmpty == true
+                          ? 'NIK tidak boleh kosong'
+                          : null,
                     ),
                     const SizedBox(height: 16),
 
@@ -172,7 +181,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
                       textInputAction: TextInputAction.next,
-                      validator: (value) => value?.trim().isEmpty == true ? 'Nomor telepon tidak boleh kosong' : null,
+                      validator: (value) => value?.trim().isEmpty == true
+                          ? 'Nomor telepon tidak boleh kosong'
+                          : null,
                     ),
                     const SizedBox(height: 16),
 
@@ -182,7 +193,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       onDateSelected: (date) {
                         setState(() => _selectedDate = date);
                       },
-                      validator: (date) => date == null ? 'Pilih tanggal lahir' : null,
+                      validator: (date) =>
+                          date == null ? 'Pilih tanggal lahir' : null,
                     ),
                     const SizedBox(height: 16),
 
@@ -194,14 +206,20 @@ class _RegisterPageState extends State<RegisterPage> {
                       textInputAction: TextInputAction.next,
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                          _obscurePassword
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
                           color: Colors.grey,
                         ),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Password tidak boleh kosong';
-                        if (value.length < 6) return 'Password minimal 6 karakter';
+                        if (value == null || value.isEmpty)
+                          return 'Password tidak boleh kosong';
+                        if (value.length < 6)
+                          return 'Password minimal 6 karakter';
                         return null;
                       },
                     ),
@@ -216,18 +234,21 @@ class _RegisterPageState extends State<RegisterPage> {
                       onFieldSubmitted: (_) => _submit(),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                          _obscurePassword
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
                           color: Colors.grey,
                         ),
-                        onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                        onPressed: () =>
+                            setState(() => _obscureConfirm = !_obscureConfirm),
                       ),
                       validator: (value) {
-                        if (value != _passwordController.text) return 'Password tidak cocok';
+                        if (value != _passwordController.text)
+                          return 'Password tidak cocok';
                         return null;
                       },
                     ),
                     const SizedBox(height: 40),
-
 
                     ElevatedButton(
                       onPressed: isLoading ? null : _submit,
@@ -242,24 +263,31 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       child: isLoading
                           ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                      )
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
                           : const Text(
-                        'Register',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
+                              'Register',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                     ),
                     const SizedBox(height: 24),
-
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           'Already have an account? ',
-                          style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey.shade600,
+                          ),
                         ),
                         GestureDetector(
                           onTap: isLoading ? null : () => context.pop(),
