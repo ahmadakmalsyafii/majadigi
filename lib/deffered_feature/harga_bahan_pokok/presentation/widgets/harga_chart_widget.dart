@@ -1,12 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/entities/commodity_price_history_entity.dart';
 
 class HargaChartWidget extends StatelessWidget {
-  const HargaChartWidget({super.key});
+  final List<PriceHistoryItemEntity> priceHistory;
+
+  const HargaChartWidget({super.key, required this.priceHistory});
 
   @override
   Widget build(BuildContext context) {
+    if (priceHistory.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Center(child: Text('Tidak ada data riwayat harga')),
+      );
+    }
+
+    // Sort the history by date ascending just in case API returns descending
+    final sortedHistory = List<PriceHistoryItemEntity>.from(priceHistory)
+      ..sort((a, b) => a.date.compareTo(b.date));
+
+    // Calculate min and max for Y-axis scaling
+    double minPrice = sortedHistory.map((e) => e.price.toDouble()).reduce((a, b) => a < b ? a : b);
+    double maxPrice = sortedHistory.map((e) => e.price.toDouble()).reduce((a, b) => a > b ? a : b);
+
+    // Provide some padding to the chart
+    final diff = maxPrice - minPrice;
+    minPrice = diff == 0 ? minPrice - 1000 : minPrice - (diff * 0.2);
+    maxPrice = diff == 0 ? maxPrice + 1000 : maxPrice + (diff * 0.2);
+
+    List<FlSpot> spots = [];
+    for (int i = 0; i < sortedHistory.length; i++) {
+      spots.add(FlSpot(i.toDouble(), sortedHistory[i].price.toDouble()));
+    }
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(top: 16, right: 24, left: 16, bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -15,147 +49,145 @@ class HargaChartWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Grafik Harga',
+            'Grafik Harga (30 Hari)',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 16),
-          // Dummy chart representation
+          const SizedBox(height: 24),
           SizedBox(
-            height: 200,
-            child: Stack(
-              children: [
-                // Y-axis labels
-                const Positioned(
-                  left: 0,
-                  top: 0,
-                  bottom: 24,
-                  width: 30,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('1k+', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                      Text('500', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                      Text('150', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                      Text('100', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                      Text('50', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                      Text('10', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                    ],
+            height: 220,
+            child: LineChart(
+              LineChartData(
+                minY: minPrice,
+                maxY: maxPrice,
+                minX: 0,
+                maxX: (sortedHistory.length - 1).toDouble(),
+                lineTouchData: LineTouchData(
+                  touchTooltipData: LineTouchTooltipData(
+                    getTooltipItems: (touchedSpots) {
+                      return touchedSpots.map((LineBarSpot touchedSpot) {
+                        final price = touchedSpot.y;
+                        final dateStr = sortedHistory[touchedSpot.x.toInt()].date;
+                        DateTime parsedDate;
+                        try {
+                          parsedDate = DateTime.parse(dateStr);
+                        } catch(e) {
+                          parsedDate = DateTime.now();
+                        }
+                        final formattedDate = DateFormat('dd MMM').format(parsedDate);
+                        final formatCurrency = NumberFormat.currency(
+                          locale: 'id_ID',
+                          symbol: 'Rp ',
+                          decimalDigits: 0,
+                        );
+                        
+                        return LineTooltipItem(
+                          '$formattedDate\n${formatCurrency.format(price)}',
+                          const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        );
+                      }).toList();
+                    },
                   ),
                 ),
-                // Graph lines (Dummy)
-                Positioned(
-                  left: 40,
-                  right: 0,
-                  top: 0,
-                  bottom: 24,
-                  child: CustomPaint(
-                    painter: _DummyChartPainter(),
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  horizontalInterval: diff == 0 ? 1000 : (diff / 4).clamp(1, double.infinity),
+                  getDrawingHorizontalLine: (value) {
+                    return FlLine(
+                      color: Colors.grey.shade200,
+                      strokeWidth: 1,
+                    );
+                  },
+                ),
+                titlesData: FlTitlesData(
+                  show: true,
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 30,
+                      interval: (sortedHistory.length / 5).ceil().toDouble().clamp(1, double.infinity),
+                      getTitlesWidget: (value, meta) {
+                        final index = value.toInt();
+                        if (index < 0 || index >= sortedHistory.length) {
+                          return const SizedBox.shrink();
+                        }
+                        final dateStr = sortedHistory[index].date;
+                        DateTime parsedDate;
+                        try {
+                          parsedDate = DateTime.parse(dateStr);
+                        } catch(e) {
+                          return const SizedBox.shrink();
+                        }
+                        final text = DateFormat('dd MMM').format(parsedDate);
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            text,
+                            style: const TextStyle(color: Colors.grey, fontSize: 10),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 45,
+                      getTitlesWidget: (value, meta) {
+                        if (value == maxPrice || value == minPrice) {
+                          return const SizedBox.shrink(); // Don't show top and bottom bounds
+                        }
+                        final formatCurrency = NumberFormat.compact(locale: 'id_ID');
+                        return Text(
+                          formatCurrency.format(value),
+                          style: const TextStyle(color: Colors.grey, fontSize: 10),
+                          textAlign: TextAlign.right,
+                        );
+                      },
+                    ),
                   ),
                 ),
-                // X-axis labels
-                const Positioned(
-                  left: 40,
-                  right: 0,
-                  bottom: 0,
-                  height: 20,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Sun', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                      Text('Mon', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                      Text('Tue', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                      Text('Wed', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                      Text('Thu', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                      Text('Fri', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                      Text('Sat', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                    ],
-                  ),
+                borderData: FlBorderData(
+                  show: false,
                 ),
-              ],
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: spots,
+                    isCurved: true,
+                    color: Colors.cyan.shade400,
+                    barWidth: 2,
+                    isStrokeCapRound: true,
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (spot, percent, barData, index) {
+                        return FlDotCirclePainter(
+                          radius: 3,
+                          color: Colors.white,
+                          strokeWidth: 2,
+                          strokeColor: Colors.cyan.shade400,
+                        );
+                      },
+                    ),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      color: Colors.cyan.shade400.withOpacity(0.1),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
       ),
     );
   }
-}
-
-class _DummyChartPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    // Draw horizontal grid lines
-    final gridPaint = Paint()
-      ..color = Colors.grey.shade200
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
-    
-    // Draw 6 grid lines
-    for (int i = 0; i < 6; i++) {
-      double y = size.height * (i / 5);
-      canvas.drawLine(
-        Offset(0, y),
-        Offset(size.width, y),
-        gridPaint, // In a real app we might use dotted line effect
-      );
-    }
-
-    // Draw the main line
-    final linePaint = Paint()
-      ..color = Colors.cyan.shade400
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-
-    final path = Path();
-    path.moveTo(0, size.height * 0.8);
-    path.quadraticBezierTo(size.width * 0.2, size.height * 0.6, size.width * 0.3, size.height * 0.7);
-    path.quadraticBezierTo(size.width * 0.4, size.height * 0.9, size.width * 0.5, size.height * 0.6);
-    path.quadraticBezierTo(size.width * 0.6, size.height * 0.2, size.width * 0.7, size.height * 0.1); // Peak
-    path.quadraticBezierTo(size.width * 0.8, size.height * 0.5, size.width * 0.85, size.height * 0.5);
-    path.lineTo(size.width, size.height * 0.5);
-
-    canvas.drawPath(path, linePaint);
-
-    // Draw a secondary line (faded)
-    final secLinePaint = Paint()
-      ..color = Colors.grey.shade300
-      ..strokeWidth = 1.5
-      ..style = PaintingStyle.stroke;
-
-    final secPath = Path();
-    secPath.moveTo(0, size.height * 0.9);
-    secPath.quadraticBezierTo(size.width * 0.2, size.height * 0.9, size.width * 0.3, size.height * 0.6);
-    secPath.quadraticBezierTo(size.width * 0.4, size.height * 0.5, size.width * 0.5, size.height * 0.9);
-    secPath.quadraticBezierTo(size.width * 0.6, size.height * 0.8, size.width * 0.7, size.height * 0.5); 
-    secPath.quadraticBezierTo(size.width * 0.8, size.height * 0.8, size.width * 0.85, size.height * 0.8);
-    secPath.lineTo(size.width, size.height * 0.8);
-
-    canvas.drawPath(secPath, secLinePaint);
-
-    // Draw peak point
-    final pointPaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-    final pointBorderPaint = Paint()
-      ..color = Colors.orange
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-
-    final peakX = size.width * 0.7;
-    final peakY = size.height * 0.1;
-    
-    // Draw vertical line from peak
-    final vertLinePaint = Paint()
-      ..color = Colors.orange.shade300
-      ..strokeWidth = 1;
-    canvas.drawLine(Offset(peakX, peakY), Offset(peakX, size.height), vertLinePaint);
-
-    canvas.drawCircle(Offset(peakX, peakY), 4, pointPaint);
-    canvas.drawCircle(Offset(peakX, peakY), 4, pointBorderPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

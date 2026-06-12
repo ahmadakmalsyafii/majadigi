@@ -73,9 +73,10 @@ class _LayananTabViewState extends State<LayananTabView> {
             color: Colors.black87,
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         GridView.builder(
           shrinkWrap: true,
+          padding: EdgeInsets.zero,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,

@@ -5,6 +5,7 @@ import 'package:majadigi/deffered_feature/harga_bahan_pokok/data/datasources/har
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/entities/commodity_entity.dart';
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/entities/commodity_detail_entity.dart';
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/entities/city_price_entity.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/entities/commodity_price_history_entity.dart';
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/repositories/harga_bahan_pokok_repository.dart';
 
 class HargaBahanPokokRepositoryImpl implements HargaBahanPokokRepository {
@@ -57,6 +58,28 @@ class HargaBahanPokokRepositoryImpl implements HargaBahanPokokRepository {
         limit: limit,
       );
       return Right(response);
+    } on DioException catch (e) {
+      return Left(ServerFailure(message: e.message ?? 'Server Error'));
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, CommodityPriceHistoryEntity>> getCommodityPriceHistory(
+    int bpId,
+  ) async {
+    try {
+      final result = await remoteDataSource.getCommodityPriceHistory(bpId);
+      final entity = CommodityPriceHistoryEntity(
+        data: result.data
+            .map(
+              (item) =>
+                  PriceHistoryItemEntity(date: item.date, price: item.price),
+            )
+            .toList(),
+      );
+      return Right(entity);
     } on DioException catch (e) {
       return Left(ServerFailure(message: e.message ?? 'Server Error'));
     } catch (e) {

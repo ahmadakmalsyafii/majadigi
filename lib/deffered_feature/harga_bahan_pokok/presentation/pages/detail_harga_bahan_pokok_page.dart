@@ -292,10 +292,10 @@ class DetailHargaBahanPokokView extends StatelessWidget {
           BlocBuilder<HargaBahanPokokBloc, HargaBahanPokokState>(
             builder: (context, state) {
               if (state is CommodityDetailLoaded) {
-                return const SliverToBoxAdapter(
+                return SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: HargaChartWidget(),
+                    padding: const EdgeInsets.all(16.0),
+                    child: HargaChartWidget(priceHistory: state.priceHistory),
                   ),
                 );
               }

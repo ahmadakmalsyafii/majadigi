@@ -80,6 +80,7 @@ import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/repositories/
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/usecases/get_commodity_price_list_usecase.dart';
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/usecases/get_commodity_detail_usecase.dart';
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/usecases/get_city_price_list_usecase.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/usecases/get_commodity_price_history_usecase.dart';
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/presentation/bloc/harga_bahan_pokok_bloc.dart';
 import 'package:majadigi/deffered_feature/bansos/data/datasources/bansos_remote_datasource.dart';
 import 'package:majadigi/deffered_feature/bansos/data/repository/bansos_repository_impl.dart';
@@ -174,6 +175,7 @@ void init() async {
       getCommodityPriceList: sl(),
       getCommodityDetail: sl(),
       getCityPriceList: sl(),
+      getCommodityPriceHistory: sl(),
     ),
   );
   sl.registerFactory(() => BansosBloc(getBansosByNik: sl()));
@@ -211,6 +213,7 @@ void init() async {
   sl.registerLazySingleton(() => GetCommodityPriceListUseCase(sl()));
   sl.registerLazySingleton(() => GetCommodityDetailUseCase(sl()));
   sl.registerLazySingleton(() => GetCityPriceListUseCase(sl()));
+  sl.registerLazySingleton(() => GetCommodityPriceHistoryUseCase(sl()));
   sl.registerLazySingleton(() => GetBansosByNikUseCase(sl()));
   sl.registerLazySingleton(() => GetDestinationsUseCase(sl()));
   sl.registerLazySingleton(() => GetFacilitiesUseCase(sl()));
@@ -248,7 +251,11 @@ void init() async {
         () => PendaftaranRemoteDataSourceImpl(firestore: sl()),
   );
   sl.registerLazySingleton<KlinikHoaksRemoteDataSource>(
-    () => KlinikHoaksRemoteDataSourceImpl(dioClient: sl()),
+    () => KlinikHoaksRemoteDataSourceImpl(
+      dioClient: sl(),
+      sharedPreferences: sl(),
+    
+    ),
   );
   sl.registerLazySingleton<HargaBahanPokokRemoteDataSource>(
     () => HargaBahanPokokRemoteDataSourceImpl(dioClient: sl()),

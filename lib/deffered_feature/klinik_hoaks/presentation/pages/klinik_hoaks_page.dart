@@ -118,6 +118,63 @@ class _KlinikHoaksViewState extends State<_KlinikHoaksView> {
             );
           }
 
+          // Progressive loading: tampilkan stats dulu, list masih loading
+          if (state is KlinikHoaksPartialLoaded) {
+            return Column(
+              children: [
+                // Header dengan gradasi & Statistik (sudah tersedia)
+                CustomHeader(
+                  title: 'Klinik Hoaks',
+                  subtitle: 'Verifikasi & klarifikasi informasi resmi',
+                  subtitleWidget: LayoutBuilder(builder: (context, constraints) {
+                    final cardWidth = (constraints.maxWidth - 24) / 4;
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildStatCard(
+                          '${state.stats.jmlHoaksYtd}',
+                          'Berita Hoaks',
+                          cardWidth,
+                        ),
+                        _buildStatCard(
+                          '${state.stats.jmlDisinformasiYtd}',
+                          'Disinformasi',
+                          cardWidth,
+                        ),
+                        _buildStatCard(
+                          '${state.stats.jmlFaktaYtd}',
+                          'Fakta',
+                          cardWidth,
+                        ),
+                        _buildStatCard(
+                          '${state.stats.jmlHateSpeechYtd}',
+                          'Hate Speech',
+                          cardWidth,
+                        ),
+                      ],
+                    );
+                  }),
+                ),
+                // Loading indicator untuk daftar klarifikasi
+                const Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 16),
+                        Text(
+                          'Memuat klarifikasi terkini...',
+                          style: TextStyle(color: Colors.grey, fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+
           if (state is KlinikHoaksLoaded) {
             return Column(
               children: [

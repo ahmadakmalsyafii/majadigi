@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/entities/commodity_entity.dart';
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/entities/commodity_detail_entity.dart';
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/entities/city_price_entity.dart';
+import 'package:majadigi/deffered_feature/harga_bahan_pokok/domain/entities/commodity_price_history_entity.dart';
 
 abstract class HargaBahanPokokState extends Equatable {
   const HargaBahanPokokState();
@@ -33,9 +34,10 @@ class CommodityDetailLoading extends HargaBahanPokokState {}
 class CommodityDetailLoaded extends HargaBahanPokokState {
   final CommodityDetailDataEntity detail;
   final List<CityPriceEntity> cityPrices;
-  const CommodityDetailLoaded(this.detail, this.cityPrices);
+  final List<PriceHistoryItemEntity> priceHistory;
+  const CommodityDetailLoaded(this.detail, this.cityPrices, this.priceHistory);
   @override
-  List<Object?> get props => [detail, cityPrices];
+  List<Object?> get props => [detail, cityPrices, priceHistory];
 }
 
 class CommodityDetailError extends HargaBahanPokokState {
