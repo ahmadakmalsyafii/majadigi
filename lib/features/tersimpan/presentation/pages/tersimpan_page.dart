@@ -18,11 +18,14 @@ const defaultHospitalService = ServiceEntity(
   address: 'Jl. Jaksa Agung Suprapto No.2, Malang',
   websiteUrl: 'https://rsusaifulanwar.jatimprov.go.id',
   features: [],
-  operationalHours: OperationalHourEntity(
-    hari: 'Senin - Minggu',
-    buka: '00:00',
-    tutup: '23:59',
-  ),
+  operationalHours: [
+    OperationalHourEntity(
+      hari: '',
+      buka: '',
+      tutup: '',
+      keterangan: '',
+    ),
+  ],
 );
 
 class TersimpanPage extends StatefulWidget {

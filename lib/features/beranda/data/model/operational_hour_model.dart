@@ -9,20 +9,11 @@ class OperationalHourModel extends OperationalHourEntity {
   });
 
   factory OperationalHourModel.fromJson(Map<String, dynamic> json) {
-    if (json.containsKey('items') && json['items'] is List && (json['items'] as List).isNotEmpty) {
-      final firstItem = json['items'][0] as Map;
-      return OperationalHourModel(
-        hari: firstItem['hari'] ?? '',
-        buka: firstItem['buka'] ?? '',
-        tutup: firstItem['tutup'] ?? '',
-        keterangan: firstItem['keterangan'] ?? '',
-      );
-    }
-    return const OperationalHourModel(
-      hari: '',
-      buka: '',
-      tutup: '',
-      keterangan: '',
+    return OperationalHourModel(
+      hari: json['hari'] ?? '',
+      buka: json['buka'],
+      tutup: json['tutup'],
+      keterangan: json['keterangan'],
     );
   }
 

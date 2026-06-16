@@ -105,7 +105,6 @@ class PendaftaranRemoteDataSourceImpl implements PendaftaranRemoteDataSource {
       final date = booking.date;
       final doctorId = booking.doctorId;
 
-      // Hitung jumlah pendaftar hari itu untuk menentukan antrean
       final regSnapshot = await firestore
           .collection('registrations')
           .where('doctorId', isEqualTo: doctorId)

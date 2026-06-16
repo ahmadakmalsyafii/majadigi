@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:majadigi/features/beranda/domain/entity/feature_entity.dart';
+import 'package:majadigi/features/beranda/domain/entity/ketentuan_layanan_entity.dart';
 import 'package:majadigi/features/beranda/domain/entity/operational_hour_entity.dart';
 
 class ServiceEntity extends Equatable {
@@ -11,8 +12,8 @@ class ServiceEntity extends Equatable {
   final String address;
   final String websiteUrl;
   final List<FeatureEntity> features;
-  final OperationalHourEntity operationalHours;
-
+  final List<OperationalHourEntity> operationalHours;
+  final KetentuanLayananEntity? ketentuanLayanan;
 
   const ServiceEntity({
     required this.id,
@@ -24,9 +25,20 @@ class ServiceEntity extends Equatable {
     required this.websiteUrl,
     required this.features,
     required this.operationalHours,
-
+    this.ketentuanLayanan,
   });
 
   @override
-  List<Object?> get props => [id, name, icon, about, description, address, websiteUrl, features, operationalHours];
+  List<Object?> get props => [
+        id,
+        name,
+        icon,
+        about,
+        description,
+        address,
+        websiteUrl,
+        features,
+        operationalHours,
+        ketentuanLayanan,
+      ];
 }

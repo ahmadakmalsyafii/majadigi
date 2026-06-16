@@ -98,10 +98,18 @@ import 'package:majadigi/core/feature_manager/domain/repositories/feature_manage
 import 'package:majadigi/core/feature_manager/domain/usecases/manage_feature_usecase.dart';
 import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_bloc.dart';
 import 'package:majadigi/deffered_feature/islamic_center/data/datasources/islamic_center_remote_datasource.dart';
-import 'package:majadigi/deffered_feature/islamic_center/data/repository/islamic_center_repository_impl.dart';
+import 'package:majadigi/deffered_feature/islamic_center/data/repositories/islamic_center_repository_impl.dart';
 import 'package:majadigi/deffered_feature/islamic_center/domain/repositories/islamic_center_repository.dart';
 import 'package:majadigi/deffered_feature/islamic_center/domain/usecases/get_facilities_usecase.dart';
 import 'package:majadigi/deffered_feature/islamic_center/presentation/bloc/islamic_center_bloc.dart';
+import 'package:majadigi/deffered_feature/islamic_center/presentation/bloc/islamic_center_ticket_bloc.dart';
+import 'package:majadigi/deffered_feature/islamic_center/data/repositories/islamic_center_ticket_repository_impl.dart';
+import 'package:majadigi/deffered_feature/islamic_center/domain/repositories/islamic_center_ticket_repository.dart';
+import 'package:majadigi/deffered_feature/islamic_center/domain/usecases/create_islamic_ticket_usecase.dart';
+import 'package:majadigi/deffered_feature/destinasi_wisata/data/repositories/destination_ticket_repository_impl.dart';
+import 'package:majadigi/deffered_feature/destinasi_wisata/domain/repositories/destination_ticket_repository.dart';
+import 'package:majadigi/deffered_feature/destinasi_wisata/domain/usecases/create_destination_ticket_usecase.dart';
+import 'package:majadigi/deffered_feature/destinasi_wisata/presentation/bloc/destination_ticket_bloc.dart';
 
 /// Global service locator.
 final sl = GetIt.instance;
@@ -183,6 +191,8 @@ void init() async {
 
   sl.registerFactory(() => ListLayananBloc(getAllServiceUsecase: sl()));
   sl.registerFactory(() => IslamicCenterBloc(getFacilitiesUseCase: sl()));
+  sl.registerFactory(() => IslamicCenterTicketBloc(sl()));
+  sl.registerFactory(() => DestinationTicketBloc(sl()));
 
   // Use Cases
   // di.registerLazySingleton<AuthUseCase>(() => AuthUseCaseImpl(di()));
@@ -217,6 +227,8 @@ void init() async {
   sl.registerLazySingleton(() => GetBansosByNikUseCase(sl()));
   sl.registerLazySingleton(() => GetDestinationsUseCase(sl()));
   sl.registerLazySingleton(() => GetFacilitiesUseCase(sl()));
+  sl.registerLazySingleton(() => CreateIslamicTicketUsecase(sl()));
+  sl.registerLazySingleton(() => CreateDestinationTicketUsecase(sl()));
 
   // Data Sources
   // di.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(di()));
@@ -323,6 +335,12 @@ void init() async {
   );
   sl.registerLazySingleton<IslamicCenterRepository>(
     () => IslamicCenterRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<IslamicCenterTicketRepository>(
+    () => IslamicCenterTicketRepositoryImpl(firestore: sl()),
+  );
+  sl.registerLazySingleton<DestinationTicketRepository>(
+    () => DestinationTicketRepositoryImpl(firestore: sl()),
   );
 
   sl.registerLazySingleton<FeatureManagerLocalDataSource>(

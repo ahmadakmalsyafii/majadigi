@@ -3,6 +3,7 @@ import 'package:majadigi/core/widgets/custom_header.dart';
 import 'package:majadigi/deffered_feature/destinasi_wisata/domain/entity/destination_entity.dart';
 import 'package:majadigi/deffered_feature/destinasi_wisata/presentation/widgets/rute_tab_view.dart';
 import 'package:majadigi/deffered_feature/destinasi_wisata/presentation/widgets/tentang_tab_view.dart';
+import 'package:majadigi/deffered_feature/destinasi_wisata/presentation/pages/destinasi_booking_page.dart';
 
 class DetailDestinasiPage extends StatefulWidget {
   final DestinationEntity destination;
@@ -101,6 +102,49 @@ class _DetailDestinasiPageState extends State<DetailDestinasiPage>
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DestinasiBookingPage(
+                    destination: widget.destination,
+                  ),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0065FF),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text(
+              'Pesan Tiket',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:majadigi/core/widgets/custom_header.dart';
 import 'package:majadigi/deffered_feature/islamic_center/domain/entity/facility_entity.dart';
+import 'package:majadigi/deffered_feature/islamic_center/presentation/pages/islamic_center_booking_page.dart';
 
 class IslamicCenterFacilityDetailPage extends StatelessWidget {
   final FacilityEntity facility;
@@ -100,7 +101,15 @@ class IslamicCenterFacilityDetailPage extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Implementasi pemesanan tiket nantinya
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => IslamicCenterBookingPage(
+                            room: room,
+                            facility: facility,
+                          ),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0048B5),

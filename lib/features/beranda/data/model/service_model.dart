@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:majadigi/features/beranda/data/model/feature_model.dart';
+import 'package:majadigi/features/beranda/data/model/ketentuan_layanan_model.dart';
 import 'package:majadigi/features/beranda/data/model/operational_hour_model.dart';
 import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
 
@@ -14,6 +15,7 @@ class ServiceModel extends ServiceEntity {
     required super.websiteUrl,
     required super.features,
     required super.operationalHours,
+    super.ketentuanLayanan,
   });
 
   factory ServiceModel.fromJson(Map<String, dynamic> json) {
@@ -34,16 +36,20 @@ class ServiceModel extends ServiceEntity {
                 )
                 .toList()
           : [],
-      operationalHours: json['operational_hours'] != null
-          ? OperationalHourModel.fromJson(
-              Map<String, dynamic>.from(json['operational_hours'] as Map),
+      operationalHours: (json['operational_hours'] != null && json['operational_hours']['items'] != null)
+          ? (json['operational_hours']['items'] as List<dynamic>)
+                .map(
+                  (item) => OperationalHourModel.fromJson(
+                    Map<String, dynamic>.from(item as Map),
+                  ),
+                )
+                .toList()
+          : [],
+      ketentuanLayanan: json['ketentuan_layanan'] != null
+          ? KetentuanLayananModel.fromJson(
+              Map<String, dynamic>.from(json['ketentuan_layanan'] as Map),
             )
-          : const OperationalHourModel(
-              hari: '',
-              buka: '',
-              tutup: '',
-              keterangan: '',
-            ),
+          : null,
     );
   }
 
@@ -66,16 +72,20 @@ class ServiceModel extends ServiceEntity {
                 )
                 .toList()
           : [],
-      operationalHours: data['operational_hours'] != null
-          ? OperationalHourModel.fromJson(
-              Map<String, dynamic>.from(data['operational_hours'] as Map),
+      operationalHours: (data['operational_hours'] != null && data['operational_hours']['items'] != null)
+          ? (data['operational_hours']['items'] as List<dynamic>)
+                .map(
+                  (item) => OperationalHourModel.fromJson(
+                    Map<String, dynamic>.from(item as Map),
+                  ),
+                )
+                .toList()
+          : [],
+      ketentuanLayanan: data['ketentuan_layanan'] != null
+          ? KetentuanLayananModel.fromJson(
+              Map<String, dynamic>.from(data['ketentuan_layanan'] as Map),
             )
-          : const OperationalHourModel(
-              hari: '',
-              buka: '',
-              tutup: '',
-              keterangan: '',
-            ),
+          : null,
     );
   }
 
@@ -89,7 +99,12 @@ class ServiceModel extends ServiceEntity {
       'address': address,
       'website_url': websiteUrl,
       'feature': features.map((f) => (f as FeatureModel).toJson()).toList(),
-      'operational_hours': (operationalHours as OperationalHourModel).toJson(),
+      'operational_hours': {
+        'items': operationalHours.map((o) => (o as OperationalHourModel).toJson()).toList(),
+      },
+      'ketentuan_layanan': ketentuanLayanan != null
+          ? (ketentuanLayanan as KetentuanLayananModel).toJson()
+          : null,
     };
   }
 }

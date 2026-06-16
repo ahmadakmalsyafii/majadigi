@@ -3,8 +3,8 @@ import 'package:equatable/equatable.dart';
 
 class OperationalHourEntity extends Equatable {
   final String hari;
-  final String buka;
-  final String tutup;
+  final String? buka;
+  final String? tutup;
   final String? keterangan;
 
   const OperationalHourEntity({
