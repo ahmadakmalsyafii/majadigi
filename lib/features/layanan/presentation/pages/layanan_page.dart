@@ -7,7 +7,7 @@ import 'package:majadigi/core/widgets/custom_search_bar.dart';
 import 'package:majadigi/features/layanan/presentation/bloc/layanan_bloc.dart';
 import 'package:majadigi/features/layanan/presentation/bloc/layanan_event.dart';
 import 'package:majadigi/features/layanan/presentation/bloc/layanan_state.dart';
-import 'package:majadigi/features/list_layanan/presentation/bloc/list_layanan_bloc.dart';
+import 'package:majadigi/features/layanan/presentation/widgets/layanan_shimmer.dart';
 
 class LayananPage extends StatefulWidget {
   const LayananPage({super.key});
@@ -22,7 +22,9 @@ class _LayananPageState extends State<LayananPage> {
 
   void _loadMore() async {
     if (isLoadingMore) return;
-    setState(() { isLoadingMore = true; });
+    setState(() {
+      isLoadingMore = true;
+    });
     await Future.delayed(const Duration(milliseconds: 800));
     if (mounted) {
       setState(() {
@@ -41,7 +43,9 @@ class _LayananPageState extends State<LayananPage> {
         isLoadingMore: isLoadingMore,
         onLoadMore: _loadMore,
         onSearch: () {
-          setState(() { visibleCount = 20; });
+          setState(() {
+            visibleCount = 20;
+          });
         },
       ),
     );
@@ -79,24 +83,28 @@ class _LayananView extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300)
+                      border: Border.all(color: Colors.grey.shade300),
                     ),
                     child: CustomSearchBar(
                       hintText: 'Cari layanan...',
                       onChanged: (value) {
                         onSearch();
-                        context.read<LayananBloc>().add(SearchLayananEvent(value));
+                        context.read<LayananBloc>().add(
+                          SearchLayananEvent(value),
+                        );
                       },
                     ),
-                  )
+                  ),
                 ],
               );
-            }
+            },
           ),
           Expanded(
             child: NotificationListener<ScrollNotification>(
               onNotification: (ScrollNotification scrollInfo) {
-                if (!isLoadingMore && scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 50) {
+                if (!isLoadingMore &&
+                    scrollInfo.metrics.pixels >=
+                        scrollInfo.metrics.maxScrollExtent - 50) {
                   onLoadMore();
                 }
                 return false;
@@ -104,23 +112,31 @@ class _LayananView extends StatelessWidget {
               child: BlocBuilder<LayananBloc, LayananState>(
                 builder: (context, state) {
                   if (state is LayananLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const LayananShimmer();
                   } else if (state is LayananLoaded) {
                     final services = state.filteredServices;
                     final katalog = state.filteredKatalogLayanan;
                     final totalCount = services.length + katalog.length;
 
                     if (totalCount == 0) {
-                      return const Center(child: Text("Tidak ada layanan ditemukan"));
+                      return const Center(
+                        child: Text("Tidak ada layanan ditemukan"),
+                      );
                     }
 
-                    final int currentCount = visibleCount < totalCount ? visibleCount : totalCount;
+                    final int currentCount = visibleCount < totalCount
+                        ? visibleCount
+                        : totalCount;
                     final bool hasMore = currentCount < totalCount;
 
                     return ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
+                      ),
                       itemCount: currentCount + (hasMore ? 1 : 0),
-                      separatorBuilder: (context, index) => const SizedBox(height: 8),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 8),
                       itemBuilder: (context, index) {
                         if (index == currentCount) {
                           return const Padding(
@@ -129,9 +145,18 @@ class _LayananView extends StatelessWidget {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+                                  SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
                                   SizedBox(width: 8),
-                                  Text('Memuat...', style: TextStyle(color: Colors.grey)),
+                                  Text(
+                                    'Memuat...',
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
                                 ],
                               ),
                             ),
@@ -174,7 +199,12 @@ class _LayananView extends StatelessWidget {
     );
   }
 
-  Widget _buildListItem(BuildContext context, {required String name, required String iconUrl, required VoidCallback onTap}) {
+  Widget _buildListItem(
+    BuildContext context, {
+    required String name,
+    required String iconUrl,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -197,7 +227,8 @@ class _LayananView extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Image.network(
                   iconUrl,
-                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.image_not_supported, color: Colors.grey),
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.image_not_supported, color: Colors.grey),
                 ),
               ),
             ),

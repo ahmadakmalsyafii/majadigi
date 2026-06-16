@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:majadigi/core/error/exceptions.dart';
 import 'package:majadigi/deffered_feature/pendaftaran_pasien/data/model/pendaftaran_poli_model.dart';
 import 'package:majadigi/deffered_feature/pendaftaran_pasien/data/model/pendaftaran_dokter_model.dart';
@@ -7,9 +6,14 @@ import 'package:majadigi/deffered_feature/pendaftaran_pasien/data/model/pendafta
 
 abstract class PendaftaranRemoteDataSource {
   Future<List<PendaftaranPoliModel>> getPoliList(String hospitalId);
-  Future<List<PendaftaranDokterModel>> getDokterList(String hospitalId, String poliId);
+  Future<List<PendaftaranDokterModel>> getDokterList(
+    String hospitalId,
+    String poliId,
+  );
   Future<Map<String, int>> getTimeSlotQuotas(String doctorId, String date);
-  Future<PendaftaranBookingModel> saveRegistration(PendaftaranBookingModel booking);
+  Future<PendaftaranBookingModel> saveRegistration(
+    PendaftaranBookingModel booking,
+  );
 }
 
 class PendaftaranRemoteDataSourceImpl implements PendaftaranRemoteDataSource {
@@ -32,31 +36,47 @@ class PendaftaranRemoteDataSourceImpl implements PendaftaranRemoteDataSource {
             .collection('polis')
             .where('hospitalId', isEqualTo: hospitalId)
             .get();
-        return reSnapshot.docs.map((doc) => PendaftaranPoliModel.fromFirestore(doc)).toList();
+        return reSnapshot.docs
+            .map((doc) => PendaftaranPoliModel.fromFirestore(doc))
+            .toList();
       }
 
-      return polisSnapshot.docs.map((doc) => PendaftaranPoliModel.fromFirestore(doc)).toList();
+      return polisSnapshot.docs
+          .map((doc) => PendaftaranPoliModel.fromFirestore(doc))
+          .toList();
     } catch (e) {
-      throw ServerException(message: 'Gagal memuat poliklinik dari database: $e');
+      throw ServerException(
+        message: 'Gagal memuat poliklinik dari database: $e',
+      );
     }
   }
 
   @override
-  Future<List<PendaftaranDokterModel>> getDokterList(String hospitalId, String poliId) async {
+  Future<List<PendaftaranDokterModel>> getDokterList(
+    String hospitalId,
+    String poliId,
+  ) async {
     try {
       final docsSnapshot = await firestore
           .collection('doctors')
           .where('hospitalId', isEqualTo: hospitalId)
           .where('poliId', isEqualTo: poliId)
           .get();
-      return docsSnapshot.docs.map((doc) => PendaftaranDokterModel.fromFirestore(doc)).toList();
+      return docsSnapshot.docs
+          .map((doc) => PendaftaranDokterModel.fromFirestore(doc))
+          .toList();
     } catch (e) {
-      throw ServerException(message: 'Gagal memuat daftar dokter dari database: $e');
+      throw ServerException(
+        message: 'Gagal memuat daftar dokter dari database: $e',
+      );
     }
   }
 
   @override
-  Future<Map<String, int>> getTimeSlotQuotas(String doctorId, String date) async {
+  Future<Map<String, int>> getTimeSlotQuotas(
+    String doctorId,
+    String date,
+  ) async {
     try {
       final registrationsSnapshot = await firestore
           .collection('registrations')
@@ -78,7 +98,9 @@ class PendaftaranRemoteDataSourceImpl implements PendaftaranRemoteDataSource {
   }
 
   @override
-  Future<PendaftaranBookingModel> saveRegistration(PendaftaranBookingModel booking) async {
+  Future<PendaftaranBookingModel> saveRegistration(
+    PendaftaranBookingModel booking,
+  ) async {
     try {
       final date = booking.date;
       final doctorId = booking.doctorId;
@@ -94,7 +116,7 @@ class PendaftaranRemoteDataSourceImpl implements PendaftaranRemoteDataSource {
       final queueNumberStr = 'A-${queueNum.toString().padLeft(3, '0')}';
 
       final docRef = firestore.collection('registrations').doc();
-      
+
       final updatedBooking = PendaftaranBookingModel(
         id: docRef.id,
         userId: booking.userId,
@@ -140,7 +162,12 @@ class PendaftaranRemoteDataSourceImpl implements PendaftaranRemoteDataSource {
         'jadwal': 'Senin - Jumat, 08:00 - 14:00',
         'kuota': 15,
         'poliCode': 'UMUM',
-        'availableTimes': ['08:00 - 09:00', '09:00 - 10:00', '13:00 - 14:00', '14:00 - 15:00'],
+        'availableTimes': [
+          '08:00 - 09:00',
+          '09:00 - 10:00',
+          '13:00 - 14:00',
+          '14:00 - 15:00',
+        ],
       },
       {
         'name': 'dr. Siti Aminah',
@@ -211,7 +238,9 @@ class PendaftaranRemoteDataSourceImpl implements PendaftaranRemoteDataSource {
       batch.set(ref, {
         'hospitalId': hospitalId,
         'poliId': poliId,
-        'poliName': defaultPolis.firstWhere((p) => p['code'] == doc['poliCode'])['name'],
+        'poliName': defaultPolis.firstWhere(
+          (p) => p['code'] == doc['poliCode'],
+        )['name'],
         'name': doc['name'],
         'spesialis': doc['spesialis'],
         'jadwal': doc['jadwal'],

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:majadigi/core/di/di.dart';
 import 'package:majadigi/deffered_feature/antrean_pasien/domain/entity/dokter_entity.dart';
 import 'package:majadigi/deffered_feature/antrean_pasien/domain/entity/poli_entity.dart';
@@ -38,9 +37,9 @@ class _AntreanPasienView extends StatelessWidget {
             previous.errorMessage != current.errorMessage,
         listener: (context, state) {
           if (state.errorMessage != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.errorMessage!)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
           }
         },
         child: Column(
@@ -54,7 +53,9 @@ class _AntreanPasienView extends StatelessWidget {
                     builder: (context) {
                       return AlertDialog(
                         title: const Text('Hapus Fitur'),
-                        content: const Text('Apakah Anda yakin ingin menghapus fitur ini dari perangkat?'),
+                        content: const Text(
+                          'Apakah Anda yakin ingin menghapus fitur ini dari perangkat?',
+                        ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),
@@ -62,11 +63,15 @@ class _AntreanPasienView extends StatelessWidget {
                           ),
                           TextButton(
                             onPressed: () {
-                              sl<FeatureManagerBloc>().add(const UninstallFeatureEvent('antrean_pasien'));
+                              sl<FeatureManagerBloc>().add(
+                                const UninstallFeatureEvent('antrean_pasien'),
+                              );
                               Navigator.pop(context);
                               Navigator.pop(context);
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Fitur berhasil dihapus')),
+                                const SnackBar(
+                                  content: Text('Fitur berhasil dihapus'),
+                                ),
                               );
                             },
                             child: const Text('Ya'),
@@ -77,7 +82,10 @@ class _AntreanPasienView extends StatelessWidget {
                   );
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.white),
                     borderRadius: BorderRadius.circular(16),
@@ -86,7 +94,10 @@ class _AntreanPasienView extends StatelessWidget {
                     children: [
                       Icon(Icons.delete_outline, color: Colors.white, size: 16),
                       SizedBox(width: 4),
-                      Text('Hapus', style: TextStyle(color: Colors.white, fontSize: 14)),
+                      Text(
+                        'Hapus',
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                      ),
                     ],
                   ),
                 ),
@@ -107,11 +118,15 @@ class _AntreanPasienView extends StatelessWidget {
                     BlocBuilder<AntreanBloc, AntreanState>(
                       buildWhen: (previous, current) =>
                           previous.antreanResult != current.antreanResult ||
-                          previous.isLoadingAntrean != current.isLoadingAntrean ||
+                          previous.isLoadingAntrean !=
+                              current.isLoadingAntrean ||
                           previous.selectedDokter != current.selectedDokter,
                       builder: (context, state) {
-                        if (state.antreanResult != null && !state.isLoadingAntrean) {
-                          return StatusAntreanView(antrean: state.antreanResult!);
+                        if (state.antreanResult != null &&
+                            !state.isLoadingAntrean) {
+                          return StatusAntreanView(
+                            antrean: state.antreanResult!,
+                          );
                         }
                         return const SizedBox.shrink();
                       },
@@ -125,7 +140,6 @@ class _AntreanPasienView extends StatelessWidget {
       ),
     );
   }
-
 
   Widget _buildPoliDropdown() {
     return BlocBuilder<AntreanBloc, AntreanState>(
@@ -177,7 +191,9 @@ class _AntreanPasienView extends StatelessWidget {
                         }).toList(),
                         onChanged: (value) {
                           if (value != null) {
-                            context.read<AntreanBloc>().add(FetchDokterEvent(value));
+                            context.read<AntreanBloc>().add(
+                              FetchDokterEvent(value),
+                            );
                           }
                         },
                       ),
@@ -212,7 +228,9 @@ class _AntreanPasienView extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
-                color: state.selectedPoli == null ? Colors.grey.shade100 : Colors.white,
+                color: state.selectedPoli == null
+                    ? Colors.grey.shade100
+                    : Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.grey.shade300),
               ),
@@ -230,9 +248,11 @@ class _AntreanPasienView extends StatelessWidget {
                   : DropdownButtonHideUnderline(
                       child: DropdownButton<DokterEntity>(
                         isExpanded: true,
-                        hint: Text(state.selectedPoli == null
-                            ? 'Pilih Poli terlebih dahulu'
-                            : 'Pilih Dokter'),
+                        hint: Text(
+                          state.selectedPoli == null
+                              ? 'Pilih Poli terlebih dahulu'
+                              : 'Pilih Dokter',
+                        ),
                         value: state.selectedDokter,
                         items: state.dokterList.map((dokter) {
                           return DropdownMenuItem<DokterEntity>(
@@ -244,7 +264,9 @@ class _AntreanPasienView extends StatelessWidget {
                             ? null
                             : (value) {
                                 if (value != null) {
-                                  context.read<AntreanBloc>().add(SelectDokterEvent(value));
+                                  context.read<AntreanBloc>().add(
+                                    SelectDokterEvent(value),
+                                  );
                                 }
                               },
                       ),
@@ -259,7 +281,8 @@ class _AntreanPasienView extends StatelessWidget {
   Widget _buildSubmitButton(BuildContext context) {
     return BlocBuilder<AntreanBloc, AntreanState>(
       builder: (context, state) {
-        final isEnabled = state.selectedPoli != null && state.selectedDokter != null;
+        final isEnabled =
+            state.selectedPoli != null && state.selectedDokter != null;
 
         return SizedBox(
           width: double.infinity,

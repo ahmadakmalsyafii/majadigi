@@ -1,13 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 Widget mainHeader() {
   return Container(
     width: double.infinity,
     height: 200,
-    decoration: const BoxDecoration(
-      color: Color(0xFF004BA0),
-    ),
+    decoration: const BoxDecoration(color: Color(0xFF004BA0)),
     child: Stack(
       children: [
         Positioned(

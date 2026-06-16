@@ -30,6 +30,7 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
     await _firestore.collection("users").doc(user.uid).set(user.toJson());
   }
 
+  @override
   Future<UserModel> signIn(String email, String password) async {
     try {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(

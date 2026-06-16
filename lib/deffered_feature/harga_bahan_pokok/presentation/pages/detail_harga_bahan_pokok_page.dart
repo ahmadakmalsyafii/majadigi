@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:majadigi/core/di/di.dart';
 import 'package:majadigi/deffered_feature/harga_bahan_pokok/presentation/bloc/harga_bahan_pokok_bloc.dart';
@@ -28,7 +27,11 @@ class DetailHargaBahanPokokView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formatCurrency = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    final formatCurrency = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
@@ -39,9 +42,7 @@ class DetailHargaBahanPokokView extends StatelessWidget {
             child: Stack(
               children: [
                 // Blue background header
-                const CustomHeader(
-                  title: '',
-                ),
+                const CustomHeader(title: ''),
 
                 // Content Card overlapping the header
                 BlocBuilder<HargaBahanPokokBloc, HargaBahanPokokState>(
@@ -60,7 +61,7 @@ class DetailHargaBahanPokokView extends StatelessWidget {
                       );
                     } else if (state is CommodityDetailLoaded) {
                       final detail = state.detail;
-                      
+
                       Color diffColor = Colors.black;
                       IconData? diffIcon;
                       if (detail.diff > 0) {
@@ -72,7 +73,11 @@ class DetailHargaBahanPokokView extends StatelessWidget {
                       }
 
                       return Container(
-                        margin: const EdgeInsets.only(top: 100, left: 16, right: 16),
+                        margin: const EdgeInsets.only(
+                          top: 100,
+                          left: 16,
+                          right: 16,
+                        ),
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -100,19 +105,30 @@ class DetailHargaBahanPokokView extends StatelessWidget {
                                   ),
                                   child: detail.image.isNotEmpty
                                       ? ClipRRect(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                           child: Image.network(
                                             detail.image,
                                             fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.shopping_bag, color: Colors.grey),
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    const Icon(
+                                                      Icons.shopping_bag,
+                                                      color: Colors.grey,
+                                                    ),
                                           ),
                                         )
-                                      : const Icon(Icons.shopping_bag, color: Colors.grey),
+                                      : const Icon(
+                                          Icons.shopping_bag,
+                                          color: Colors.grey,
+                                        ),
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         detail.commodityName,
@@ -145,14 +161,24 @@ class DetailHargaBahanPokokView extends StatelessWidget {
                                     detail.diff == 0
                                         ? const Text(
                                             'Stabil',
-                                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey,
+                                            ),
                                           )
                                         : Row(
                                             children: [
-                                              Icon(diffIcon, color: diffColor, size: 12),
+                                              Icon(
+                                                diffIcon,
+                                                color: diffColor,
+                                                size: 12,
+                                              ),
                                               const SizedBox(width: 2),
                                               Text(
-                                                detail.diffPercent.replaceAll('-', ''),
+                                                detail.diffPercent.replaceAll(
+                                                  '-',
+                                                  '',
+                                                ),
                                                 style: TextStyle(
                                                   fontSize: 12,
                                                   color: diffColor,
@@ -172,16 +198,23 @@ class DetailHargaBahanPokokView extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Text(
                                         'Harga rata-rata tertinggi',
-                                        style: TextStyle(fontSize: 12, color: Colors.black87),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.black87,
+                                        ),
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
                                         detail.maxCity.kabkotaName,
-                                        style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.grey.shade600,
+                                        ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -189,8 +222,13 @@ class DetailHargaBahanPokokView extends StatelessWidget {
                                       Row(
                                         children: [
                                           Text(
-                                            formatCurrency.format(detail.maxCity.avgPrice),
-                                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                                            formatCurrency.format(
+                                              detail.maxCity.avgPrice,
+                                            ),
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 12,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -200,16 +238,23 @@ class DetailHargaBahanPokokView extends StatelessWidget {
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Text(
                                         'Harga rata-rata terendah',
-                                        style: TextStyle(fontSize: 12, color: Colors.black87),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.black87,
+                                        ),
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
                                         detail.minCity.kabkotaName,
-                                        style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.grey.shade600,
+                                        ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -217,8 +262,13 @@ class DetailHargaBahanPokokView extends StatelessWidget {
                                       Row(
                                         children: [
                                           Text(
-                                            formatCurrency.format(detail.minCity.avgPrice),
-                                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                                            formatCurrency.format(
+                                              detail.minCity.avgPrice,
+                                            ),
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 12,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -237,7 +287,7 @@ class DetailHargaBahanPokokView extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Chart Widget Area
           BlocBuilder<HargaBahanPokokBloc, HargaBahanPokokState>(
             builder: (context, state) {
@@ -275,13 +325,17 @@ class DetailHargaBahanPokokView extends StatelessWidget {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: state.cityPrices.length,
-                          separatorBuilder: (context, index) => Divider(color: Colors.grey.shade200),
+                          separatorBuilder: (context, index) =>
+                              Divider(color: Colors.grey.shade200),
                           itemBuilder: (context, index) {
                             final cityPrice = state.cityPrices[index];
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 8.0,
+                              ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Expanded(
                                     child: Text(

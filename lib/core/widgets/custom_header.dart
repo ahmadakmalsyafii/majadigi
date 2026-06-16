@@ -23,13 +23,16 @@ class CustomHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Color(0xFF0048B5),
-      ),
+      decoration: const BoxDecoration(color: Color(0xFF0048B5)),
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 24),
+          padding: const EdgeInsets.only(
+            top: 24,
+            left: 24,
+            right: 24,
+            bottom: 24,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -58,7 +61,10 @@ class CustomHeader extends StatelessWidget {
                               const SizedBox(width: 4),
                               const Text(
                                 'Kembali',
-                                style: TextStyle(color: Colors.white, fontSize: 16),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
                               ),
                             ],
                           ),
@@ -66,7 +72,7 @@ class CustomHeader extends StatelessWidget {
                         const SizedBox(height: 24),
                       ],
                     ),
-                    if (trailing != null) trailing!,
+                    ?trailing,
                   ],
                 ),
               ),

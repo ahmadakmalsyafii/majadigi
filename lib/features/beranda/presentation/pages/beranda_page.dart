@@ -9,7 +9,8 @@ import 'package:majadigi/features/beranda/presentation/bloc/beranda_state.dart';
 import 'package:majadigi/features/beranda/presentation/widgets/banner_carousel.dart';
 import 'package:majadigi/features/beranda/presentation/widgets/searchbar_beranda.dart';
 import 'package:majadigi/features/beranda/presentation/widgets/service_section.dart';
-import 'package:majadigi/features/beranda/presentation/widgets/jatim_angka_section.dart'; 
+import 'package:majadigi/features/beranda/presentation/widgets/jatim_angka_section.dart';
+import 'package:majadigi/features/beranda/presentation/widgets/beranda_shimmer.dart';
 
 class BerandaPage extends StatelessWidget {
   const BerandaPage({super.key});
@@ -29,7 +30,7 @@ class BerandaPage extends StatelessWidget {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24,16,24,0),
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -51,13 +52,13 @@ class BerandaPage extends StatelessWidget {
                       ),
                       IconButton(
                         style: ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(
+                          backgroundColor: WidgetStatePropertyAll(
                             Colors.white.withOpacity(0.3),
                           ),
                           side: WidgetStatePropertyAll(
                             BorderSide(color: Colors.white),
                           ),
-                          shape: MaterialStatePropertyAll(
+                          shape: WidgetStatePropertyAll(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),
                             ),
@@ -77,69 +78,53 @@ class BerandaPage extends StatelessWidget {
                       sl<BerandaBloc>()..add(const GetBerandaDataEvent()),
                   child: BlocBuilder<BerandaBloc, BerandaState>(
                     builder: (context, state) {
-                      if (state is BerandaLoading) {
-                        return SizedBox(
-                          height: 200,
-                          child: Container(
-                            color: Colors.white,
-                            child: const Center(
-                              child: CircularProgressIndicator(),
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 24.0),
+                        child: Column(
+                          children: [
+                            if (state.bannerStatus == BerandaSectionStatus.loading || state.bannerStatus == BerandaSectionStatus.initial)
+                              const BannerShimmer()
+                            else if (state.bannerStatus == BerandaSectionStatus.loaded)
+                              BannerCarouselWidget(banners: state.banners)
+                            else
+                              const SizedBox.shrink(),
+
+                            const SearchBarBeranda(),
+
+                            Container(
+                              padding: const EdgeInsets.all(24.0),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[50],
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(24),
+                                  topRight: Radius.circular(24),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  if (state.serviceStatus == BerandaSectionStatus.loading || state.serviceStatus == BerandaSectionStatus.initial)
+                                    const ServiceShimmer()
+                                  else if (state.serviceStatus == BerandaSectionStatus.loaded)
+                                    ServiceSection(services: state.services)
+                                  else
+                                    const SizedBox.shrink(),
+
+                                  const SizedBox(height: 24),
+
+                                  if (state.jatimAngkaStatus == BerandaSectionStatus.loading || state.jatimAngkaStatus == BerandaSectionStatus.initial)
+                                    const JatimAngkaShimmer()
+                                  else if (state.jatimAngkaStatus == BerandaSectionStatus.loaded)
+                                    JatimAngkaSection(
+                                      jatimAngkaList: state.jatimAngka,
+                                    )
+                                  else
+                                    const SizedBox.shrink(),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      } else if (state is BerandaError) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.error,
-                                color: Colors.red,
-                                size: 40,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(state.message),
-                              const SizedBox(height: 16),
-                              ElevatedButton(
-                                onPressed: () {
-                                  context.read<BerandaBloc>().add(
-                                    const GetBerandaDataEvent(),
-                                  );
-                                },
-                                child: const Text('Coba Lagi'),
-                              ),
-                            ],
-                          ),
-                        );
-                      } else if (state is BerandaLoaded) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 24.0),
-                          child: Column(
-                            children: [
-                              BannerCarouselWidget(banners: state.banners),
-                              SearchBarBeranda(),
-                              Container(
-                                padding: const EdgeInsets.all(24.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[50],
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(24),
-                                    topRight: Radius.circular(24),
-                                  ),
-                                ),
-                                child: Column(
-                                  children: [
-                                    ServiceSection(services: state.services),
-                                    const SizedBox(height: 24),
-                                    JatimAngkaSection(jatimAngkaList: state.jatimAngka),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      return const SizedBox.shrink();
+                          ],
+                        ),
+                      );
                     },
                   ),
                 ),
