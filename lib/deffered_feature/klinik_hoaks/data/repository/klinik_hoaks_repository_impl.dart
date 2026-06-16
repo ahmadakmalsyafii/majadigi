@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:dartz/dartz.dart';
 import 'package:majadigi/core/error/exceptions.dart';
 import 'package:majadigi/core/error/failure.dart';
@@ -39,13 +40,15 @@ class KlinikHoaksRepositoryImpl implements KlinikHoaksRepository {
   Future<Either<Failure, bool>> reportHoax({
     required String info,
     required String source,
-    String? filePath,
+    Uint8List? imageBytes,
+    String? fileName,
   }) async {
     try {
       final result = await remoteDataSource.reportHoax(
         info: info,
         source: source,
-        filePath: filePath,
+        imageBytes: imageBytes,
+        fileName: fileName,
       );
       return Right(result);
     } on ServerException catch (e) {

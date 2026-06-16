@@ -1,25 +1,41 @@
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:majadigi/core/di/di.dart';
 import 'package:majadigi/core/widgets/custom_header.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_hoaks_bloc.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_hoaks_event.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/bloc/klinik_hoaks_state.dart';
 
-class LaporkanHoaksPage extends StatefulWidget {
-  final KlinikHoaksBloc bloc;
-
-  const LaporkanHoaksPage({super.key, required this.bloc});
+class LaporkanHoaksPage extends StatelessWidget {
+  const LaporkanHoaksPage({super.key});
 
   @override
-  State<LaporkanHoaksPage> createState() => _LaporkanHoaksPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider<KlinikHoaksBloc>(
+      create: (_) => sl<KlinikHoaksBloc>(),
+      child: const _LaporkanHoaksView(),
+    );
+  }
 }
 
-class _LaporkanHoaksPageState extends State<LaporkanHoaksPage> {
+class _LaporkanHoaksView extends StatefulWidget {
+  const _LaporkanHoaksView({super.key});
+
+  @override
+  State<_LaporkanHoaksView> createState() => _LaporkanHoaksViewState();
+}
+
+class _LaporkanHoaksViewState extends State<_LaporkanHoaksView> {
   final _formKey = GlobalKey<FormState>();
   final _infoController = TextEditingController();
   final _sourceController = TextEditingController();
-  String? _mockFileName;
+  final ImagePicker _imagePicker = ImagePicker();
+  XFile? _selectedImage;
+  Uint8List? _imageBytes;
 
   @override
   void dispose() {
@@ -28,7 +44,35 @@ class _LaporkanHoaksPageState extends State<LaporkanHoaksPage> {
     super.dispose();
   }
 
-  void _showMockUploadSelector() {
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? pickedFile = await _imagePicker.pickImage(
+        source: source,
+        maxWidth: 1920,
+        maxHeight: 1080,
+        imageQuality: 85,
+      );
+
+      if (pickedFile != null) {
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _selectedImage = pickedFile;
+          _imageBytes = bytes;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal memilih gambar: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showImageSourceSelector() {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -42,7 +86,7 @@ class _LaporkanHoaksPageState extends State<LaporkanHoaksPage> {
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  'Pilih Bukti (Simulasi)',
+                  'Pilih Bukti',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -51,30 +95,16 @@ class _LaporkanHoaksPageState extends State<LaporkanHoaksPage> {
                 leading: const Icon(Icons.photo_library, color: Colors.blue),
                 title: const Text('Pilih dari Galeri'),
                 onTap: () {
-                  setState(() {
-                    _mockFileName = 'bukti_ss_galeri_${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}.jpg';
-                  });
                   Navigator.pop(context);
+                  _pickImage(ImageSource.gallery);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.camera_alt, color: Colors.green),
                 title: const Text('Ambil Foto Kamera'),
                 onTap: () {
-                  setState(() {
-                    _mockFileName = 'foto_bukti_kamera_${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}.png';
-                  });
                   Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.description, color: Colors.orange),
-                title: const Text('Unggah File Dokumen (PDF)'),
-                onTap: () {
-                  setState(() {
-                    _mockFileName = 'dokumen_klarifikasi_referensi.pdf';
-                  });
-                  Navigator.pop(context);
+                  _pickImage(ImageSource.camera);
                 },
               ),
               const SizedBox(height: 12),
@@ -87,17 +117,19 @@ class _LaporkanHoaksPageState extends State<LaporkanHoaksPage> {
 
   void _removeSelectedFile() {
     setState(() {
-      _mockFileName = null;
+      _selectedImage = null;
+      _imageBytes = null;
     });
   }
 
   void _submitReport() {
     if (_formKey.currentState!.validate()) {
-      widget.bloc.add(
+      context.read<KlinikHoaksBloc>().add(
         SubmitHoaxReportEvent(
           info: _infoController.text,
           source: _sourceController.text,
-          filePath: _mockFileName,
+          imageBytes: _imageBytes,
+          fileName: _selectedImage?.name,
         ),
       );
     }
@@ -182,27 +214,23 @@ class _LaporkanHoaksPageState extends State<LaporkanHoaksPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: widget.bloc,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: BlocConsumer<KlinikHoaksBloc, KlinikHoaksState>(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: BlocConsumer<KlinikHoaksBloc, KlinikHoaksState>(
           listener: (context, state) {
-            if (state is KlinikHoaksLoaded) {
-              if (state.reportStatus == ReportStatus.success) {
-                _showSuccessDialog();
-              } else if (state.reportStatus == ReportStatus.failure) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.reportErrorMessage ?? 'Gagal mengirim laporan'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
+            if (state is KlinikHoaksReportSuccess) {
+              _showSuccessDialog();
+            } else if (state is KlinikHoaksReportFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.red,
+                ),
+              );
             }
           },
           builder: (context, state) {
-            final isLoading = state is KlinikHoaksLoaded && state.reportStatus == ReportStatus.loading;
+            final isLoading = state is KlinikHoaksReportLoading;
 
             return Stack(
               children: [
@@ -315,9 +343,9 @@ class _LaporkanHoaksPageState extends State<LaporkanHoaksPage> {
                               ),
                               const SizedBox(height: 8),
 
-                              _mockFileName == null
+                              _selectedImage == null
                                   ? InkWell(
-                                      onTap: _showMockUploadSelector,
+                                      onTap: _showImageSourceSelector,
                                       borderRadius: BorderRadius.circular(16),
                                       child: Container(
                                         width: double.infinity,
@@ -350,7 +378,7 @@ class _LaporkanHoaksPageState extends State<LaporkanHoaksPage> {
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
-                                              'JPG, PNG, PDF maks. 10MB',
+                                              'JPG, PNG maks. 10MB',
                                               style: TextStyle(
                                                 fontSize: 11,
                                                 color: Colors.grey.shade500,
@@ -360,47 +388,85 @@ class _LaporkanHoaksPageState extends State<LaporkanHoaksPage> {
                                         ),
                                       ),
                                     )
-                                  : Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 12,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.blue.shade50.withOpacity(0.5),
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(color: Colors.blue.shade200),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            _mockFileName!.endsWith('.pdf')
-                                                ? Icons.picture_as_pdf
-                                                : Icons.image,
-                                            color: Colors.blue,
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: Text(
-                                              _mockFileName!,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w500,
-                                                color: Colors.black87,
+                                  : Column(
+                                      children: [
+                                        // Preview gambar
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(12),
+                                          child: Stack(
+                                            children: [
+                                              Image.memory(
+                                                _imageBytes!,
+                                                width: double.infinity,
+                                                height: 200,
+                                                fit: BoxFit.cover,
                                               ),
-                                            ),
+                                              Positioned(
+                                                top: 8,
+                                                right: 8,
+                                                child: GestureDetector(
+                                                  onTap: _removeSelectedFile,
+                                                  child: Container(
+                                                    padding: const EdgeInsets.all(6),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.black54,
+                                                      borderRadius: BorderRadius.circular(20),
+                                                    ),
+                                                    child: const Icon(
+                                                      Icons.close,
+                                                      color: Colors.white,
+                                                      size: 18,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          IconButton(
-                                            icon: const Icon(
-                                              Icons.cancel_rounded,
-                                              color: Colors.red,
-                                            ),
-                                            onPressed: _removeSelectedFile,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        // Nama file
+                                        Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 10,
                                           ),
-                                        ],
-                                      ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue.shade50.withOpacity(0.5),
+                                            borderRadius: BorderRadius.circular(8),
+                                            border: Border.all(color: Colors.blue.shade200),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              const Icon(Icons.image, color: Colors.blue, size: 18),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: Text(
+                                                  _selectedImage!.name,
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.black87,
+                                                  ),
+                                                ),
+                                              ),
+                                              GestureDetector(
+                                                onTap: _showImageSourceSelector,
+                                                child: Text(
+                                                  'Ganti',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.blue.shade600,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
                             ],
                           ),
@@ -432,9 +498,9 @@ class _LaporkanHoaksPageState extends State<LaporkanHoaksPage> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
-                          'Lapor',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        child: Text(
+                          isLoading ? 'Mengirim...' : 'Lapor',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -444,13 +510,26 @@ class _LaporkanHoaksPageState extends State<LaporkanHoaksPage> {
                   Container(
                     color: Colors.black26,
                     child: const Center(
-                      child: CircularProgressIndicator(),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(color: Colors.white),
+                          SizedBox(height: 16),
+                          Text(
+                            'Mengirim laporan...',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
               ],
             );
           },
-        ),
       ),
     );
   }

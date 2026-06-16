@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:equatable/equatable.dart';
 
 abstract class KlinikHoaksEvent extends Equatable {
@@ -22,14 +23,16 @@ class SearchKlinikHoaksEvent extends KlinikHoaksEvent {
 class SubmitHoaxReportEvent extends KlinikHoaksEvent {
   final String info;
   final String source;
-  final String? filePath;
+  final Uint8List? imageBytes;
+  final String? fileName;
 
   const SubmitHoaxReportEvent({
     required this.info,
     required this.source,
-    this.filePath,
+    this.imageBytes,
+    this.fileName,
   });
 
   @override
-  List<Object?> get props => [info, source, filePath];
+  List<Object?> get props => [info, source, imageBytes, fileName];
 }

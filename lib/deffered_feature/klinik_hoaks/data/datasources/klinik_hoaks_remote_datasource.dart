@@ -1,11 +1,15 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:majadigi/core/error/exceptions.dart';
 import 'package:majadigi/core/network/dio_client.dart';
+import 'package:majadigi/core/network/cloudinary_service.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/data/model/klinik_hoaks_stats_model.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/data/model/klinik_hoaks_clarification_model.dart';
+import 'package:majadigi/deffered_feature/klinik_hoaks/data/model/hoax_report_model.dart';
 
 abstract class KlinikHoaksRemoteDataSource {
   Future<KlinikHoaksStatsModel> getStats();
@@ -13,13 +17,16 @@ abstract class KlinikHoaksRemoteDataSource {
   Future<bool> reportHoax({
     required String info,
     required String source,
-    String? filePath,
+    Uint8List? imageBytes,
+    String? fileName,
   });
 }
 
 class KlinikHoaksRemoteDataSourceImpl implements KlinikHoaksRemoteDataSource {
   final DioClient dioClient;
   final SharedPreferences sharedPreferences;
+  final FirebaseFirestore firestore;
+  final CloudinaryService cloudinaryService;
   final String _baseUrl = 'https://api-splp.layanan.go.id/t/jatimprov.go.id/klinik-hoaks/v1/mobile';
 
   // Cache keys
@@ -40,6 +47,8 @@ class KlinikHoaksRemoteDataSourceImpl implements KlinikHoaksRemoteDataSource {
   KlinikHoaksRemoteDataSourceImpl({
     required this.dioClient,
     required this.sharedPreferences,
+    required this.firestore,
+    required this.cloudinaryService,
   });
 
   /// Cek apakah cache masih valid berdasarkan timestamp
@@ -311,17 +320,44 @@ class KlinikHoaksRemoteDataSourceImpl implements KlinikHoaksRemoteDataSource {
     }
   }
 
+  // ─── REPORT HOAX ──────────────────────────────────────────────────────
+
   @override
   Future<bool> reportHoax({
     required String info,
     required String source,
-    String? filePath,
+    Uint8List? imageBytes,
+    String? fileName,
   }) async {
     try {
-      // Simulasi pengiriman laporan dengan delay 1.5 detik
-      await Future.delayed(const Duration(milliseconds: 1500));
+      String? imageUrl;
+
+      // 1. Upload gambar ke Cloudinary jika ada
+      if (imageBytes != null && imageBytes.isNotEmpty) {
+        debugPrint('[KlinikHoaks] Mengupload bukti ke Cloudinary...');
+        imageUrl = await cloudinaryService.uploadImageBytes(
+          imageBytes,
+          fileName ?? 'bukti_hoaks_${DateTime.now().millisecondsSinceEpoch}.jpg',
+        );
+        debugPrint('[KlinikHoaks] Upload berhasil: $imageUrl');
+      }
+
+      // 2. Simpan laporan ke Firestore
+      final report = HoaxReportModel(
+        info: info,
+        source: source,
+        imageUrl: imageUrl,
+        reportedAt: DateTime.now(),
+        status: 'pending',
+      );
+
+      final docRef = firestore.collection('hoax_reports').doc();
+      await docRef.set(report.toJson());
+
+      debugPrint('[KlinikHoaks] Laporan berhasil disimpan ke Firestore: ${docRef.id}');
       return true;
     } catch (e) {
+      debugPrint('[KlinikHoaks] Gagal mengirim laporan: $e');
       throw ServerException(message: 'Gagal mengirim laporan: $e');
     }
   }

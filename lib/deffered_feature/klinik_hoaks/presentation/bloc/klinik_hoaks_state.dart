@@ -85,3 +85,16 @@ class KlinikHoaksError extends KlinikHoaksState {
   @override
   List<Object?> get props => [message];
 }
+
+class KlinikHoaksReportLoading extends KlinikHoaksState {}
+
+class KlinikHoaksReportSuccess extends KlinikHoaksState {}
+
+class KlinikHoaksReportFailure extends KlinikHoaksState {
+  final String message;
+
+  const KlinikHoaksReportFailure({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
