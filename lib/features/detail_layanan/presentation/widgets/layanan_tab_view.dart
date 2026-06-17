@@ -102,7 +102,7 @@ class _LayananTabViewState extends State<LayananTabView> {
               iconColor = Colors.green;
             } else if (widget.service.name.toLowerCase().contains('islamic')) {
               featureName = 'Islamic Center';
-              icon = Icons.mosque;
+              icon = Icons.nights_stay_outlined;
               iconColor = Colors.green;
             } else if (widget.service.features.isNotEmpty) {
               featureName = widget.service.features[index].judul;

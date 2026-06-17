@@ -60,6 +60,18 @@ class DestinationTicketRepositoryImpl implements DestinationTicketRepository {
 
       await docRef.set(model.toFirestore());
 
+      // Record ke activity_histories
+      final historyRef = _firestore.collection('activity_histories').doc();
+      await historyRef.set({
+        'id': historyRef.id,
+        'ticket_id': docRef.id,
+        'type': 'destinasi_wisata',
+        'title': 'Tiket $destinationName',
+        'user_id': userId,
+        'status': 'pending',
+        'date_booked': FieldValue.serverTimestamp(),
+      });
+
       return Right(model);
     } catch (e) {
       return Left(e.toString());

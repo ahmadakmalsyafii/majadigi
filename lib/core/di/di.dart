@@ -111,6 +111,17 @@ import 'package:majadigi/deffered_feature/destinasi_wisata/domain/repositories/d
 import 'package:majadigi/deffered_feature/destinasi_wisata/domain/usecases/create_destination_ticket_usecase.dart';
 import 'package:majadigi/deffered_feature/destinasi_wisata/presentation/bloc/destination_ticket_bloc.dart';
 
+import 'package:majadigi/features/riwayat_aktivitas/data/datasources/activity_history_remote_datasource.dart';
+import 'package:majadigi/features/riwayat_aktivitas/data/repositories/activity_history_repository_impl.dart';
+import 'package:majadigi/features/riwayat_aktivitas/domain/repositories/activity_history_repository.dart';
+import 'package:majadigi/features/riwayat_aktivitas/domain/usecases/get_activity_histories_usecase.dart';
+import 'package:majadigi/features/riwayat_aktivitas/domain/usecases/save_activity_history_usecase.dart';
+import 'package:majadigi/features/riwayat_aktivitas/presentation/bloc/activity_history_bloc.dart';
+import 'package:majadigi/features/ticket_viewer/data/datasources/ticket_viewer_remote_datasource.dart';
+import 'package:majadigi/features/ticket_viewer/data/repositories/ticket_viewer_repository_impl.dart';
+import 'package:majadigi/features/ticket_viewer/domain/repositories/ticket_viewer_repository.dart';
+import 'package:majadigi/features/ticket_viewer/domain/usecases/get_ticket_detail_usecase.dart';
+import 'package:majadigi/features/ticket_viewer/presentation/bloc/ticket_viewer_bloc.dart';
 /// Global service locator.
 final sl = GetIt.instance;
 
@@ -193,6 +204,8 @@ void init() async {
   sl.registerFactory(() => IslamicCenterBloc(getFacilitiesUseCase: sl()));
   sl.registerFactory(() => IslamicCenterTicketBloc(sl()));
   sl.registerFactory(() => DestinationTicketBloc(sl()));
+  sl.registerFactory(() => ActivityHistoryBloc(getActivityHistoriesUseCase: sl()));
+  sl.registerFactory(() => TicketViewerBloc(sl()));
 
   // Use Cases
   // di.registerLazySingleton<AuthUseCase>(() => AuthUseCaseImpl(di()));
@@ -229,6 +242,9 @@ void init() async {
   sl.registerLazySingleton(() => GetFacilitiesUseCase(sl()));
   sl.registerLazySingleton(() => CreateIslamicTicketUsecase(sl()));
   sl.registerLazySingleton(() => CreateDestinationTicketUsecase(sl()));
+  sl.registerLazySingleton(() => GetActivityHistoriesUseCase(sl()));
+  sl.registerLazySingleton(() => SaveActivityHistoryUseCase(sl()));
+  sl.registerLazySingleton(() => GetTicketDetailUsecase(sl()));
 
   // Data Sources
   // di.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(di()));
@@ -280,6 +296,12 @@ void init() async {
   );
   sl.registerLazySingleton<IslamicCenterRemoteDataSource>(
     () => IslamicCenterRemoteDataSourceImpl(firestore: sl()),
+  );
+  sl.registerLazySingleton<ActivityHistoryRemoteDataSource>(
+    () => ActivityHistoryRemoteDataSourceImpl(firestore: sl()),
+  );
+  sl.registerLazySingleton<TicketViewerRemoteDataSource>(
+    () => TicketViewerRemoteDataSourceImpl(firestore: sl()),
   );
 
   // Repositories
@@ -341,6 +363,12 @@ void init() async {
   );
   sl.registerLazySingleton<DestinationTicketRepository>(
     () => DestinationTicketRepositoryImpl(firestore: sl()),
+  );
+  sl.registerLazySingleton<ActivityHistoryRepository>(
+    () => ActivityHistoryRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerLazySingleton<TicketViewerRepository>(
+    () => TicketViewerRepositoryImpl(remoteDataSource: sl()),
   );
 
   sl.registerLazySingleton<FeatureManagerLocalDataSource>(

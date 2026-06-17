@@ -7,7 +7,7 @@ import 'package:majadigi/features/beranda/domain/entity/service_entity.dart';
 import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_bloc.dart';
 import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_event.dart';
 import 'package:majadigi/core/feature_manager/presentation/bloc/feature_manager_state.dart';
-import 'package:majadigi/core/widgets/custom_header.dart';
+import 'package:majadigi/core/widgets/main_header.dart';
 
 const defaultHospitalService = ServiceEntity(
   id: 'rssa',
@@ -19,12 +19,7 @@ const defaultHospitalService = ServiceEntity(
   websiteUrl: 'https://rsusaifulanwar.jatimprov.go.id',
   features: [],
   operationalHours: [
-    OperationalHourEntity(
-      hari: '',
-      buka: '',
-      tutup: '',
-      keterangan: '',
-    ),
+    OperationalHourEntity(hari: '', buka: '', tutup: '', keterangan: ''),
   ],
 );
 
@@ -92,7 +87,7 @@ class _TersimpanPageState extends State<TersimpanPage> {
         bgColor = Colors.blue.shade50;
         break;
       case 'islamic_center':
-        iconData = Icons.mosque;
+        iconData = Icons.nights_stay_outlined;
         iconColor = Colors.pink;
         bgColor = Colors.pink.shade50;
         break;
@@ -176,10 +171,9 @@ class _TersimpanPageState extends State<TersimpanPage> {
       backgroundColor: const Color(0xFFF5F5F5),
       body: Column(
         children: [
-          const CustomHeader(
+          mainHeader(
             title: 'Tersimpan',
             subtitle: 'Layanan yang telah diunduh',
-            showBackButton: false,
           ),
           Expanded(
             child: BlocBuilder<FeatureManagerBloc, FeatureManagerState>(

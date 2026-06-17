@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:majadigi/core/widgets/main_header.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:majadigi/features/auth/domain/entity/user_entity.dart';
@@ -11,7 +12,14 @@ import 'package:majadigi/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:majadigi/features/profile/presentation/bloc/profile_event.dart';
 import 'package:majadigi/features/profile/presentation/bloc/profile_state.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:majadigi/features/riwayat_aktivitas/presentation/bloc/activity_history_bloc.dart';
+import 'package:majadigi/features/riwayat_aktivitas/presentation/bloc/activity_history_event.dart';
+import 'package:majadigi/features/riwayat_aktivitas/presentation/bloc/activity_history_state.dart';
+import 'package:majadigi/features/riwayat_aktivitas/domain/entities/activity_history_entity.dart';
+import 'package:majadigi/core/di/di.dart';
+import 'package:majadigi/features/profile/presentation/widgets/activity_history_profile_shimmer.dart';
+import 'package:majadigi/features/profile/presentation/widgets/profile_info_shimmer.dart';
+import 'package:majadigi/features/profile/presentation/widgets/profile_page_shimmer.dart';
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
@@ -41,8 +49,9 @@ class ProfilePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildHeader(),
+                        mainHeader(title: 'Profile'),
                         const SizedBox(height: 20),
+                        _buildRiwayatAktivitas(context, state.user),
                         const SizedBox(height: 20),
                         _buildInfoSection(context, state.user),
                         const SizedBox(height: 20),
@@ -67,8 +76,8 @@ class ProfilePage extends StatelessWidget {
                 ],
               );
             } else if (state is AuthLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else {
+               return const ProfilePageShimmer();
+             } else {
               return const Center(
                 child: Text("Silakan login terlebih dahulu."),
               );
@@ -79,193 +88,215 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      height: 200,
-      decoration: const BoxDecoration(color: Color(0xFF004BA0)),
-      child: Stack(
-        children: [
-          Positioned(
-            right: -50,
-            bottom: -50,
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
-              ),
+
+
+  Widget _buildRiwayatAktivitas(BuildContext context, UserEntity user) {
+    return BlocProvider(
+      create: (context) => sl<ActivityHistoryBloc>()..add(FetchActivityHistories(userId: user.uid)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Riwayat Aktivitas',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                InkWell(
+                  onTap: () {
+                    context.pushNamed('riwayat_aktivitas', extra: user.uid);
+                  },
+                  child: Row(
+                    children: [
+                      Text(
+                        'Lihat Semua',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.blue.shade600,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: Colors.blue.shade600,
+                        size: 18,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ),
-          Positioned(
-            right: -10,
-            bottom: -80,
-            child: Container(
-              width: 250,
-              height: 250,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.05),
-              ),
-            ),
-          ),
-          const SafeArea(
-            child: Padding(
-              padding: EdgeInsets.only(left: 20, top: 20),
+            const SizedBox(height: 10),
+            BlocBuilder<ActivityHistoryBloc, ActivityHistoryState>(
+               builder: (context, state) {
+                 if (state is ActivityHistoryLoading) {
+                   return const ActivityHistoryProfileShimmer(itemCount: 2);
+                 } else if (state is ActivityHistoryError) {
+                   return Center(child: Text(state.message));
+                 } else if (state is ActivityHistoryLoaded) {
+                   final histories = state.histories;
+                   if (histories.isEmpty) {
+                     return const Padding(
+                       padding: EdgeInsets.symmetric(vertical: 10),
+                       child: Text('Belum ada riwayat aktivitas', style: TextStyle(color: Colors.grey)),
+                     );
+                   }
+
+                   // Ambil maksimal 2 item
+                   final displayHistories = histories.take(2).toList();
+
+                   return Column(
+                     children: displayHistories.map((history) =>
+                       _buildActivityCard(context, history)
+                     ).toList(),
+                   );
+                 }
+                 return const SizedBox.shrink();
+               },
+             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActivityCard(BuildContext context, ActivityHistoryEntity history) {
+    IconData iconData;
+    switch (history.type) {
+      case 'islamic_center':
+        iconData = Icons.nights_stay_outlined;
+        break;
+      case 'destinasi_wisata':
+        iconData = Icons.map_outlined;
+        break;
+      case 'rsud':
+        iconData = Icons.local_hospital_outlined;
+        break;
+      default:
+        iconData = Icons.receipt_long_outlined;
+    }
+
+    return GestureDetector(
+      onTap: () {
+        context.pushNamed(
+          'ticket_viewer',
+          extra: {
+            'ticketId': history.ticketId,
+            'type': history.type,
+          },
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Row(
+          children: [
+            Icon(iconData, size: 24, color: Colors.black87),
+            const SizedBox(width: 16),
+            Expanded(
               child: Text(
-                'Profile',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
+                history.title,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRiwayatAktivitas() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Riwayat Aktivitas',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: const Text(
-                  'Lihat Semua >',
-                  style: TextStyle(color: Colors.blue),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          _buildActivityCard(
-            'assets/icons/Hospital Building.svg',
-            'Tiket RSUD',
-          ),
-          const SizedBox(height: 10),
-          _buildActivityCard('assets/icons/Moon Stars.svg', 'Islamic Center'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActivityCard(String iconPath, String title) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      child: Row(
-        children: [
-          SvgPicture.asset(
-            iconPath,
-            width: 24,
-            height: 24,
-            colorFilter: const ColorFilter.mode(
-              Colors.black87,
-              BlendMode.srcIn,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Text(
-            title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildInfoSection(BuildContext context, UserEntity user) {
-    String formattedDate = user.dateOfBirth != null
-        ? DateFormat('dd MMMM yyyy', 'id_ID').format(user.dateOfBirth!)
-        : '-';
+     String formattedDate = user.dateOfBirth != null
+         ? DateFormat('dd MMMM yyyy', 'id_ID').format(user.dateOfBirth!)
+         : '-';
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Info',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              IconButton(
-                icon: const Icon(Icons.edit, color: Colors.black54),
-                onPressed: () => _showEditProfileBottomSheet(context, user),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            child: Column(
-              children: [
-                _buildInfoRow('assets/icons/User.svg', 'Nama', user.name),
-                const Divider(),
-                _buildInfoRow('assets/icons/NIK.svg', 'NIK', user.NIK ?? '-'),
-                const Divider(),
-                _buildInfoRow(
-                  'assets/icons/Baby Carriage.svg',
-                  'Tanggal Lahir',
-                  formattedDate,
-                ),
-                const Divider(),
-                _buildInfoRow(
-                  'assets/icons/Gender.svg',
-                  'Gender',
-                  user.gender ?? '-',
-                ),
-                const Divider(),
-                _buildInfoRow(
-                  'assets/icons/Address.svg',
-                  'Alamat',
-                  user.address ?? '-',
-                ),
-                const Divider(),
-                _buildInfoRow(
-                  null,
-                  'Email',
-                  user.email,
-                  fallbackIcon: Icons.alternate_email,
-                ),
-                const Divider(),
-                _buildInfoRow(
-                  'assets/icons/Password.svg',
-                  'Password',
-                  '******************',
-                  iconWidth: 26,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+     return Padding(
+       padding: const EdgeInsets.symmetric(horizontal: 20),
+       child: Column(
+         crossAxisAlignment: CrossAxisAlignment.start,
+         children: [
+           Row(
+             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+             children: [
+               const Text(
+                 'Info',
+                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+               ),
+               IconButton(
+                 icon: const Icon(Icons.edit, color: Colors.black54),
+                 onPressed: () => _showEditProfileBottomSheet(context, user),
+               ),
+             ],
+           ),
+           const SizedBox(height: 10),
+           BlocBuilder<ProfileBloc, ProfileState>(
+             builder: (context, state) {
+               if (state is ProfileLoading) {
+                 return const ProfileInfoShimmer();
+               }
+               return Container(
+                 padding: const EdgeInsets.all(16),
+                 decoration: BoxDecoration(
+                   color: Colors.white,
+                   borderRadius: BorderRadius.circular(12),
+                   border: Border.all(color: Colors.grey.shade300),
+                 ),
+                 child: Column(
+                   children: [
+                     _buildInfoRow('assets/icons/User.svg', 'Nama', user.name),
+                     const Divider(),
+                     _buildInfoRow('assets/icons/NIK.svg', 'NIK', user.NIK ?? '-'),
+                     const Divider(),
+                     _buildInfoRow(
+                       'assets/icons/Baby Carriage.svg',
+                       'Tanggal Lahir',
+                       formattedDate,
+                     ),
+                     const Divider(),
+                     _buildInfoRow(
+                       'assets/icons/Gender.svg',
+                       'Gender',
+                       user.gender ?? '-',
+                     ),
+                     const Divider(),
+                     _buildInfoRow(
+                       'assets/icons/Address.svg',
+                       'Alamat',
+                       user.address ?? '-',
+                     ),
+                     const Divider(),
+                     _buildInfoRow(
+                       null,
+                       'Email',
+                       user.email,
+                       fallbackIcon: Icons.alternate_email,
+                     ),
+                     const Divider(),
+                     _buildInfoRow(
+                       'assets/icons/Password.svg',
+                       'Password',
+                       '******************',
+                       iconWidth: 26,
+                     ),
+                   ],
+                 ),
+               );
+             },
+           ),
+         ],
+       ),
+     );
+   }
 
   Widget _buildInfoRow(
     String? iconPath,

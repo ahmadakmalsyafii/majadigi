@@ -56,6 +56,18 @@ class IslamicCenterTicketRepositoryImpl implements IslamicCenterTicketRepository
 
       await docRef.set(model.toFirestore());
 
+      // Record ke activity_histories
+      final historyRef = _firestore.collection('activity_histories').doc();
+      await historyRef.set({
+        'id': historyRef.id,
+        'ticket_id': docRef.id,
+        'type': 'islamic_center',
+        'title': 'Tiket $roomName',
+        'user_id': userId,
+        'status': 'pending',
+        'date_booked': FieldValue.serverTimestamp(),
+      });
+
       return Right(model);
     } catch (e) {
       return Left(e.toString());

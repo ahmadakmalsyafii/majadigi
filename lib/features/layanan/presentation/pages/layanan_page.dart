@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:majadigi/core/di/di.dart';
-import 'package:majadigi/core/widgets/custom_header.dart';
+import 'package:majadigi/core/widgets/main_header.dart';
 import 'package:majadigi/core/widgets/custom_search_bar.dart';
 import 'package:majadigi/features/layanan/presentation/bloc/layanan_bloc.dart';
 import 'package:majadigi/features/layanan/presentation/bloc/layanan_event.dart';
@@ -75,10 +75,9 @@ class _LayananView extends StatelessWidget {
             builder: (context) {
               return Column(
                 children: [
-                  const CustomHeader(
+                  mainHeader(
                     title: 'Cari Layanan',
                     subtitle: 'Temukan layanan sesuai kebutuhanmu.',
-                    showBackButton: false,
                   ),
                   Container(
                     padding: const EdgeInsets.all(8.0),

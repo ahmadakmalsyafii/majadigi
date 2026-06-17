@@ -32,7 +32,11 @@ import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/pages/klinik
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/pages/klinik_hoaks_detail_page.dart' deferred as klinik_hoaks_detail;
 import 'package:majadigi/deffered_feature/klinik_hoaks/presentation/pages/laporkan_hoaks_page.dart' deferred as laporkan_hoaks;
 import 'package:majadigi/deffered_feature/no_darurat/presentation/pages/noDarurat_pages.dart' deferred as no_darurat;
-
+import 'package:majadigi/features/riwayat_aktivitas/presentation/pages/activity_history_page.dart';
+import 'package:majadigi/features/riwayat_aktivitas/presentation/bloc/activity_history_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:majadigi/core/di/di.dart';
+import 'package:majadigi/features/ticket_viewer/presentation/pages/ticket_viewer_page.dart';
 class AppRouter {
   final AuthBloc authBloc;
 
@@ -341,6 +345,40 @@ class AppRouter {
         },
       ),
 
+      GoRoute(
+        path: '/riwayat-aktivitas',
+        name: 'riwayat_aktivitas',
+        redirect: (BuildContext context, GoRouterState state) {
+          if (state.extra == null) {
+            return '/profil'; // redirect ke profil jika tidak ada userId
+          }
+          return null;
+        },
+        builder: (BuildContext context, GoRouterState state) {
+          final userId = state.extra as String;
+          return BlocProvider(
+            create: (context) => sl<ActivityHistoryBloc>(),
+            child: ActivityHistoryPage(userId: userId),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/ticket-viewer',
+        name: 'ticket_viewer',
+        redirect: (BuildContext context, GoRouterState state) {
+          if (state.extra == null) {
+            return '/';
+          }
+          return null;
+        },
+        builder: (BuildContext context, GoRouterState state) {
+          final args = state.extra as Map<String, String>;
+          return TicketViewerPage(
+            ticketId: args['ticketId']!,
+            type: args['type']!,
+          );
+        },
+      ),
 
       //BUAT NAV BUTTOMNYA
       StatefulShellRoute.indexedStack(

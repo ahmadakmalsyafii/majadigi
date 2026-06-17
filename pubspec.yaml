@@ -74,6 +74,7 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/images/main_background.png
+    - assets/images/header_background.png
     - .env
     - lib/core/env/.env
 
