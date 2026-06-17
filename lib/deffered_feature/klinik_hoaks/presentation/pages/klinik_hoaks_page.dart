@@ -126,34 +126,29 @@ class _KlinikHoaksViewState extends State<_KlinikHoaksView> {
                 CustomHeader(
                   title: 'Klinik Hoaks',
                   subtitle: 'Verifikasi & klarifikasi informasi resmi',
-                  subtitleWidget: LayoutBuilder(builder: (context, constraints) {
-                    final cardWidth = (constraints.maxWidth - 24) / 4;
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildStatCard(
-                          '${state.stats.jmlHoaksYtd}',
-                          'Berita Hoaks',
-                          cardWidth,
-                        ),
-                        _buildStatCard(
-                          '${state.stats.jmlDisinformasiYtd}',
-                          'Disinformasi',
-                          cardWidth,
-                        ),
-                        _buildStatCard(
-                          '${state.stats.jmlFaktaYtd}',
-                          'Fakta',
-                          cardWidth,
-                        ),
-                        _buildStatCard(
-                          '${state.stats.jmlHateSpeechYtd}',
-                          'Hate Speech',
-                          cardWidth,
-                        ),
-                      ],
-                    );
-                  }),
+                  subtitleWidget: Row(
+                    children: [
+                      _buildStatCard(
+                        '${state.stats.jmlHoaksYtd}',
+                        'Berita Hoaks',
+                      ),
+                      const SizedBox(width: 8),
+                      _buildStatCard(
+                        '${state.stats.jmlDisinformasiYtd}',
+                        'Disinformasi',
+                      ),
+                      const SizedBox(width: 8),
+                      _buildStatCard(
+                        '${state.stats.jmlFaktaYtd}',
+                        'Fakta',
+                      ),
+                      const SizedBox(width: 8),
+                      _buildStatCard(
+                        '${state.stats.jmlHateSpeechYtd}',
+                        'Hate Speech',
+                      ),
+                    ],
+                  ),
                 ),
                 // Loading indicator untuk daftar klarifikasi
                 const Expanded(
@@ -226,34 +221,29 @@ class _KlinikHoaksViewState extends State<_KlinikHoaksView> {
                       ),
                     ),
                   ),
-                  subtitleWidget: LayoutBuilder(builder: (context, constraints) {
-                    final cardWidth = (constraints.maxWidth - 24) / 4;
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildStatCard(
-                          '${state.stats.jmlHoaksYtd}',
-                          'Berita Hoaks',
-                          cardWidth,
-                        ),
-                        _buildStatCard(
-                          '${state.stats.jmlDisinformasiYtd}',
-                          'Disinformasi',
-                          cardWidth,
-                        ),
-                        _buildStatCard(
-                          '${state.stats.jmlFaktaYtd}',
-                          'Fakta',
-                          cardWidth,
-                        ),
-                        _buildStatCard(
-                          '${state.stats.jmlHateSpeechYtd}',
-                          'Hate Speech',
-                          cardWidth,
-                        ),
-                      ],
-                    );
-                  }),
+                  subtitleWidget: Row(
+                    children: [
+                      _buildStatCard(
+                        '${state.stats.jmlHoaksYtd}',
+                        'Berita Hoaks',
+                      ),
+                      const SizedBox(width: 8),
+                      _buildStatCard(
+                        '${state.stats.jmlDisinformasiYtd}',
+                        'Disinformasi',
+                      ),
+                      const SizedBox(width: 8),
+                      _buildStatCard(
+                        '${state.stats.jmlFaktaYtd}',
+                        'Fakta',
+                      ),
+                      const SizedBox(width: 8),
+                      _buildStatCard(
+                        '${state.stats.jmlHateSpeechYtd}',
+                        'Hate Speech',
+                      ),
+                    ],
+                  ),
                 ),
 
                 // Area Pencarian & Kategori
@@ -382,7 +372,7 @@ class _KlinikHoaksViewState extends State<_KlinikHoaksView> {
                   ),
                   child: ElevatedButton(
                     onPressed: () {
-                      context.push('/klinik-hoaks/lapor', extra: context.read<KlinikHoaksBloc>());
+                      context.push('/klinik-hoaks/lapor');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue.shade600,
@@ -408,43 +398,50 @@ class _KlinikHoaksViewState extends State<_KlinikHoaksView> {
     );
   }
 
-  Widget _buildStatCard(String count, String label, double width) {
-    return Container(
-      width: width,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            count,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue,
+  Widget _buildStatCard(String count, String label) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 9,
-              fontWeight: FontWeight.w600,
-              color: Colors.black54,
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                count,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 4),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

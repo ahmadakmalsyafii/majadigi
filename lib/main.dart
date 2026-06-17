@@ -15,7 +15,7 @@ void main() async {
 
   await initializeDateFormatting('id_ID', null);
 
-  di.init();
+  await di.init();
 
   runApp(const App());
 }

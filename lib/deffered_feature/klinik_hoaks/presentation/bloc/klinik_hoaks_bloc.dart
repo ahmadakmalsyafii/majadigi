@@ -94,25 +94,18 @@ class KlinikHoaksBloc extends Bloc<KlinikHoaksEvent, KlinikHoaksState> {
     SubmitHoaxReportEvent event,
     Emitter<KlinikHoaksState> emit,
   ) async {
-    if (state is KlinikHoaksLoaded) {
-      final currentState = state as KlinikHoaksLoaded;
-      emit(currentState.copyWith(reportStatus: ReportStatus.loading));
+    emit(KlinikHoaksReportLoading());
 
-      final result = await reportHoax(
-        info: event.info,
-        source: event.source,
-        filePath: event.filePath,
-      );
+    final result = await reportHoax(
+      info: event.info,
+      source: event.source,
+      imageBytes: event.imageBytes,
+      fileName: event.fileName,
+    );
 
-      result.fold(
-        (failure) => emit(currentState.copyWith(
-          reportStatus: ReportStatus.failure,
-          reportErrorMessage: failure.message,
-        )),
-        (success) => emit(currentState.copyWith(
-          reportStatus: ReportStatus.success,
-        )),
-      );
-    }
+    result.fold(
+      (failure) => emit(KlinikHoaksReportFailure(message: failure.message)),
+      (success) => emit(KlinikHoaksReportSuccess()),
+    );
   }
 }

@@ -325,19 +325,12 @@ class AppRouter {
       GoRoute(
         path: '/klinik-hoaks/lapor',
         name: 'klinik_hoaks_lapor',
-        redirect: (BuildContext context, GoRouterState state) {
-          if (state.extra == null) {
-            return '/';
-          }
-          return null;
-        },
         builder: (BuildContext context, GoRouterState state) {
-          final bloc = state.extra as KlinikHoaksBloc;
           return FutureBuilder(
             future: laporkan_hoaks.loadLibrary(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                return laporkan_hoaks.LaporkanHoaksPage(bloc: bloc);
+                return laporkan_hoaks.LaporkanHoaksPage();
               }
               return const Scaffold(body: Center(child: CircularProgressIndicator()));
             },

@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:dartz/dartz.dart';
 import 'package:majadigi/core/error/failure.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/domain/repositories/klinik_hoaks_repository.dart';
@@ -10,12 +11,14 @@ class ReportHoaxUseCase {
   Future<Either<Failure, bool>> call({
     required String info,
     required String source,
-    String? filePath,
+    Uint8List? imageBytes,
+    String? fileName,
   }) async {
     return await repository.reportHoax(
       info: info,
       source: source,
-      filePath: filePath,
+      imageBytes: imageBytes,
+      fileName: fileName,
     );
   }
 }

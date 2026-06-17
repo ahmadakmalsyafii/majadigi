@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
+import 'package:majadigi/core/network/cloudinary_service.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/data/datasources/klinik_hoaks_remote_datasource.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/domain/repositories/klinik_hoaks_repository.dart';
 import 'package:majadigi/deffered_feature/klinik_hoaks/data/repository/klinik_hoaks_repository_impl.dart';
@@ -125,7 +126,7 @@ import 'package:majadigi/features/ticket_viewer/presentation/bloc/ticket_viewer_
 /// Global service locator.
 final sl = GetIt.instance;
 
-void init() async {
+Future<void> init() async {
   // External dependencies
   final sharedpreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton<SharedPreferences>(() => sharedpreferences);
@@ -136,6 +137,7 @@ void init() async {
   sl.registerLazySingleton(() => ApiKeyManager(sl()));
   sl.registerLazySingleton(() => DioClient(sl()));
   sl.registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance);
+  sl.registerLazySingleton(() => CloudinaryService());
 
   // Factories/BLoCs
   // di.registerFactory<AuthBloc>(() => AuthBloc(di()));
@@ -282,7 +284,9 @@ void init() async {
     () => KlinikHoaksRemoteDataSourceImpl(
       dioClient: sl(),
       sharedPreferences: sl(),
-    
+
+      firestore: sl(),
+      cloudinaryService: sl(),
     ),
   );
   sl.registerLazySingleton<HargaBahanPokokRemoteDataSource>(
